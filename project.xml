@@ -1,0 +1,22 @@
+<project name = "esm"
+         optflags = "-O0">
+
+    <cflags>
+        -std=gnu99 -g \
+    </cflags>
+
+    <defines>
+        <define name = "ESM"/>
+    </defines>
+
+    <exec name = "esm_test">
+        <includes>
+            <dir name = "include"/>
+        </includes>
+        <sources>
+            <dir name = "src"/>
+            <dir name = "core"/>
+        </sources>
+    </exec>
+
+</project>
