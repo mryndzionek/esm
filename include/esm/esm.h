@@ -1,0 +1,81 @@
+#ifndef INCLUDE_ESM_ESM_H_
+#define INCLUDE_ESM_ESM_H_
+
+#include <stdbool.h>
+#include <stddef.h>
+#include "platform.h"
+#include "signal.h"
+
+#define ESM_CONTAINER_OF(ptr, type, field) \
+		((type *)(((char *)(ptr)) - offsetof(type, field)))
+
+#define ESM_THIS_FILE \
+		static char const THIS_FILE__[] = __FILE__
+
+#define ESM_DEFINE_STATE(_name) \
+		static void esm_##_name##_entry(esm_t *const esm); \
+		static void esm_##_name##_handle(esm_t *const esm, signal_t *sig); \
+		static void esm_##_name##_exit(esm_t *const esm); \
+		static const esm_state_t esm_##_name##_state = { \
+				.entry = esm_##_name##_entry, \
+				.handle = esm_##_name##_handle, \
+				.exit = esm_##_name##_exit, \
+				.name = #_name, \
+		}
+
+#define ESM_REGISTER(_type, _name, _init, _sigq_size) \
+		static _type##_esm_t _name##_ctx = { \
+				.esm = { \
+				.name = #_name, \
+				.subscribed = ESM_INIT_SUB, \
+				.curr_state = &esm_##_init##_state, \
+				.sig_queue_len = _sigq_size, \
+				.sig_queue = (signal_t[_sigq_size]){0}, \
+		}}; \
+		esm_sec_t _name##_sec \
+		__attribute((__section__("esm_section"))) \
+		__attribute((__used__)) = { \
+				.esm = &_name##_ctx.esm \
+		}
+
+#define ESM_TRANSITION(_state) do { \
+		ESM_ASSERT(esm); \
+		ESM_ASSERT(_state); \
+		esm->next_state = _state; \
+} while(0)
+
+#define ESM_SUBSCRIBE(_sig) esm->subscribed |= (1UL << _sig)
+#define ESM_UNSUBSCRIBE(_sig) esm->subscribed &= ~(1UL << _sig)
+
+#define ESM_SIG_MASK(_sig) (1UL << _sig)
+
+typedef struct _esm esm_t;
+
+typedef struct {
+	char const *const name;
+	void (*entry)(esm_t *const esm);
+	void (*handle)(esm_t *const esm, signal_t *sig);
+	void (*exit)(esm_t *const esm);
+} esm_state_t;
+
+struct _esm {
+	char const *const name;
+	uint32_t subscribed;
+	esm_state_t const *curr_state;
+	esm_state_t const *next_state;
+	const uint8_t sig_queue_len;
+	uint8_t sig_head;
+	signal_t *sig_queue;
+};
+
+typedef struct {
+	esm_t *const esm;
+} esm_sec_t;
+
+extern const esm_state_t esm_unhandled_sig;
+extern const esm_state_t esm_self_transition;
+
+void esm_process(void);
+void esm_send_signal(signal_t *sig);
+
+#endif /* INCLUDE_ESM_ESM_H_ */
