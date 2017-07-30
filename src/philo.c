@@ -31,7 +31,7 @@ static void esm_thinking_entry(esm_t *const esm)
 			.receiver = esm
 	};
 	esm_timer_add(&self->timer,
-			ESM_RANDOM(3000UL), &sig);
+			1000UL + ESM_RANDOM(5000UL), &sig);
 }
 
 static void esm_thinking_exit(esm_t *const esm)

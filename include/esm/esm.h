@@ -51,6 +51,13 @@
 
 #define ESM_SIG_MASK(_sig) (1UL << _sig)
 
+#define ESM_SIGNAL(_name) esm_sig_##_name,
+typedef enum
+{
+	ESM_SIGNALS
+} esm_signal_e;
+#undef ESM_SIGNAL
+
 typedef struct _esm esm_t;
 
 typedef struct

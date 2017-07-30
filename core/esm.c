@@ -15,6 +15,12 @@ const esm_state_t esm_unhandled_sig = {
 		.name = "esm_unhandled",
 };
 
+#define ESM_SIGNAL(_name) #_name,
+static char const * const esm_sig_name[] ={
+		ESM_SIGNALS
+};
+#undef ESM_SIGNAL
+
 static void self_entry(esm_t *const esm)
 {
 	esm->next_state = esm->curr_state;
@@ -71,11 +77,11 @@ void esm_process(void)
 
 						if(esm->curr_state != esm->next_state)
 						{
-							ESM_PRINTF("[%08d] [%s] Transition %s --%d--> %s\r\n",
+							ESM_PRINTF("[%08d] [%s] Transition %s --%s--> %s\r\n",
 									esm_global_time,
 									esm->name,
 									esm->curr_state->name,
-									sig->type,
+									esm_sig_name[sig->type],
 									esm->next_state->name);
 
 							esm->curr_state->exit(esm);
@@ -98,8 +104,8 @@ static void _send(esm_t *const esm, esm_signal_t *sig)
 {
 	if(esm->subscribed & (1UL << sig->type))
 	{
-		ESM_PRINTF("[%08d] [%s] Receiving signal %d (%s)\r\n", esm_global_time,
-				esm->name, sig->type, esm->curr_state->name);
+		ESM_PRINTF("[%08d] [%s] Receiving signal '%s' (%s)\r\n", esm_global_time,
+				esm->name, esm_sig_name[sig->type], esm->curr_state->name);
 
 		if(esm->sig_len)
 		{
