@@ -121,4 +121,4 @@ static void esm_serving_handle(esm_t *const esm, esm_signal_t *sig)
 static const table_cfg_t table_cfg = {
 };
 
-ESM_REGISTER(table, table, serving, 1);
+ESM_REGISTER(table, table, serving, 5);
