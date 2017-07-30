@@ -21,6 +21,13 @@ void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig) {
 }
 
 void esm_timer_rm(esm_timer_t *timer) {
+	if(!(timer->item.next || timer->item.prev))
+	{
+		if(&timer->item != esm_timers.first)
+		{
+			return;
+		}
+	}
 	esm_list_erase(&esm_timers, &timer->item);
 }
 
