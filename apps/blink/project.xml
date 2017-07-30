@@ -1,0 +1,20 @@
+<project name = "esm"
+         optflags = "-O0">
+
+    <cflags>
+        -std=gnu99 -g -Werror \
+    </cflags>
+
+    <exec name = "blink">
+        <includes>
+            <dir name = "include"/>
+            <dir name = "../../include"/>
+        </includes>
+        <sources>
+            <dir name = "../../src"/>
+            <dir name = "src"/>
+            <dir name = "../../core"/>
+        </sources>
+    </exec>
+
+</project>

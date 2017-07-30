@@ -27,6 +27,7 @@
 		static _type##_esm_t _name##_ctx = { \
 				.esm = { \
 						.name = #_name, \
+						.id = esm_id_##_name, \
 						.subscribed = ESM_INIT_SUB, \
 						.curr_state = &esm_##_init##_state, \
 						.sig_queue_size = _sigq_size, \
@@ -58,6 +59,12 @@ typedef enum
 } esm_signal_e;
 #undef ESM_SIGNAL
 
+#define ESM_ID(_name) esm_id_##_name,
+typedef enum {
+		ESM_IDS
+} esm_id_e;
+#undef ESM_ID
+
 typedef struct _esm esm_t;
 
 typedef struct
@@ -77,6 +84,7 @@ typedef struct {
 
 struct _esm {
 	char const *const name;
+	const uint8_t id;
 	uint32_t subscribed;
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;

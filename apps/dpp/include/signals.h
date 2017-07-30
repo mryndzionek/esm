@@ -7,6 +7,14 @@
 		ESM_SIGNAL(done) \
 		ESM_SIGNAL(hungry)
 
+#define ESM_IDS \
+      ESM_ID(philo_1) \
+      ESM_ID(philo_2) \
+      ESM_ID(philo_3) \
+      ESM_ID(philo_4) \
+      ESM_ID(philo_5) \
+      ESM_ID(table)
+
 typedef struct
 {
 	uint8_t num;

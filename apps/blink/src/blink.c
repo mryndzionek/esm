@@ -78,18 +78,8 @@ static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
-static const blink_cfg_t blink_1_cfg = {
+static const blink_cfg_t blink_cfg = {
 		.delay = 3000UL
 };
 
-static const blink_cfg_t blink_2_cfg = {
-		.delay = 7000UL
-};
-
-static const blink_cfg_t blink_3_cfg = {
-		.delay = 11000UL
-};
-
-ESM_REGISTER(blink, blink_1, off, 1);
-ESM_REGISTER(blink, blink_2, off, 1);
-ESM_REGISTER(blink, blink_3, off, 1);
+ESM_REGISTER(blink, blink, off, 1);

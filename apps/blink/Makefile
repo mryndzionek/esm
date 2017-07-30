@@ -14,6 +14,7 @@ NM = $(CROSS_COMPILE)nm
 # Include files
 INCLUDES = \
     -Iinclude \
+    -I../../include \
 
 OPT_FLAGS = -O0
 
@@ -21,7 +22,7 @@ OPT_FLAGS = -O0
 CFLAGS += \
 
 # Global C flags
-CFLAGS += -std=gnu99 -g \
+CFLAGS += -std=gnu99 -g -Werror \
 
 # Global linker flags
 
@@ -40,20 +41,11 @@ SOURCES_blink = \
 C_OBJ_blink = $(patsubst %.c, obj/%.o, $(filter %.c, $(SOURCES_blink)))
 ASM_OBJ_blink = $(patsubst %.S, obj/%.o, $(filter %.S, $(SOURCES_blink)))
 
-SOURCES_dpp = \
-    core/esm.c \
-    core/esm_list.c \
-    core/esm_timer.c \
-    src/main.c \
-    src/philo.c \
-    src/table.c \
-
-C_OBJ_dpp = $(patsubst %.c, obj/%.o, $(filter %.c, $(SOURCES_dpp)))
-ASM_OBJ_dpp = $(patsubst %.S, obj/%.o, $(filter %.S, $(SOURCES_dpp)))
-
 vpath %.c \
+    ../../ \
 
 vpath %.S \
+    ../../ \
 
 V ?= 0
 Q_0 := @
@@ -73,7 +65,7 @@ endef
 
 all: build
 
-build: blink dpp
+build: blink
 
 blink: $(C_OBJ_blink) $(ASM_OBJ_blink) $(THIS_MAKEFILE)
 	$(call loginfo,"Linking exec" $@)
@@ -84,16 +76,7 @@ blink: $(C_OBJ_blink) $(ASM_OBJ_blink) $(THIS_MAKEFILE)
 	$(Q)$(SIZE) $(C_OBJ_blink)
 	$(Q)$(SIZE) --format=SysV bin/$@.elf
 
-dpp: $(C_OBJ_dpp) $(ASM_OBJ_dpp) $(THIS_MAKEFILE)
-	$(call loginfo,"Linking exec" $@)
-	$(Q)$(CC) $(LDFLAGS) -Wl,-M=bin/$@.map $(CFLAGS) \
-		$(C_OBJ_dpp) $(ASM_OBJ_dpp) $(LIBS) -o bin/$@.elf
-	$(Q)$(NM) bin/$@.elf >bin/$@.elf.txt
-	$(Q)$(OBJCOPY) -O binary bin/$@.elf bin/$@.bin
-	$(Q)$(SIZE) $(C_OBJ_dpp)
-	$(Q)$(SIZE) --format=SysV bin/$@.elf
-
-$(C_OBJ_blink) $(ASM_OBJ_blink) $(C_OBJ_dpp) $(ASM_OBJ_dpp) : | bin obj
+$(C_OBJ_blink) $(ASM_OBJ_blink) : | bin obj
 
 bin:
 	$(Q)mkdir -p $@
@@ -123,4 +106,3 @@ obj/%.d: ;
 .PRECIOUS: obj/%.d
 
 -include $(patsubst %,obj/%.d,$(basename $(SOURCES_blink)))
--include $(patsubst %,obj/%.d,$(basename $(SOURCES_dpp)))

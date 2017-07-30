@@ -21,6 +21,8 @@ static char const * const esm_sig_name[] ={
 };
 #undef ESM_SIGNAL
 
+static uint32_t esm_sig_mask;
+
 static void self_entry(esm_t *const esm)
 {
 	esm->next_state = esm->curr_state;
@@ -50,23 +52,21 @@ void esm_process(void)
 		esm_global_time++;
 		if(esm_timer_next() == 0)
 		{
-			bool ready;
 			esm_timer_fire();
 
 			do
 			{
-				ready = true;
 				for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 					esm_t *esm = sec->esm;
 					if(esm->sig_len)
 					{
-						ready = false;
 						esm_signal_t *sig = &esm->sig_queue[esm->sig_tail++];
 						if(esm->sig_tail == esm->sig_queue_size)
 						{
 							esm->sig_tail = 0;
 						}
 						--esm->sig_len;
+						esm_sig_mask &= ~(1UL << esm->id);
 
 						esm->next_state = esm->curr_state;
 						esm->curr_state->handle(esm, sig);
@@ -94,7 +94,7 @@ void esm_process(void)
 								esm_global_time, esm->name);
 					}
 				}
-			} while(!ready);
+			} while(esm_sig_mask);
 			ESM_PRINTF("[%010u] ------------------------------------\r\n", esm_global_time);
 		}
 	}
@@ -119,6 +119,7 @@ static void _send(esm_t *const esm, esm_signal_t *sig)
 			esm->sig_head = 0;
 		}
 		++esm->sig_len;
+		esm_sig_mask |= (1UL << esm->id);
 	}
 }
 
