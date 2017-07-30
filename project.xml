@@ -5,16 +5,25 @@
         -std=gnu99 -g \
     </cflags>
 
-    <defines>
-        <define name = "ESM"/>
-    </defines>
-
-    <exec name = "esm_test">
+    <exec name = "blink">
         <includes>
             <dir name = "include"/>
         </includes>
         <sources>
-            <dir name = "src"/>
+            <file name = "src/main.c"/>
+            <file name = "src/blink.c"/>
+            <dir name = "core"/>
+        </sources>
+    </exec>
+
+    <exec name = "dpp">
+        <includes>
+            <dir name = "include"/>
+        </includes>
+        <sources>
+            <file name = "src/main.c"/>
+            <file name = "src/philo.c"/>
+            <file name = "src/table.c"/>
             <dir name = "core"/>
         </sources>
     </exec>

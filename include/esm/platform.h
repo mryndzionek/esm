@@ -1,6 +1,7 @@
 #ifndef INCLUDE_ESM_PLATFORM_H_
 #define INCLUDE_ESM_PLATFORM_H_
 
+#include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
@@ -28,6 +29,8 @@
 		ts.tv_sec = 0; \
 		ts.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC; \
 		nanosleep(&ts, NULL);
+
+#define ESM_RANDOM(_num) ((int) ((float) (_num) * random() / (RAND_MAX + 1.0)))
 
 extern uint32_t esm_global_time;
 

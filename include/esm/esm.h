@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stddef.h>
 #include "platform.h"
-#include "signal.h"
+#include "signals.h"
 
 #define ESM_CONTAINER_OF(ptr, type, field) \
 		((type *)(((char *)(ptr)) - offsetof(type, field)))
@@ -14,7 +14,7 @@
 
 #define ESM_DEFINE_STATE(_name) \
 		static void esm_##_name##_entry(esm_t *const esm); \
-		static void esm_##_name##_handle(esm_t *const esm, signal_t *sig); \
+		static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
 		static void esm_##_name##_exit(esm_t *const esm); \
 		static const esm_state_t esm_##_name##_state = { \
 				.entry = esm_##_name##_entry, \
@@ -26,12 +26,14 @@
 #define ESM_REGISTER(_type, _name, _init, _sigq_size) \
 		static _type##_esm_t _name##_ctx = { \
 				.esm = { \
-				.name = #_name, \
-				.subscribed = ESM_INIT_SUB, \
-				.curr_state = &esm_##_init##_state, \
-				.sig_queue_len = _sigq_size, \
-				.sig_queue = (signal_t[_sigq_size]){0}, \
-		}}; \
+						.name = #_name, \
+						.subscribed = ESM_INIT_SUB, \
+						.curr_state = &esm_##_init##_state, \
+						.sig_queue_size = _sigq_size, \
+						.sig_queue = (esm_signal_t[_sigq_size]){0}, \
+		}, \
+		.cfg = &_name##_cfg \
+		}; \
 		esm_sec_t _name##_sec \
 		__attribute((__section__("esm_section"))) \
 		__attribute((__used__)) = { \
@@ -51,10 +53,18 @@
 
 typedef struct _esm esm_t;
 
+typedef struct
+{
+	esm_signal_e type;
+	esm_t *sender;
+	esm_t *receiver;
+	esm_sig_params_t params;
+} esm_signal_t;
+
 typedef struct {
 	char const *const name;
 	void (*entry)(esm_t *const esm);
-	void (*handle)(esm_t *const esm, signal_t *sig);
+	void (*handle)(esm_t *const esm, esm_signal_t *sig);
 	void (*exit)(esm_t *const esm);
 } esm_state_t;
 
@@ -63,9 +73,11 @@ struct _esm {
 	uint32_t subscribed;
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;
-	const uint8_t sig_queue_len;
+	const uint8_t sig_queue_size;
+	uint8_t sig_len;
 	uint8_t sig_head;
-	signal_t *sig_queue;
+	uint8_t sig_tail;
+	esm_signal_t *sig_queue;
 };
 
 typedef struct {
@@ -76,6 +88,6 @@ extern const esm_state_t esm_unhandled_sig;
 extern const esm_state_t esm_self_transition;
 
 void esm_process(void);
-void esm_send_signal(signal_t *sig);
+void esm_send_signal(esm_signal_t *sig);
 
 #endif /* INCLUDE_ESM_ESM_H_ */

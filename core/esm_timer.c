@@ -3,7 +3,7 @@
 
 static esm_list_t esm_timers = {0};
 
-void esm_timer_add(esm_timer_t *timer, uint32_t delay, signal_t *sig) {
+void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig) {
 	timer->expiry = esm_global_time+delay;
 	timer->sig = *sig;
 	/* Move the timer into the right place in the ordered list

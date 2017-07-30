@@ -3,27 +3,29 @@
 
 #include <stdio.h>
 
+ESM_THIS_FILE;
+
 extern esm_sec_t __start_esm_section;
 extern esm_sec_t __stop_esm_section;
 
 const esm_state_t esm_unhandled_sig = {
-      .entry = (void*)0,
-      .handle = (void*)0,
-      .exit = (void*)0,
-      .name = "esm_unhandled",
+		.entry = (void*)0,
+		.handle = (void*)0,
+		.exit = (void*)0,
+		.name = "esm_unhandled",
 };
 
 static void self_entry(esm_t *const esm)
 {
-   esm->next_state = esm->curr_state;
-   esm->next_state->entry(esm);
+	esm->next_state = esm->curr_state;
+	esm->next_state->entry(esm);
 }
 
 const esm_state_t esm_self_transition = {
-      .entry = self_entry,
-      .handle = (void*)0,
-      .exit = (void*)0,
-      .name = "esm_internal",
+		.entry = self_entry,
+		.handle = (void*)0,
+		.exit = (void*)0,
+		.name = "esm_internal",
 };
 
 void esm_process(void)
@@ -31,8 +33,9 @@ void esm_process(void)
 	esm_sec_t *sec;
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-		ESM_PRINTF("Initializing esm: %s\r\n", sec->esm->name);
-		sec->esm->curr_state->entry(sec->esm);
+		esm_t *esm = sec->esm;
+		ESM_PRINTF("[%08d] [%s] Initializing\r\n", esm_global_time, esm->name);
+		sec->esm->curr_state->entry(esm);
 	}
 
 	while(1)
@@ -41,28 +44,90 @@ void esm_process(void)
 		esm_global_time++;
 		if(esm_timer_next() == 0)
 		{
+			bool ready;
 			esm_timer_fire();
 
-			for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-				ESM_PRINTF("Processing esm: %s\r\n", sec->esm->name);
-			}
+			do
+			{
+				ready = true;
+				for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
+					esm_t *esm = sec->esm;
+					if(esm->sig_len)
+					{
+						ready = false;
+						esm_signal_t *sig = &esm->sig_queue[esm->sig_tail++];
+						if(esm->sig_tail == esm->sig_queue_size)
+						{
+							esm->sig_tail = 0;
+						}
+						--esm->sig_len;
+
+						esm->next_state = esm->curr_state;
+						esm->curr_state->handle(esm, sig);
+
+						ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
+								"[%08d] [%s] Unhandled signal: %d (%s)\r\n",
+								esm_global_time, esm->name, sig->type, esm->curr_state->name);
+
+						if(esm->curr_state != esm->next_state)
+						{
+							ESM_PRINTF("[%08d] [%s] Transition %s --%d--> %s\r\n",
+									esm_global_time,
+									esm->name,
+									esm->curr_state->name,
+									sig->type,
+									esm->next_state->name);
+
+							esm->curr_state->exit(esm);
+							esm->next_state->entry(esm);
+							esm->curr_state = esm->next_state;
+						}
+
+						ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
+								"[%08d] [%s] Transitioning from entry/exit not allowed\r\n",
+								esm_global_time, esm->name);
+					}
+				}
+			} while(!ready);
+			ESM_PRINTF("[%08d] ------------------------------------\r\n", esm_global_time);
 		}
 	}
 }
 
-void esm_send_signal(signal_t *sig)
+static void _send(esm_t *const esm, esm_signal_t *sig)
+{
+	if(esm->subscribed & (1UL << sig->type))
+	{
+		ESM_PRINTF("[%08d] [%s] Receiving signal %d (%s)\r\n", esm_global_time,
+				esm->name, sig->type, esm->curr_state->name);
+
+		if(esm->sig_len)
+		{
+			ESM_ASSERT_MSG(esm->sig_head != esm->sig_tail,
+					"Event queue for %s overrun\r\n", esm->name);
+		}
+
+		esm->sig_queue[esm->sig_head++] = *sig;
+		if(esm->sig_head == esm->sig_queue_size)
+		{
+			esm->sig_head = 0;
+		}
+		++esm->sig_len;
+	}
+}
+
+void esm_send_signal(esm_signal_t *sig)
 {
 	esm_sec_t *sec;
 
-	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-		if(sec->esm->subscribed & (1UL << sig->type))
-		{
-			ESM_PRINTF("Sending signal %d to %s:%s\r\n", sig->type, sec->esm->name, sec->esm->curr_state->name);
-			sec->esm->sig_queue[sec->esm->sig_head++] = *sig;
-			if(sec->esm->sig_head == sec->esm->sig_queue_len)
-			{
-				sec->esm->sig_head = 0;
-			}
+	if(sig->receiver)
+	{
+		_send(sig->receiver, sig);
+	}
+	else
+	{
+		for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
+			_send(sec->esm, sig);
 		}
 	}
 }
