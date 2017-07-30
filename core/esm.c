@@ -90,7 +90,7 @@ void esm_process(void)
 					}
 				}
 			} while(esm_sig_mask);
-			ESM_PRINTF("[%010u] ------------------------------------\r\n", esm_global_time);
+			ESM_IDLE(esm_global_time);
 		}
 	}
 }
