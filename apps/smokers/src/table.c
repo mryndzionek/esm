@@ -25,6 +25,12 @@ typedef struct {
 ESM_DEFINE_STATE(idle);
 ESM_DEFINE_STATE(requesting);
 
+static const char *const resource2str[] = {
+		"tobacco",
+		"paper",
+		"matches"
+};
+
 static void esm_idle_entry(esm_t *const esm)
 {
 	table_esm_t *self = ESM_CONTAINER_OF(esm, table_esm_t, esm);
@@ -60,17 +66,29 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 static void esm_requesting_entry(esm_t *const esm)
 {
 	table_esm_t *self = ESM_CONTAINER_OF(esm, table_esm_t, esm);
-	smoker_resource_e resource = ESM_RANDOM(N_SMOKERS);
+	smoker_resource_e resource_1 = ESM_RANDOM(N_SMOKERS);
+	smoker_resource_e resource_2 = (resource_1 + ESM_RANDOM(2) + 1) % N_SMOKERS;
+
+	ESM_ASSERT(resource_1 <= matches);
+	ESM_ASSERT(resource_2 <= matches);
+	ESM_ASSERT(resource_1 != resource_2);
+
+	ESM_PRINTF("[%010u] [%s] Requesting '%s' and '%s'\r\n",
+			esm_global_time,
+			esm->name,
+			resource2str[resource_1],
+			resource2str[resource_2]);
 
 	esm_signal_t sig = {
 			.type = esm_sig_request,
 			.sender = esm,
 			.receiver = (void *)0,
-			.params.resource = resource
+			.params.resource = resource_1
 	};
+
 	esm_send_signal(&sig);
 
-	sig.params.resource = (resource + ESM_RANDOM(2) + 1) % N_SMOKERS;
+	sig.params.resource = resource_2;
 	esm_send_signal(&sig);
 }
 
