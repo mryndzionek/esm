@@ -19,7 +19,6 @@ OPT_FLAGS = -O0
 
 # Global defines
 CFLAGS += \
-    -DESM \
 
 # Global C flags
 CFLAGS += -std=gnu99 -g \
@@ -31,15 +30,26 @@ CFLAGS += -std=gnu99 -g \
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 CFLAGS += $(INCLUDES)
 
-SOURCES_esm_test = \
+SOURCES_blink = \
     core/esm.c \
     core/esm_list.c \
     core/esm_timer.c \
-    src/blink.c \
     src/main.c \
+    src/blink.c \
 
-C_OBJ_esm_test = $(patsubst %.c, obj/%.o, $(filter %.c, $(SOURCES_esm_test)))
-ASM_OBJ_esm_test = $(patsubst %.S, obj/%.o, $(filter %.S, $(SOURCES_esm_test)))
+C_OBJ_blink = $(patsubst %.c, obj/%.o, $(filter %.c, $(SOURCES_blink)))
+ASM_OBJ_blink = $(patsubst %.S, obj/%.o, $(filter %.S, $(SOURCES_blink)))
+
+SOURCES_dpp = \
+    core/esm.c \
+    core/esm_list.c \
+    core/esm_timer.c \
+    src/main.c \
+    src/philo.c \
+    src/table.c \
+
+C_OBJ_dpp = $(patsubst %.c, obj/%.o, $(filter %.c, $(SOURCES_dpp)))
+ASM_OBJ_dpp = $(patsubst %.S, obj/%.o, $(filter %.S, $(SOURCES_dpp)))
 
 vpath %.c \
 
@@ -63,18 +73,27 @@ endef
 
 all: build
 
-build: esm_test
+build: blink dpp
 
-esm_test: $(C_OBJ_esm_test) $(ASM_OBJ_esm_test) $(THIS_MAKEFILE)
+blink: $(C_OBJ_blink) $(ASM_OBJ_blink) $(THIS_MAKEFILE)
 	$(call loginfo,"Linking exec" $@)
 	$(Q)$(CC) $(LDFLAGS) -Wl,-M=bin/$@.map $(CFLAGS) \
-		$(C_OBJ_esm_test) $(ASM_OBJ_esm_test) $(LIBS) -o bin/$@.elf
+		$(C_OBJ_blink) $(ASM_OBJ_blink) $(LIBS) -o bin/$@.elf
 	$(Q)$(NM) bin/$@.elf >bin/$@.elf.txt
 	$(Q)$(OBJCOPY) -O binary bin/$@.elf bin/$@.bin
-	$(Q)$(SIZE) $(C_OBJ_esm_test)
+	$(Q)$(SIZE) $(C_OBJ_blink)
 	$(Q)$(SIZE) --format=SysV bin/$@.elf
 
-$(C_OBJ_esm_test) $(ASM_OBJ_esm_test) : | bin obj
+dpp: $(C_OBJ_dpp) $(ASM_OBJ_dpp) $(THIS_MAKEFILE)
+	$(call loginfo,"Linking exec" $@)
+	$(Q)$(CC) $(LDFLAGS) -Wl,-M=bin/$@.map $(CFLAGS) \
+		$(C_OBJ_dpp) $(ASM_OBJ_dpp) $(LIBS) -o bin/$@.elf
+	$(Q)$(NM) bin/$@.elf >bin/$@.elf.txt
+	$(Q)$(OBJCOPY) -O binary bin/$@.elf bin/$@.bin
+	$(Q)$(SIZE) $(C_OBJ_dpp)
+	$(Q)$(SIZE) --format=SysV bin/$@.elf
+
+$(C_OBJ_blink) $(ASM_OBJ_blink) $(C_OBJ_dpp) $(ASM_OBJ_dpp) : | bin obj
 
 bin:
 	$(Q)mkdir -p $@
@@ -103,4 +122,5 @@ clean:
 obj/%.d: ;
 .PRECIOUS: obj/%.d
 
--include $(patsubst %,obj/%.d,$(basename $(SOURCES_esm_test)))
+-include $(patsubst %,obj/%.d,$(basename $(SOURCES_blink)))
+-include $(patsubst %,obj/%.d,$(basename $(SOURCES_dpp)))
