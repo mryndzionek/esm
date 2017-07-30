@@ -40,7 +40,7 @@ void esm_process(void)
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 		esm_t *esm = sec->esm;
-		ESM_PRINTF("[%08d] [%s] Initializing\r\n", esm_global_time, esm->name);
+		ESM_PRINTF("[%010u] [%s] Initializing\r\n", esm_global_time, esm->name);
 		sec->esm->curr_state->entry(esm);
 	}
 
@@ -72,12 +72,12 @@ void esm_process(void)
 						esm->curr_state->handle(esm, sig);
 
 						ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
-								"[%08d] [%s] Unhandled signal: %d (%s)\r\n",
+								"[%010u] [%s] Unhandled signal: %d (%s)\r\n",
 								esm_global_time, esm->name, sig->type, esm->curr_state->name);
 
 						if(esm->curr_state != esm->next_state)
 						{
-							ESM_PRINTF("[%08d] [%s] Transition %s --%s--> %s\r\n",
+							ESM_PRINTF("[%010u] [%s] Transition %s --%s--> %s\r\n",
 									esm_global_time,
 									esm->name,
 									esm->curr_state->name,
@@ -90,12 +90,12 @@ void esm_process(void)
 						}
 
 						ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
-								"[%08d] [%s] Transitioning from entry/exit not allowed\r\n",
+								"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
 								esm_global_time, esm->name);
 					}
 				}
 			} while(!ready);
-			ESM_PRINTF("[%08d] ------------------------------------\r\n", esm_global_time);
+			ESM_PRINTF("[%010u] ------------------------------------\r\n", esm_global_time);
 		}
 	}
 }
@@ -104,7 +104,7 @@ static void _send(esm_t *const esm, esm_signal_t *sig)
 {
 	if(esm->subscribed & (1UL << sig->type))
 	{
-		ESM_PRINTF("[%08d] [%s] Receiving signal '%s' (%s)\r\n", esm_global_time,
+		ESM_PRINTF("[%010u] [%s] Receiving signal '%s' (%s)\r\n", esm_global_time,
 				esm->name, esm_sig_name[sig->type], esm->curr_state->name);
 
 		if(esm->sig_len)
