@@ -66,7 +66,10 @@ void esm_process(void)
 							esm->sig_tail = 0;
 						}
 						--esm->sig_len;
-						esm_sig_mask &= ~(1UL << esm->id);
+						if(esm->sig_len == 0)
+						{
+							esm_sig_mask &= ~(1UL << esm->id);
+						}
 
 						esm->next_state = esm->curr_state;
 						esm->curr_state->handle(esm, sig);
