@@ -131,4 +131,8 @@ void esm_send_signal(esm_signal_t *sig)
 			_send(sec->esm, sig);
 		}
 	}
+
+	ESM_ASSERT_MSG(esm_sig_mask != 0,
+			"[%010u] Signal '%s' is lost\r\n",
+			esm_global_time, esm_sig_name[sig->type]);
 }
