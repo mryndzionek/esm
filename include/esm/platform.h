@@ -32,6 +32,25 @@
 
 #define ESM_RANDOM(_num) ((int) ((float) (_num) * random() / (RAND_MAX + 1.0)))
 
+
+#define ESM_DEBUG_init(_time, _p_esm, ...) \
+      ESM_PRINTF("[%010u] [%s] Initializing\r\n", _time, _p_esm->name)
+
+#define ESM_DEBUG_trans(_time, _p_esm, _sig, ...) \
+      ESM_PRINTF("[%010u] [%s] Transition %s --%s--> %s\r\n", \
+                 _time, \
+                 _p_esm->name, \
+                 _p_esm->curr_state->name, \
+                 esm_sig_name[_sig->type], \
+                 _p_esm->next_state->name)
+
+#define ESM_DEBUG_receive(_time, _p_esm, _sig, ...) \
+      ESM_PRINTF("[%010u] [%s] Receiving signal '%s' (%s)\r\n", _time, \
+                 _p_esm->name, esm_sig_name[_sig->type], _p_esm->curr_state->name)
+
+#define ESM_DEBUG(_p_esm, _time, _action, ...) \
+      ESM_DEBUG_##_action( _time, _p_esm, __VA_ARGS__)
+
 extern uint32_t esm_global_time;
 
 #endif /* INCLUDE_ESM_PLATFORM_H_ */

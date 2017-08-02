@@ -42,7 +42,7 @@ void esm_process(void)
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 		esm_t *esm = sec->esm;
-		ESM_PRINTF("[%010u] [%s] Initializing\r\n", esm_global_time, esm->name);
+		ESM_DEBUG(esm, esm_global_time, init);
 		sec->esm->curr_state->entry(esm);
 	}
 
@@ -77,12 +77,7 @@ void esm_process(void)
 
 						if(esm->curr_state != esm->next_state)
 						{
-							ESM_PRINTF("[%010u] [%s] Transition %s --%s--> %s\r\n",
-									esm_global_time,
-									esm->name,
-									esm->curr_state->name,
-									esm_sig_name[sig->type],
-									esm->next_state->name);
+							ESM_DEBUG(esm, esm_global_time, trans, sig);
 
 							esm->curr_state->exit(esm);
 							esm->next_state->entry(esm);
@@ -104,8 +99,7 @@ static void _send(esm_t *const esm, esm_signal_t *sig)
 {
 	if(esm->subscribed & (1UL << sig->type))
 	{
-		ESM_PRINTF("[%010u] [%s] Receiving signal '%s' (%s)\r\n", esm_global_time,
-				esm->name, esm_sig_name[sig->type], esm->curr_state->name);
+		ESM_DEBUG(esm, esm_global_time, receive, sig);
 
 		if(esm->sig_len)
 		{
