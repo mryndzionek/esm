@@ -59,7 +59,7 @@ static void esm_hungry_entry(esm_t *const esm)
 			.type = esm_sig_hungry,
 			.sender = esm,
 			.receiver = (void *)0,
-			.params = self->cfg->num
+			.params.num = self->cfg->num
 	};
 	esm_send_signal(&sig);
 }
