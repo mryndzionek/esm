@@ -51,6 +51,9 @@
 #define ESM_DEBUG(_p_esm, _time, _action, ...) \
       ESM_DEBUG_##_action( _time, _p_esm, __VA_ARGS__)
 
+#define ESM_IDLE(_time) \
+      ESM_PRINTF("[%010u] ------------------------------------\r\n", _time)
+
 extern uint32_t esm_global_time;
 
 #endif /* INCLUDE_ESM_PLATFORM_H_ */
