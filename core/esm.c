@@ -49,17 +49,20 @@ void esm_process(void)
 	while(1)
 	{
 		ESM_WAIT();
-		esm_global_time++;
+
 		if(esm_timer_next() == 0)
 		{
 			esm_timer_fire();
-
-			do
+		}
+		if(esm_sig_mask)
+		{
+			while(esm_sig_mask)
 			{
 				for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 					esm_t *esm = sec->esm;
 					if(esm->sig_len)
 					{
+						ESM_CRITICAL_ENTER();
 						esm_signal_t *sig = &esm->sig_queue[esm->sig_tail++];
 						if(esm->sig_tail == esm->sig_queue_size)
 						{
@@ -70,6 +73,7 @@ void esm_process(void)
 						{
 							esm_sig_mask &= ~(1UL << esm->id);
 						}
+						ESM_CRITICAL_EXIT();
 
 						esm->next_state = esm->curr_state;
 						esm->curr_state->handle(esm, sig);
@@ -92,32 +96,35 @@ void esm_process(void)
 								esm_global_time, esm->name);
 					}
 				}
-			} while(esm_sig_mask);
+			}
 			ESM_IDLE(esm_global_time);
 		}
 	}
 }
 
-static void _send(esm_t *const esm, esm_signal_t *sig)
+void esm_send_signal_from_isr(esm_signal_t *sig)
 {
-	if(esm->subscribed & (1UL << sig->type))
+	ESM_CRITICAL_ENTER();
+	ESM_ASSERT(sig->receiver);
+	if(sig->receiver->subscribed & (1UL << sig->type))
 	{
-		ESM_DEBUG(esm, esm_global_time, receive, sig);
+		ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
 
-		if(esm->sig_len)
+		if(sig->receiver->sig_len)
 		{
-			ESM_ASSERT_MSG(esm->sig_head != esm->sig_tail,
-					"Event queue for %s overrun\r\n", esm->name);
+			ESM_ASSERT_MSG(sig->receiver->sig_head != sig->receiver->sig_tail,
+					"Event queue for %s overrun\r\n", sig->receiver->name);
 		}
 
-		esm->sig_queue[esm->sig_head++] = *sig;
-		if(esm->sig_head == esm->sig_queue_size)
+		sig->receiver->sig_queue[sig->receiver->sig_head++] = *sig;
+		if(sig->receiver->sig_head == sig->receiver->sig_queue_size)
 		{
-			esm->sig_head = 0;
+			sig->receiver->sig_head = 0;
 		}
-		++esm->sig_len;
-		esm_sig_mask |= (1UL << esm->id);
+		++sig->receiver->sig_len;
+		esm_sig_mask |= (1UL << sig->receiver->id);
 	}
+	ESM_CRITICAL_EXIT();
 }
 
 void esm_send_signal(esm_signal_t *sig)
@@ -126,13 +133,15 @@ void esm_send_signal(esm_signal_t *sig)
 
 	if(sig->receiver)
 	{
-		_send(sig->receiver, sig);
+		esm_send_signal_from_isr(sig);
 	}
 	else
 	{
 		for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-			_send(sec->esm, sig);
+			sig->receiver = sec->esm;
+			esm_send_signal_from_isr(sig);
 		}
+		sig->receiver = (void *)0;
 	}
 
 	ESM_ASSERT_MSG(esm_sig_mask != 0,

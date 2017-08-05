@@ -24,14 +24,18 @@
 		ESM_RESET(); } } while(0)
 
 #define ESM_TICKS_PER_SEC	(1000UL)
-#define ESM_WAIT() \
-		struct timespec ts; \
-		ts.tv_sec = 0; \
-		ts.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC; \
-		nanosleep(&ts, NULL);
+#define ESM_WAIT() do { \
+      struct timespec ts; \
+      ts.tv_sec = 0; \
+      ts.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC; \
+      nanosleep(&ts, NULL); \
+      esm_global_time++; \
+} while(0)
 
 #define ESM_RANDOM(_num) ((int) ((float) (_num) * random() / (RAND_MAX + 1.0)))
 
+#define ESM_CRITICAL_ENTER()
+#define ESM_CRITICAL_EXIT()
 
 #define ESM_DEBUG_init(_time, _p_esm, ...) \
       ESM_PRINTF("[%010u] [%s] Initializing\r\n", _time, _p_esm->name)
