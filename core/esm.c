@@ -7,6 +7,7 @@ ESM_THIS_FILE;
 
 extern esm_sec_t __start_esm_section;
 extern esm_sec_t __stop_esm_section;
+uint32_t esm_global_time;
 
 const esm_state_t esm_unhandled_sig = {
 		.entry = (void*)0,
@@ -39,6 +40,8 @@ const esm_state_t esm_self_transition = {
 void esm_process(void)
 {
 	esm_sec_t *sec;
+
+	ESM_INIT;
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 		esm_t *esm = sec->esm;
