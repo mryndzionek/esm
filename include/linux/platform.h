@@ -62,6 +62,4 @@
 #define ESM_IDLE(_time) \
       ESM_PRINTF("[%010u] ------------------------------------\r\n", _time)
 
-extern uint32_t esm_global_time;
-
 #endif /* INCLUDE_ESM_PLATFORM_H_ */

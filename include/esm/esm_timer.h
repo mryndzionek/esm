@@ -14,6 +14,8 @@ struct esm_timer {
 	esm_signal_t sig;
 };
 
+extern uint32_t esm_global_time;
+
 #define esm_timer_enabled(tm)  ((tm)->expiry >= 0)
 void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig);
 void esm_timer_rm(esm_timer_t *timer);

@@ -1,6 +1,7 @@
 #include "esm/esm_timer.h"
 #include "signal.h"
 
+uint32_t esm_global_time;
 static esm_list_t esm_timers = {0};
 
 void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig) {
