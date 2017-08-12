@@ -15,6 +15,7 @@ NM = $(CROSS_COMPILE)nm
 INCLUDES = \
     -Iinclude \
     -I../../include \
+    -I../../include/linux \
 
 OPT_FLAGS = -O0
 
