@@ -65,6 +65,10 @@ typedef enum {
 
 typedef struct _esm esm_t;
 
+#define ESM_ID(_name) extern esm_t * const _name##_p;
+ESM_IDS
+#undef ESM_ID
+
 typedef struct
 {
 	esm_signal_e type;
@@ -97,7 +101,7 @@ extern const esm_state_t esm_unhandled_sig;
 extern const esm_state_t esm_self_transition;
 
 void esm_process(void);
+void esm_broadcast_signal(esm_signal_t *sig);
 void esm_send_signal(esm_signal_t *sig);
-void esm_send_signal_from_isr(esm_signal_t *sig);
 
 #endif /* INCLUDE_ESM_ESM_H_ */

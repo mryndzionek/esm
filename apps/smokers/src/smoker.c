@@ -76,7 +76,7 @@ static void esm_smoking_exit(esm_t *const esm)
 			.sender = esm,
 			.receiver = (void *)0,
 	};
-	esm_send_signal(&sig);
+	esm_broadcast_signal(&sig);
 }
 
 static void esm_smoking_handle(esm_t *const esm, esm_signal_t *sig)

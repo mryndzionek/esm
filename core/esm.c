@@ -78,6 +78,7 @@ void esm_process(void)
 						}
 						ESM_CRITICAL_EXIT();
 
+						ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
 						esm->next_state = esm->curr_state;
 						esm->curr_state->handle(esm, sig);
 
@@ -105,14 +106,12 @@ void esm_process(void)
 	}
 }
 
-void esm_send_signal_from_isr(esm_signal_t *sig)
+void esm_send_signal(esm_signal_t *sig)
 {
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
 	if(sig->receiver->subscribed & (1UL << sig->type))
 	{
-		ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
-
 		if(sig->receiver->sig_len)
 		{
 			ESM_ASSERT_MSG(sig->receiver->sig_head != sig->receiver->sig_tail,
@@ -130,21 +129,14 @@ void esm_send_signal_from_isr(esm_signal_t *sig)
 	ESM_CRITICAL_EXIT();
 }
 
-void esm_send_signal(esm_signal_t *sig)
+void esm_broadcast_signal(esm_signal_t *sig)
 {
-	if(sig->receiver)
-	{
-		esm_send_signal_from_isr(sig);
+	esm_t * const * sec;
+	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
+		sig->receiver = *sec;
+		esm_send_signal(sig);
 	}
-	else
-	{
-		esm_t * const * sec;
-		for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-			sig->receiver = *sec;
-			esm_send_signal_from_isr(sig);
-		}
-		sig->receiver = (void *)0;
-	}
+	sig->receiver = (void *)0;
 
 	ESM_ASSERT_MSG(esm_sig_mask != 0,
 			"[%010u] Signal '%s' is lost\r\n",
