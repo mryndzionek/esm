@@ -14,8 +14,8 @@ NM = $(CROSS_COMPILE)nm
 # Include files
 INCLUDES = \
     -Iinclude \
-    -I../../include \
-    -I../../include/linux \
+    -I../../core/include \
+    -I../../platform/linux/include \
 
 OPT_FLAGS = -O0
 
@@ -33,10 +33,10 @@ THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 CFLAGS += $(INCLUDES)
 
 SOURCES_dpp = \
-    core/esm.c \
-    core/esm_list.c \
-    core/esm_timer.c \
-    src/main.c \
+    core/src/esm.c \
+    core/src/esm_list.c \
+    core/src/esm_timer.c \
+    platform/linux/src/main.c \
     src/philo.c \
     src/table.c \
 
