@@ -35,7 +35,7 @@
 		}, \
 		.cfg = &_name##_cfg \
 		}; \
-		esm_t * const _name##_p \
+		esm_t * const _name##_esm \
 		__attribute((__section__("esm_section"))) \
 		__attribute((__used__)) = &_name##_ctx.esm;
 
@@ -65,7 +65,7 @@ typedef enum {
 
 typedef struct _esm esm_t;
 
-#define ESM_ID(_name) extern esm_t * const _name##_p;
+#define ESM_ID(_name) extern esm_t * const _name##_esm;
 ESM_IDS
 #undef ESM_ID
 
