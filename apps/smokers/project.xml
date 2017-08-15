@@ -9,6 +9,7 @@
         <includes>
             <dir name = "include"/>
             <dir name = "../../include"/>
+            <dir name = "../../include/linux"/>
         </includes>
         <sources>
             <dir name = "../../src"/>
