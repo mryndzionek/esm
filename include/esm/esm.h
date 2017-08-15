@@ -35,7 +35,7 @@
 		}, \
 		.cfg = &_name##_cfg \
 		}; \
-		esm_sec_t _name##_sec \
+		const esm_sec_t _name##_sec \
 		__attribute((__section__("esm_section"))) \
 		__attribute((__used__)) = { \
 				.esm = &_name##_ctx.esm \
