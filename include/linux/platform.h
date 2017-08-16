@@ -23,6 +23,10 @@
 		do { if(!(_cond)) { ESM_BUG_REPORT( _cond, _format, ##_args ); \
 		ESM_RESET(); } } while(0)
 
+#define ESM_INIT do { \
+      srand(time(NULL)); \
+} while(0)
+
 #define ESM_TICKS_PER_SEC	(1000UL)
 #define ESM_WAIT() do { \
       struct timespec ts; \
