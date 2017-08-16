@@ -7,7 +7,6 @@ ESM_THIS_FILE;
 
 extern esm_sec_t __start_esm_section;
 extern esm_sec_t __stop_esm_section;
-uint32_t esm_global_time;
 
 const esm_state_t esm_unhandled_sig = {
 		.entry = (void*)0,
