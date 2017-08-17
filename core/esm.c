@@ -5,8 +5,8 @@
 
 ESM_THIS_FILE;
 
-extern esm_sec_t __start_esm_section;
-extern esm_sec_t __stop_esm_section;
+extern esm_t * const __start_esm_section;
+extern esm_t * const __stop_esm_section;
 
 const esm_state_t esm_unhandled_sig = {
 		.entry = (void*)0,
@@ -16,7 +16,7 @@ const esm_state_t esm_unhandled_sig = {
 };
 
 #define ESM_SIGNAL(_name) #_name,
-static char const * const esm_sig_name[] ={
+static char const * const esm_sig_name[] = {
 		ESM_SIGNALS
 };
 #undef ESM_SIGNAL
@@ -38,14 +38,14 @@ const esm_state_t esm_self_transition = {
 
 void esm_process(void)
 {
-	esm_sec_t *sec;
+	esm_t * const * sec;
 
 	ESM_INIT;
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-		esm_t *esm = sec->esm;
+		esm_t * const esm = *sec;
 		ESM_DEBUG(esm, esm_global_time, init);
-		sec->esm->curr_state->entry(esm);
+		esm->curr_state->entry(esm);
 	}
 
 	while(1)
@@ -61,7 +61,8 @@ void esm_process(void)
 			while(esm_sig_mask)
 			{
 				for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-					esm_t *esm = sec->esm;
+					esm_t * const esm = *sec;
+
 					if(esm->sig_len)
 					{
 						ESM_CRITICAL_ENTER();
@@ -131,16 +132,15 @@ void esm_send_signal_from_isr(esm_signal_t *sig)
 
 void esm_send_signal(esm_signal_t *sig)
 {
-	esm_sec_t *sec;
-
 	if(sig->receiver)
 	{
 		esm_send_signal_from_isr(sig);
 	}
 	else
 	{
+		esm_t * const * sec;
 		for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-			sig->receiver = sec->esm;
+			sig->receiver = *sec;
 			esm_send_signal_from_isr(sig);
 		}
 		sig->receiver = (void *)0;

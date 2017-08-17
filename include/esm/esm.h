@@ -35,11 +35,9 @@
 		}, \
 		.cfg = &_name##_cfg \
 		}; \
-		const esm_sec_t _name##_sec \
+		esm_t * const _name##_p \
 		__attribute((__section__("esm_section"))) \
-		__attribute((__used__)) = { \
-				.esm = &_name##_ctx.esm \
-		}
+		__attribute((__used__)) = &_name##_ctx.esm;
 
 #define ESM_TRANSITION(_state) do { \
 		ESM_ASSERT(esm); \
@@ -94,10 +92,6 @@ struct _esm {
 	uint8_t sig_tail;
 	esm_signal_t *sig_queue;
 };
-
-typedef struct {
-	esm_t *const esm;
-} esm_sec_t;
 
 extern const esm_state_t esm_unhandled_sig;
 extern const esm_state_t esm_self_transition;
