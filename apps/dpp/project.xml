@@ -8,13 +8,13 @@
     <exec name = "dpp">
         <includes>
             <dir name = "include"/>
-            <dir name = "../../include"/>
-            <dir name = "../../include/linux"/>
+            <dir name = "../../core/include"/>
+            <dir name = "../../platform/linux/include"/>
         </includes>
         <sources>
-            <dir name = "../../src"/>
+            <dir name = "../../core/src"/>
+            <dir name = "../../platform/linux/src"/>
             <dir name = "src"/>
-            <dir name = "../../core"/>
         </sources>
     </exec>
 
