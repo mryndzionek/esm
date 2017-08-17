@@ -58,7 +58,7 @@ static void esm_hungry_entry(esm_t *const esm)
 	esm_signal_t sig = {
 			.type = esm_sig_hungry,
 			.sender = esm,
-			.receiver = (void *)0,
+			.receiver = table_p,
 			.params.num = self->cfg->num
 	};
 	esm_send_signal(&sig);
@@ -100,7 +100,7 @@ static void esm_eating_exit(esm_t *const esm)
 	esm_signal_t sig = {
 			.type = esm_sig_done,
 			.sender = esm,
-			.receiver = (void *)0,
+			.receiver = table_p,
 			.params = self->cfg->num
 	};
 	esm_send_signal(&sig);

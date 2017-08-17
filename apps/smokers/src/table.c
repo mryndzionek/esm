@@ -86,10 +86,10 @@ static void esm_requesting_entry(esm_t *const esm)
 			.params.resource = resource_1
 	};
 
-	esm_send_signal(&sig);
+	esm_broadcast_signal(&sig);
 
 	sig.params.resource = resource_2;
-	esm_send_signal(&sig);
+	esm_broadcast_signal(&sig);
 }
 
 static void esm_requesting_exit(esm_t *const esm)
