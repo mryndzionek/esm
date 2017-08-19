@@ -33,7 +33,12 @@
       ts.tv_sec = 0; \
       ts.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC; \
       nanosleep(&ts, NULL); \
-      esm_global_time++; \
+      esm_signal_t sig = { \
+    		  .type = esm_sig_tick, \
+			  .sender = (void*)0, \
+			  .receiver = tick_esm, \
+      }; \
+      esm_send_signal(&sig); \
 } while(0)
 
 #define ESM_RANDOM(_num) ((int) ((float) (_num) * random() / (RAND_MAX + 1.0)))

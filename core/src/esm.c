@@ -17,11 +17,38 @@ const esm_state_t esm_unhandled_sig = {
 
 #define ESM_SIGNAL(_name) #_name,
 static char const * const esm_sig_name[] = {
+		"tick",
 		ESM_SIGNALS
 };
 #undef ESM_SIGNAL
 
 static uint32_t esm_sig_mask;
+
+static void tick_handle(esm_t *const esm, esm_signal_t *sig)
+{
+	esm_global_time++;
+	if(esm_timer_next() == 0)
+	{
+		esm_timer_fire();
+	}
+}
+const esm_state_t esm_tick_process = {
+		.entry = (void*)0,
+		.handle = tick_handle,
+		.exit = (void*)0,
+		.name = "esm_tick_process",
+};
+static esm_t tick = {
+		.name = "tick",
+		.id = esm_id_tick,
+		.subscribed = ESM_SIG_MASK(esm_sig_tick),
+		.curr_state = &esm_tick_process,
+		.sig_queue_size = 1,
+		.sig_queue = (esm_signal_t[1]){0},
+};
+esm_t * const tick_esm
+__attribute((__section__("esm_section")))
+__attribute((__used__)) = &tick;
 
 static void self_entry(esm_t *const esm)
 {
@@ -44,66 +71,68 @@ void esm_process(void)
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 		esm_t * const esm = *sec;
-		ESM_DEBUG(esm, esm_global_time, init);
-		esm->curr_state->entry(esm);
+		if(esm->id != esm_id_tick)
+		{
+			ESM_DEBUG(esm, esm_global_time, init);
+			esm->curr_state->entry(esm);
+		}
 	}
 
 	while(1)
 	{
 		ESM_WAIT();
 
-		if(esm_timer_next() == 0)
+		while(esm_sig_mask)
 		{
-			esm_timer_fire();
-		}
-		if(esm_sig_mask)
-		{
-			while(esm_sig_mask)
-			{
-				for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-					esm_t * const esm = *sec;
+			for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
+				esm_t * const esm = *sec;
 
-					if(esm->sig_len)
+				if(esm->sig_len)
+				{
+					esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
+
+					ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
+
+					esm->next_state = esm->curr_state;
+					esm->curr_state->handle(esm, sig);
+
+					ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
+							"[%010u] [%s] Unhandled signal: %d (%s)\r\n",
+							esm_global_time, esm->name, sig->type, esm->curr_state->name);
+
+					if(esm->curr_state != esm->next_state)
 					{
-						esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
+						ESM_DEBUG(esm, esm_global_time, trans, sig);
 
-						ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
-						esm->next_state = esm->curr_state;
-						esm->curr_state->handle(esm, sig);
-
-						ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
-								"[%010u] [%s] Unhandled signal: %d (%s)\r\n",
-								esm_global_time, esm->name, sig->type, esm->curr_state->name);
-
-						if(esm->curr_state != esm->next_state)
-						{
-							ESM_DEBUG(esm, esm_global_time, trans, sig);
-
-							esm->curr_state->exit(esm);
-							esm->next_state->entry(esm);
-							esm->curr_state = esm->next_state;
-						}
-
-						ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
-								"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
-								esm_global_time, esm->name);
-
-						ESM_CRITICAL_ENTER();
-						if(++esm->sig_tail == esm->sig_queue_size)
-						{
-							esm->sig_tail = 0;
-						}
-						--esm->sig_len;
-						if(esm->sig_len == 0)
-						{
-							esm_sig_mask &= ~(1UL << esm->id);
-						}
-						ESM_CRITICAL_EXIT();
+						esm->curr_state->exit(esm);
+						esm->next_state->entry(esm);
+						esm->curr_state = esm->next_state;
 					}
+
+					ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
+							"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
+							esm_global_time, esm->name);
+
+					ESM_CRITICAL_ENTER();
+					if(++esm->sig_tail == esm->sig_queue_size)
+					{
+						esm->sig_tail = 0;
+					}
+					--esm->sig_len;
+					if(esm->sig_len == 0)
+					{
+						esm_sig_mask &= ~(1UL << esm->id);
+					}
+					ESM_CRITICAL_EXIT();
+				}
+
+				if(!esm_sig_mask)
+				{
+					break;
 				}
 			}
-			ESM_IDLE(esm_global_time);
 		}
+		ESM_IDLE(esm_global_time);
 	}
 }
 
