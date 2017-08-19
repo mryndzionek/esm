@@ -1,5 +1,6 @@
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
+#include "trace.h"
 
 #include <stdio.h>
 
@@ -17,7 +18,7 @@ const esm_state_t esm_unhandled_sig = {
 
 #define ESM_SIGNAL(_name) #_name,
 static char const * const esm_sig_name[] = {
-		"tick",
+		"alarm",
 		ESM_SIGNALS
 };
 #undef ESM_SIGNAL
@@ -32,23 +33,23 @@ static void tick_handle(esm_t *const esm, esm_signal_t *sig)
 		esm_timer_fire();
 	}
 }
-const esm_state_t esm_tick_process = {
+const esm_state_t tick = {
 		.entry = (void*)0,
 		.handle = tick_handle,
 		.exit = (void*)0,
-		.name = "esm_tick_process",
-};
-static esm_t tick = {
 		.name = "tick",
+};
+static esm_t esm_tick = {
+		.name = "esm_tick",
 		.id = esm_id_tick,
-		.subscribed = ESM_SIG_MASK(esm_sig_tick),
-		.curr_state = &esm_tick_process,
+		.subscribed = ESM_SIG_MASK(esm_sig_alarm),
+		.curr_state = &tick,
 		.sig_queue_size = 1,
 		.sig_queue = (esm_signal_t[1]){0},
 };
 esm_t * const tick_esm
 __attribute((__section__("esm_section")))
-__attribute((__used__)) = &tick;
+__attribute((__used__)) = &esm_tick;
 
 static void self_entry(esm_t *const esm)
 {
@@ -73,7 +74,7 @@ void esm_process(void)
 		esm_t * const esm = *sec;
 		if(esm->id != esm_id_tick)
 		{
-			ESM_DEBUG(esm, esm_global_time, init);
+			ESM_DEBUG(esm, init);
 			esm->curr_state->entry(esm);
 		}
 	}
@@ -91,7 +92,7 @@ void esm_process(void)
 				{
 					esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
 
-					ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
+					ESM_DEBUG(sig->receiver, receive, sig);
 
 					esm->next_state = esm->curr_state;
 					esm->curr_state->handle(esm, sig);
@@ -102,7 +103,7 @@ void esm_process(void)
 
 					if(esm->curr_state != esm->next_state)
 					{
-						ESM_DEBUG(esm, esm_global_time, trans, sig);
+						ESM_DEBUG(esm, trans, sig);
 
 						esm->curr_state->exit(esm);
 						esm->next_state->entry(esm);
@@ -132,7 +133,7 @@ void esm_process(void)
 				}
 			}
 		}
-		ESM_IDLE(esm_global_time);
+		ESM_IDLE();
 	}
 }
 

@@ -15,6 +15,7 @@ NM = $(CROSS_COMPILE)nm
 INCLUDES = \
     -Iinclude \
     -I../../core/include \
+    -I../../trace/include \
     -I../../platform/linux/include \
 
 OPT_FLAGS = -O0
@@ -37,6 +38,8 @@ SOURCES_smokers = \
     core/src/esm_list.c \
     core/src/esm_timer.c \
     platform/linux/src/main.c \
+    trace/src/rb.c \
+    trace/src/trace.c \
     src/smoker.c \
     src/table.c \
 
