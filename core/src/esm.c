@@ -65,18 +65,7 @@ void esm_process(void)
 
 					if(esm->sig_len)
 					{
-						ESM_CRITICAL_ENTER();
-						esm_signal_t *sig = &esm->sig_queue[esm->sig_tail++];
-						if(esm->sig_tail == esm->sig_queue_size)
-						{
-							esm->sig_tail = 0;
-						}
-						--esm->sig_len;
-						if(esm->sig_len == 0)
-						{
-							esm_sig_mask &= ~(1UL << esm->id);
-						}
-						ESM_CRITICAL_EXIT();
+						esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
 
 						ESM_DEBUG(sig->receiver, esm_global_time, receive, sig);
 						esm->next_state = esm->curr_state;
@@ -98,6 +87,18 @@ void esm_process(void)
 						ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
 								"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
 								esm_global_time, esm->name);
+
+						ESM_CRITICAL_ENTER();
+						if(++esm->sig_tail == esm->sig_queue_size)
+						{
+							esm->sig_tail = 0;
+						}
+						--esm->sig_len;
+						if(esm->sig_len == 0)
+						{
+							esm_sig_mask &= ~(1UL << esm->id);
+						}
+						ESM_CRITICAL_EXIT();
 					}
 				}
 			}
