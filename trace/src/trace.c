@@ -30,7 +30,7 @@
 #define crc_finish() (crc = ~crc)
 #define crc_get() (crc)
 
-static rb_t _rb = { .data_ = (uint8_t[256]){0}, .capacity_ = 256};
+static rb_t _rb = { .data_ = (uint8_t[ESM_TRACE_BUF_SIZE]){0}, .capacity_ = ESM_TRACE_BUF_SIZE};
 static uint8_t trace_fsm_counter;
 
 static uint8_t _crc(uint8_t *data, uint8_t len)
@@ -69,11 +69,11 @@ static uint8_t *_add_str(uint8_t *bb, char const * s)
 	uint8_t i = 16;
 	uint8_t *b = bb + 1;
 
-	ENCODE_NUM_1(b, trace_fsm_counter);
 	do
 	{
 		ENCODE_NUM_1(b, *s);
-	} while(*(s++) && i--);
+		--i;
+	} while(*(++s) && i);
 	*bb = 16 - i;
 
 	return b;
@@ -103,8 +103,8 @@ void trace_trans(uint8_t esm, uint8_t sig, char const * const cs, char const * c
 	b = _add_header(b, 1);
 	ENCODE_NUM_1(b, esm);
 	ENCODE_NUM_1(b, sig);
-	_add_str(b, cs);
-	_add_str(b, ns);
+	b = _add_str(b, cs);
+	b = _add_str(b, ns);
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
@@ -122,7 +122,7 @@ void trace_receive(uint8_t esm, uint8_t sig, char const * const cs)
 	b = _add_header(b, 2);
 	ENCODE_NUM_1(b, esm);
 	ENCODE_NUM_1(b, sig);
-	_add_str(b, cs);
+	b = _add_str(b, cs);
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
@@ -132,22 +132,7 @@ void trace_receive(uint8_t esm, uint8_t sig, char const * const cs)
 	(void)rb_write(&_rb, tmp, b-tmp);
 }
 
-void trace_idle(void)
-{
-	uint8_t tmp[15], *b = tmp;
-	uint8_t crc = 0;
-
-	b = _add_header(b, 3);
-	crc_init();
-	crc = _crc(tmp, b-tmp);
-	crc_finish();
-	crc_deinit();
-	ENCODE_NUM_1(b, crc);
-	*(b++) = END_FLAG;
-	(void)rb_write(&_rb, tmp, b-tmp);
-}
-
-size_t trace_fsm_get(uint8_t *data, size_t bytes)
+size_t trace_get(uint8_t *data, size_t bytes)
 {
 	return rb_read(&_rb, data, bytes);
 }

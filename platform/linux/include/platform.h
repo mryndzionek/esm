@@ -71,8 +71,23 @@
 		ESM_DEBUG_##_action(_p_esm, __VA_ARGS__)
 
 #define ESM_IDLE() do { \
-		trace_idle(); \
-		ESM_PRINTF("[%010u] ------------------------------------\r\n", esm_global_time); \
+} while(0)
+
+#define ESM_TRACE_BUF_SIZE		(256)
+#define ESM_TRACE_CHUNK_SIZE	(16)
+#define ESM_TRACE_OUT(_data, _size) do { \
+		size_t i; \
+		for (i = 0; i < _size; i++) \
+		{ \
+			ESM_PRINTF("0x%02x ", _data[i]); \
+		} \
+		ESM_PRINTF("\r\n"); \
+				esm_signal_t sig = { \
+				.type = esm_sig_alarm, \
+				.sender = (void*)0, \
+				.receiver = trace_esm, \
+		}; \
+		esm_send_signal(&sig); \
 } while(0)
 
 #endif /* INCLUDE_ESM_PLATFORM_H_ */

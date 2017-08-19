@@ -35,6 +35,7 @@ CFLAGS += $(INCLUDES)
 
 SOURCES_blink = \
     core/src/esm.c \
+    core/src/esm_internal.c \
     core/src/esm_list.c \
     core/src/esm_timer.c \
     platform/linux/src/main.c \

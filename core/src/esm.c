@@ -9,6 +9,8 @@ ESM_THIS_FILE;
 extern esm_t * const __start_esm_section;
 extern esm_t * const __stop_esm_section;
 
+extern bool esm_is_tracing;
+
 const esm_state_t esm_unhandled_sig = {
 		.entry = (void*)0,
 		.handle = (void*)0,
@@ -24,32 +26,6 @@ static char const * const esm_sig_name[] = {
 #undef ESM_SIGNAL
 
 static uint32_t esm_sig_mask;
-
-static void tick_handle(esm_t *const esm, esm_signal_t *sig)
-{
-	esm_global_time++;
-	if(esm_timer_next() == 0)
-	{
-		esm_timer_fire();
-	}
-}
-const esm_state_t tick = {
-		.entry = (void*)0,
-		.handle = tick_handle,
-		.exit = (void*)0,
-		.name = "tick",
-};
-static esm_t esm_tick = {
-		.name = "esm_tick",
-		.id = esm_id_tick,
-		.subscribed = ESM_SIG_MASK(esm_sig_alarm),
-		.curr_state = &tick,
-		.sig_queue_size = 1,
-		.sig_queue = (esm_signal_t[1]){0},
-};
-esm_t * const tick_esm
-__attribute((__section__("esm_section")))
-__attribute((__used__)) = &esm_tick;
 
 static void self_entry(esm_t *const esm)
 {
@@ -72,11 +48,8 @@ void esm_process(void)
 
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 		esm_t * const esm = *sec;
-		if(esm->id != esm_id_tick)
-		{
-			ESM_DEBUG(esm, init);
-			esm->curr_state->entry(esm);
-		}
+		ESM_DEBUG(esm, init);
+		esm->curr_state->entry(esm);
 	}
 
 	while(1)
@@ -92,7 +65,10 @@ void esm_process(void)
 				{
 					esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
 
-					ESM_DEBUG(sig->receiver, receive, sig);
+					if(esm->id > esm_id_trace)
+					{
+						ESM_DEBUG(sig->receiver, receive, sig);
+					}
 
 					esm->next_state = esm->curr_state;
 					esm->curr_state->handle(esm, sig);
@@ -103,7 +79,10 @@ void esm_process(void)
 
 					if(esm->curr_state != esm->next_state)
 					{
-						ESM_DEBUG(esm, trans, sig);
+						if(esm->id > esm_id_trace)
+						{
+							ESM_DEBUG(esm, trans, sig);
+						}
 
 						esm->curr_state->exit(esm);
 						esm->next_state->entry(esm);
@@ -131,6 +110,16 @@ void esm_process(void)
 				{
 					break;
 				}
+			}
+		}
+		if(!esm_is_tracing)
+		{
+			uint8_t data[ESM_TRACE_CHUNK_SIZE];
+			size_t s = trace_get(data, ESM_TRACE_CHUNK_SIZE);
+			if(s)
+			{
+				ESM_TRACE_OUT(data, s);
+				esm_is_tracing = true;
 			}
 		}
 		ESM_IDLE();
