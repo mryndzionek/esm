@@ -53,19 +53,22 @@
 #define ESM_SIGNAL(_name) esm_sig_##_name,
 typedef enum
 {
+	esm_sig_tick = 0,
 	ESM_SIGNALS
 } esm_signal_e;
 #undef ESM_SIGNAL
 
 #define ESM_ID(_name) esm_id_##_name,
 typedef enum {
-		ESM_IDS
+	esm_id_tick = 0,
+	ESM_IDS
 } esm_id_e;
 #undef ESM_ID
 
 typedef struct _esm esm_t;
 
 #define ESM_ID(_name) extern esm_t * const _name##_esm;
+extern esm_t * const tick_esm;
 ESM_IDS
 #undef ESM_ID
 
