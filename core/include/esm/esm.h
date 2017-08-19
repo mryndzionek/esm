@@ -53,7 +53,7 @@
 #define ESM_SIGNAL(_name) esm_sig_##_name,
 typedef enum
 {
-	esm_sig_tick = 0,
+	esm_sig_alarm = 0,
 	ESM_SIGNALS
 } esm_signal_e;
 #undef ESM_SIGNAL

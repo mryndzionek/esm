@@ -9,10 +9,12 @@
         <includes>
             <dir name = "include"/>
             <dir name = "../../core/include"/>
+            <dir name = "../../trace/include"/>
             <dir name = "../../platform/linux/include"/>
         </includes>
         <sources>
             <dir name = "../../core/src"/>
+            <dir name = "../../trace/src"/>
             <dir name = "../../platform/linux/src"/>
             <dir name = "src"/>
         </sources>
