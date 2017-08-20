@@ -36,7 +36,7 @@ static void esm_thinking_entry(esm_t *const esm)
 
 static void esm_thinking_exit(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void esm_thinking_handle(esm_t *const esm, esm_signal_t *sig)
@@ -66,7 +66,7 @@ static void esm_hungry_entry(esm_t *const esm)
 
 static void esm_hungry_exit(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void esm_hungry_handle(esm_t *const esm, esm_signal_t *sig)

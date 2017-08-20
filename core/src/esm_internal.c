@@ -8,7 +8,7 @@ bool esm_is_tracing;
 
 void empty_en_ex(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void tick_handle(esm_t *const esm, esm_signal_t *sig)

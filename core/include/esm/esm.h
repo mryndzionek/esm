@@ -41,7 +41,6 @@
 
 #define ESM_TRANSITION(_state) do { \
 		ESM_ASSERT(esm); \
-		ESM_ASSERT(_state); \
 		esm->next_state = _state; \
 } while(0)
 
