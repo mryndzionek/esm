@@ -25,7 +25,7 @@ static char const * const esm_sig_name[] = {
 };
 #undef ESM_SIGNAL
 
-static uint32_t esm_sig_mask;
+static uint8_t esm_sig_count;
 
 static void self_entry(esm_t *const esm)
 {
@@ -56,7 +56,7 @@ void esm_process(void)
 	{
 		ESM_WAIT();
 
-		while(esm_sig_mask)
+		while(esm_sig_count)
 		{
 			for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 				esm_t * const esm = *sec;
@@ -101,12 +101,12 @@ void esm_process(void)
 					--esm->sig_len;
 					if(esm->sig_len == 0)
 					{
-						esm_sig_mask &= ~(1UL << esm->id);
+						esm_sig_count--;
 					}
 					ESM_CRITICAL_EXIT();
 				}
 
-				if(!esm_sig_mask)
+				if(!esm_sig_count)
 				{
 					break;
 				}
@@ -126,8 +126,9 @@ void esm_process(void)
 	}
 }
 
-void esm_send_signal(esm_signal_t *sig)
+bool esm_send_signal(esm_signal_t *sig)
 {
+	bool ret = false;
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
 	if(sig->receiver->subscribed & (1UL << sig->type))
@@ -143,22 +144,29 @@ void esm_send_signal(esm_signal_t *sig)
 		{
 			sig->receiver->sig_head = 0;
 		}
+		if(!sig->receiver->sig_len)
+		{
+			esm_sig_count++;
+		}
 		++sig->receiver->sig_len;
-		esm_sig_mask |= (1UL << sig->receiver->id);
+		ret = true;
 	}
 	ESM_CRITICAL_EXIT();
+
+	return ret;
 }
 
 void esm_broadcast_signal(esm_signal_t *sig)
 {
 	esm_t * const * sec;
+	bool ret = false;
 	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
 		sig->receiver = *sec;
-		esm_send_signal(sig);
+		ret |= esm_send_signal(sig);
 	}
 	sig->receiver = (void *)0;
 
-	ESM_ASSERT_MSG(esm_sig_mask != 0,
+	ESM_ASSERT_MSG(ret,
 			"[%010u] Signal '%s' is lost\r\n",
 			esm_global_time, esm_sig_name[sig->type]);
 }
