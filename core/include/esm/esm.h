@@ -106,6 +106,6 @@ extern const esm_state_t esm_self_transition;
 
 void esm_process(void);
 void esm_broadcast_signal(esm_signal_t *sig);
-void esm_send_signal(esm_signal_t *sig);
+bool esm_send_signal(esm_signal_t *sig);
 
 #endif /* INCLUDE_ESM_ESM_H_ */
