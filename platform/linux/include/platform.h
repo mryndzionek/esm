@@ -6,6 +6,9 @@
 #include <stdio.h>
 #include <time.h>
 
+void platform_init(void);
+void platform_trace_write(uint8_t const *data, size_t size);
+
 #define ESM_PRINTF(_format, _args ... ) \
 		printf(_format, ##_args)
 
@@ -24,7 +27,7 @@
 		ESM_RESET(); } } while(0)
 
 #define ESM_INIT do { \
-		srand(time(NULL)); \
+		platform_init(); \
 } while(0)
 
 #define ESM_TICKS_PER_SEC	(1000UL)
@@ -76,18 +79,7 @@
 #define ESM_TRACE_BUF_SIZE		(256)
 #define ESM_TRACE_CHUNK_SIZE	(16)
 #define ESM_TRACE_OUT(_data, _size) do { \
-		size_t i; \
-		for (i = 0; i < _size; i++) \
-		{ \
-			ESM_PRINTF("0x%02x ", _data[i]); \
-		} \
-		ESM_PRINTF("\r\n"); \
-				esm_signal_t sig = { \
-				.type = esm_sig_alarm, \
-				.sender = (void*)0, \
-				.receiver = trace_esm, \
-		}; \
-		esm_send_signal(&sig); \
+		platform_trace_write(_data, _size); \
 } while(0)
 
 #endif /* INCLUDE_ESM_PLATFORM_H_ */
