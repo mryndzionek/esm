@@ -31,7 +31,7 @@ static void esm_idle_entry(esm_t *const esm)
 
 static void esm_idle_exit(esm_t *const esm)
 {
-	smoker_esm_t *self = ESM_CONTAINER_OF(esm, smoker_esm_t, esm);
+	(void)esm;
 }
 
 static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
@@ -70,7 +70,6 @@ static void esm_smoking_entry(esm_t *const esm)
 
 static void esm_smoking_exit(esm_t *const esm)
 {
-	smoker_esm_t *self = ESM_CONTAINER_OF(esm, smoker_esm_t, esm);
 	esm_signal_t sig = {
 			.type = esm_sig_done,
 			.sender = esm,

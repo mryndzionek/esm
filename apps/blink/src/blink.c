@@ -32,7 +32,7 @@ static void esm_on_entry(esm_t *const esm)
 
 static void esm_on_exit(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void esm_on_handle(esm_t *const esm, esm_signal_t *sig)
@@ -62,7 +62,7 @@ static void esm_off_entry(esm_t *const esm)
 
 static void esm_off_exit(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)

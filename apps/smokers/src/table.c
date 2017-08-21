@@ -45,13 +45,11 @@ static void esm_idle_entry(esm_t *const esm)
 
 static void esm_idle_exit(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 {
-	table_esm_t *self = ESM_CONTAINER_OF(esm, table_esm_t, esm);
-
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
@@ -65,7 +63,6 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 
 static void esm_requesting_entry(esm_t *const esm)
 {
-	table_esm_t *self = ESM_CONTAINER_OF(esm, table_esm_t, esm);
 	smoker_resource_e resource_1 = ESM_RANDOM(N_SMOKERS);
 	smoker_resource_e resource_2 = (resource_1 + ESM_RANDOM(2) + 1) % N_SMOKERS;
 
@@ -94,13 +91,11 @@ static void esm_requesting_entry(esm_t *const esm)
 
 static void esm_requesting_exit(esm_t *const esm)
 {
-
+	(void)esm;
 }
 
 static void esm_requesting_handle(esm_t *const esm, esm_signal_t *sig)
 {
-	table_esm_t *self = ESM_CONTAINER_OF(esm, table_esm_t, esm);
-
 	switch(sig->type)
 	{
 	case esm_sig_done:

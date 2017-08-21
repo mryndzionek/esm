@@ -3,3 +3,4 @@ obj/
 .settings/
 .cproject
 .project
+build/
