@@ -1,8 +1,5 @@
-
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.5)
 project(esm)
-
-enable_testing()
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 0)
@@ -13,8 +10,8 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wextra \
  -Werror -Wno-variadic-macros -Wno-missing-braces")
 
 configure_file (
-    "${CMAKE_CURRENT_SOURCE_DIR}/core/include/config.h.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/core/include/config.h"
+    "core/include/config.h.in"
+    "core/include/config.h"
   )
 
 if(NOT ESM_PLATFORM)
@@ -22,14 +19,14 @@ if(NOT ESM_PLATFORM)
 endif()
 
 file(GLOB ESM_SOURCES
-    "${CMAKE_SOURCE_DIR}/core/src/*.c"
-    "${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/src/*.c"
-    "${CMAKE_SOURCE_DIR}/trace/src/*.c"
+    "core/src/*.c"
+    "platform/${ESM_PLATFORM}/src/*.c"
+    "trace/src/*.c"
     )
 
-include_directories("${CMAKE_SOURCE_DIR}/core/include")
-include_directories("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/include")
-include_directories("${CMAKE_SOURCE_DIR}/trace/include")
+include_directories("core/include")
+include_directories("platform/${ESM_PLATFORM}/include")
+include_directories("trace/include")
 
 add_subdirectory(apps/blink)
 add_subdirectory(apps/dpp)
