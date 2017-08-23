@@ -11,6 +11,7 @@ _CSV_HEADER = 'timestamp, counter, epoch [ms], message, raw hex'
 
 parser = argparse.ArgumentParser(description='trace - trace decoder application')
 parser.add_argument('-i', '--input', choices=['file', 'serial'], default='serial')
+parser.add_argument('-m', '--map', default='')
 parser.add_argument('path', nargs='?', default='/dev/ttyUSB0:576000:8N1',
                    help='path to file or serial port identifier')
 parser.add_argument('-d', '--debug', default=False, action='store_true')
@@ -26,7 +27,28 @@ logging.basicConfig(level=lv,
                     datefmt='%m-%d %H:%M:%S',
                     filemode='w')
 
+
 try:
+
+    with open(args.map) as f:
+        lines = f.readlines()
+
+        sigre = re.compile('ESM_SIGNAL\((\w+)\)')
+        idre = re.compile('ESM_ID\((\w+)\)')
+
+        sigs = ['alarm']
+        idxs = ['tick', 'trace']
+
+        for l in lines:
+            sig = sigre.search(l)
+            idx = idre.search(l)
+            
+            if sig:
+                sigs.append(sig.group(1))
+
+            if idx:
+                idxs.append(idx.group(1))
+
     if args.input == 'serial':
         logging.info('Trying to open serial port: ' + args.path)
         rs = re.match('([^:]+):([0-9]+):([5678])([NOE])([12])', args.path)
@@ -40,7 +62,7 @@ try:
     else:
         logging.info('Trying to open file: ' + args.path)
         breader = open(args.path, 'rb')
-        reader = TraceDecoder.FileTraceReader(breader, 16)
+        reader = TraceDecoder.FileTraceReader(breader, 10000)
 
     try:
         ts_str = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
@@ -49,7 +71,7 @@ try:
         bwriter = open(wname, 'wb')
         exporter = TraceDecoder.CSVTraceExporter(bwriter, _CSV_HEADER)
         try:
-            decoder = TraceDecoder.TraceDecoder(reader, exporter)
+            decoder = TraceDecoder.TraceDecoder(reader, exporter, sigs, idxs)
             decoder.decode()
         finally:
             logging.debug('Closing the writer')
