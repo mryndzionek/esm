@@ -6,7 +6,7 @@ target_include_directories(${ESM_TARGET}Src
         "${CMAKE_CURRENT_LIST_DIR}/include"
 )
 
-add_executable(
+add_esm_executable(
     ${ESM_TARGET}
     ${ESM_CORE}
     src/table.c
