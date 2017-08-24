@@ -26,6 +26,7 @@ target_include_directories(${ESM_TARGET}Src
         "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/CMSIS/Device/ST/STM32F1xx/Include"
 )
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${PROJECT_SOURCE_DIR}/build/${ESM_TARGET}.map,--cref")
-set(HEX_FILE ${PROJECT_SOURCE_DIR}/build/${ESM_TARGET}.hex)
-set(BIN_FILE ${PROJECT_SOURCE_DIR}/build/${ESM_TARGET}.bin)
+set(CMAKE_EXE_LINKER_FLAGS
+    "-specs=nano.specs ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${ESM_TARGET}.map,--cref -lc -lm -lnosys")
+set(HEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/build/${ESM_TARGET}.hex)
+set(BIN_FILE ${CMAKE_CURRENT_BINARY_DIR}/build/${ESM_TARGET}.bin)

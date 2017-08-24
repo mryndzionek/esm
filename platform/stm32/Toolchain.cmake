@@ -11,4 +11,4 @@ SET(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/stm32f103c8/STM32
 SET(COMMON_FLAGS "-mcpu=cortex-m3 -mthumb -ffunction-sections -fdata-sections -g -fno-common -fmessage-length=0")
 SET(CMAKE_CXX_FLAGS "${COMMON_FLAGS} -std=c++11")
 SET(CMAKE_C_FLAGS "${COMMON_FLAGS} -std=gnu99 -Wno-unused-parameter")
-SET(CMAKE_EXE_LINKER_FLAGS "-specs=nano.specs -Wl,-gc-sections -T ${LINKER_SCRIPT} -lc -lm -lnosys")
+SET(CMAKE_EXE_LINKER_FLAGS "-mcpu=cortex-m3 -mthumb -Wl,-gc-sections -T ${LINKER_SCRIPT}")
