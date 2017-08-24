@@ -1,6 +1,14 @@
-include_directories("include")
+set(ESM_TARGET blink)
+add_library(${ESM_TARGET}Src STATIC "${ESM_CORE}")
+include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
+target_include_directories(${ESM_TARGET}Src
+    PUBLIC
+        "${CMAKE_CURRENT_LIST_DIR}/include"
+)
+
 add_executable(
-    blink
+    ${ESM_TARGET}
     ${ESM_SOURCES}
     src/blink.c
 )
+target_link_libraries(blink ${ESM_TARGET}Src)

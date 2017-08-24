@@ -18,14 +18,12 @@ if(NOT ESM_PLATFORM)
   set(ESM_PLATFORM linux)
 endif()
 
-file(GLOB ESM_SOURCES
+file(GLOB ESM_CORE
     "core/src/*.c"
-    "platform/${ESM_PLATFORM}/src/*.c"
     "trace/src/*.c"
     )
 
 include_directories("core/include")
-include_directories("platform/${ESM_PLATFORM}/include")
 include_directories("trace/include")
 
 add_subdirectory(apps/blink)
