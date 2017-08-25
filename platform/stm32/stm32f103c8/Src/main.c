@@ -40,6 +40,7 @@
 #include "stm32f1xx_hal.h"
 
 /* USER CODE BEGIN Includes */
+#include "esm/esm.h"
 
 /* USER CODE END Includes */
 
@@ -100,6 +101,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    esm_process();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
