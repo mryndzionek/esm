@@ -47,13 +47,13 @@ esm_t * const tick_esm
 __attribute((__section__("esm_section")))
 __attribute((__used__)) = &esm_tick;
 
+static uint8_t data[ESM_TRACE_CHUNK_SIZE];
 static void trace_handle(esm_t *const esm, esm_signal_t *sig)
 {
 	switch(sig->type)
 	{
 	case esm_sig_alarm:
 	{
-		uint8_t data[ESM_TRACE_CHUNK_SIZE];
 		size_t s = trace_get(data, ESM_TRACE_CHUNK_SIZE);
 		if(s)
 		{
