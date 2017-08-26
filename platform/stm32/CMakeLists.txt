@@ -13,6 +13,7 @@ target_sources(${ESM_TARGET}Src
     PUBLIC
         "${USER_SOURCES}"
         "${HAL_SOURCES}"
+        "${CMAKE_CURRENT_LIST_DIR}/src/platform.c"
         "${CMAKE_CURRENT_LIST_DIR}/include/platform.h"
         "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/startup_stm32f103xb.s"
 )

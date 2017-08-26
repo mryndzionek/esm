@@ -5,9 +5,10 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <time.h>
+#include "stm32f1xx_hal.h"
 
-void platform_init(void);
-void platform_trace_write(uint8_t const *data, size_t size);
+extern UART_HandleTypeDef huart3;
+uint16_t platform_rnd(uint16_t range);
 
 #define ESM_PRINTF(_format, _args ... )
 
@@ -28,18 +29,20 @@ void platform_trace_write(uint8_t const *data, size_t size);
 
 #define ESM_TICKS_PER_SEC	(1000UL)
 #define ESM_WAIT() do { \
-		esm_signal_t sig = { \
-				.type = esm_sig_alarm, \
-				.sender = (void*)0, \
-				.receiver = tick_esm, \
-		}; \
-		esm_send_signal(&sig); \
+      HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_SET); \
+      ESM_CRITICAL_ENTER(); \
+      if(!esm_sig_count) \
+	  { \
+         HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI); \
+	  } \
+      ESM_CRITICAL_EXIT(); \
+      HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET); \
 } while(0)
 
-#define ESM_RANDOM(_num) (0)
+#define ESM_RANDOM(_num) platform_rnd(_num)
 
-#define ESM_CRITICAL_ENTER()
-#define ESM_CRITICAL_EXIT()
+#define ESM_CRITICAL_ENTER() __disable_irq()
+#define ESM_CRITICAL_EXIT() __enable_irq()
 
 #define ESM_DEBUG_init(_p_esm, ...) do { \
 		trace_init(_p_esm->id); \
@@ -62,7 +65,8 @@ void platform_trace_write(uint8_t const *data, size_t size);
 #define ESM_TRACE_BUF_SIZE		(256)
 #define ESM_TRACE_CHUNK_SIZE	(16)
 #define ESM_TRACE_OUT(_data, _size) do { \
-		platform_trace_write(_data, _size); \
+      HAL_StatusTypeDef r = HAL_UART_Transmit_IT(&huart3, _data, _size); \
+      ESM_ASSERT(r == HAL_OK); \
 } while(0)
 
 #endif /* INCLUDE_ESM_PLATFORM_H_ */
