@@ -7,6 +7,7 @@
 #include <time.h>
 
 void platform_init(void);
+void platform_wait(void);
 void platform_trace_write(uint8_t const *data, size_t size);
 
 #define ESM_PRINTF(_format, _args ... ) \
@@ -32,16 +33,7 @@ void platform_trace_write(uint8_t const *data, size_t size);
 
 #define ESM_TICKS_PER_SEC	(1000UL)
 #define ESM_WAIT() do { \
-		struct timespec ts; \
-		ts.tv_sec = 0; \
-		ts.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC; \
-		nanosleep(&ts, NULL); \
-		esm_signal_t sig = { \
-				.type = esm_sig_alarm, \
-				.sender = (void*)0, \
-				.receiver = tick_esm, \
-		}; \
-		esm_send_signal(&sig); \
+		platform_wait(); \
 } while(0)
 
 #define ESM_RANDOM(_num) ((int) ((float) (_num) * random() / (RAND_MAX + 1.0)))
