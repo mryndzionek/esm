@@ -8,7 +8,7 @@ target_include_directories(${ESM_TARGET}Src
 
 add_executable(
     ${ESM_TARGET}
-    ${ESM_SOURCES}
+    ${ESM_CORE}
     src/blink.c
 )
 target_link_libraries(blink ${ESM_TARGET}Src)
