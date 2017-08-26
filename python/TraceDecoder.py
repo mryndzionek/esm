@@ -75,10 +75,12 @@ class CSVTraceExporter(TraceExporter):
 
 class TraceDecoder(object):
 
-    def __init__(self, reader, exporter):
+    def __init__(self, reader, exporter, sigs, idxs):
         self.reader = reader
         self.exporter = exporter
         self.reset()
+        self.sigs = sigs
+        self.idxs = idxs
 
     @staticmethod
     def format_hex(msg):
@@ -151,15 +153,20 @@ class TraceDecoder(object):
 
             if len (frame[7:]) >= length:
                 if uid == 0:
-                    l = (cnt,) + (timestamp,) + ("[{}] Initializing".format(frame[7]),) + (frame,)
+                    l = (cnt,) + (timestamp,) + ("[{}] Initializing".format(
+                        self.idxs[frame[7]]),) + (frame,)
                 elif uid == 1:
                     s = self._get_str(frame[9:-1], 2)
-                    l = (cnt,) + (timestamp,) + ("[{0}] Transition {2} --{1}-> {3}".format(frame[7],
-                        frame[8], s[0], s[1]),) + (frame,)
+                    l = (cnt,) + (timestamp,) + ("[{0}] Transition {2} --{1}-> {3}".format(
+                        self.idxs[frame[7]],
+                        self.sigs[frame[8]],
+                        s[0], s[1]),) + (frame,)
                 elif uid == 2:
                     s = self._get_str(frame[9:-1], 1)
-                    l = (cnt,) + (timestamp,) + ("[{}] Receiving signal {} ({})".format(frame[7],
-                        frame[8], s[0]),) + (frame,)
+                    l = (cnt,) + (timestamp,) + ("[{}] Receiving signal {} ({})".format(
+                        self.idxs[frame[7]],
+                        self.sigs[frame[8]],
+                        s[0]),) + (frame,)
 
             if l and self._crc_check(frame[:-1], frame[-1]):
                 return l
