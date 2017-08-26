@@ -81,11 +81,13 @@ static uint8_t *_add_str(uint8_t *bb, char const * s)
 
 void trace_init(uint8_t esm)
 {
-	uint8_t tmp[15+2], *b = tmp;
+	uint8_t tmp[15+2], *b = tmp, *lb;
 	uint8_t crc = 0;
 
 	b = _add_header(b, 0);
+	lb = b++;
 	ENCODE_NUM_1(b, esm);
+	*lb = b - lb;
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
@@ -97,14 +99,16 @@ void trace_init(uint8_t esm)
 
 void trace_trans(uint8_t esm, uint8_t sig, char const * const cs, char const * const ns)
 {
-	uint8_t tmp[15+4+32+32], *b = tmp;
+	uint8_t tmp[15+4+32+32], *b = tmp, *lb;
 	uint8_t crc = 0;
 
 	b = _add_header(b, 1);
+	lb = b++;
 	ENCODE_NUM_1(b, esm);
 	ENCODE_NUM_1(b, sig);
 	b = _add_str(b, cs);
 	b = _add_str(b, ns);
+	*lb = b - lb;
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
@@ -116,13 +120,15 @@ void trace_trans(uint8_t esm, uint8_t sig, char const * const cs, char const * c
 
 void trace_receive(uint8_t esm, uint8_t sig, char const * const cs)
 {
-	uint8_t tmp[15+4+32], *b = tmp;
+	uint8_t tmp[15+4+32], *b = tmp, *lb;
 	uint8_t crc = 0;
 
 	b = _add_header(b, 2);
+	lb = b++;
 	ENCODE_NUM_1(b, esm);
 	ENCODE_NUM_1(b, sig);
 	b = _add_str(b, cs);
+	*lb = b - lb;
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();

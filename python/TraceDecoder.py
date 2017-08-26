@@ -142,32 +142,27 @@ class TraceDecoder(object):
     def _parse(self, data):
     
         frame = self._unescape(data)
-        if len (frame) >= 6:
+        if len (frame) >= 7:
             cnt = frame[0]
             uid = frame[1]
             timestamp = struct.unpack_from('I', frame, 2)[0]
-            
+            length = frame[6]
             l = None
-            if uid == 0:
-                if len (frame[6:]) >= 2:
-                    l = (cnt,) + (timestamp,) + ("[{}] Initializing".format(frame[6]),) + (frame,)
-            elif uid  == 1:
-                if len (frame[6:]) >= 4:
-                    s = self._get_str(frame[8:-1], 2)
-                    if s:
-                        l = (cnt,) + (timestamp,) + ("[{0}] Transition {2} --{1}-> {3}".format(frame[6],
-                            frame[7], s[0], s[1]),) + (frame,)
-            elif uid  == 2:
-                if len (frame[6:]) >= 3:
-                    s = self._get_str(frame[8:-1], 1)
-                    if s:
-                        l = (cnt,) + (timestamp,) + ("[{}] Receiving signal {} ({})".format(frame[6],
-                            frame[7], s[0]),) + (frame,)
-            else:
-                return None
 
-            if l is not None and self._crc_check(frame[:-1], frame[-1]):
-                    return l
+            if len (frame[7:]) >= length:
+                if uid == 0:
+                    l = (cnt,) + (timestamp,) + ("[{}] Initializing".format(frame[7]),) + (frame,)
+                elif uid == 1:
+                    s = self._get_str(frame[9:-1], 2)
+                    l = (cnt,) + (timestamp,) + ("[{0}] Transition {2} --{1}-> {3}".format(frame[7],
+                        frame[8], s[0], s[1]),) + (frame,)
+                elif uid == 2:
+                    s = self._get_str(frame[9:-1], 1)
+                    l = (cnt,) + (timestamp,) + ("[{}] Receiving signal {} ({})".format(frame[7],
+                        frame[8], s[0]),) + (frame,)
+
+            if l and self._crc_check(frame[:-1], frame[-1]):
+                return l
 
             return None
 
