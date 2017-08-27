@@ -74,8 +74,8 @@ void esm_process(void)
 					esm->curr_state->handle(esm, sig);
 
 					ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
-							"[%010u] [%s] Unhandled signal: %d (%s)\r\n",
-							esm_global_time, esm->name, sig->type, esm->curr_state->name);
+							"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
+							esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
 
 					if(esm->curr_state != esm->next_state)
 					{
