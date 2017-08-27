@@ -29,13 +29,11 @@ target_include_directories(${ESM_TARGET}Src
 
 set(CMAKE_EXE_LINKER_FLAGS
     "-specs=nano.specs ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${ESM_TARGET}.map,--cref -lc -lm -lnosys")
-set(HEX_FILE ${CMAKE_CURRENT_BINARY_DIR}/${ESM_TARGET}.hex)
-set(BIN_FILE ${CMAKE_CURRENT_BINARY_DIR}/${ESM_TARGET}.bin)
 
 function(add_esm_executable EXECUTABLE_NAME)
     add_executable(${EXECUTABLE_NAME} ${ARGN})
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
-        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${EXECUTABLE_NAME}> ${HEX_FILE}
-        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${EXECUTABLE_NAME}> ${BIN_FILE}
+        COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${EXECUTABLE_NAME}> ${EXECUTABLE_NAME}.hex
+        COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${EXECUTABLE_NAME}> ${EXECUTABLE_NAME}.bin
         COMMENT "Building ${HEX_FILE} \nBuilding ${BIN_FILE}")
 endfunction(add_esm_executable)
