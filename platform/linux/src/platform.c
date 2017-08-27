@@ -19,9 +19,9 @@ static int epollfd;
 
 static const struct itimerspec timeout = {
 		.it_value.tv_sec = 0,
-		.it_value.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC,
+		.it_value.tv_nsec = ESM_SEC_IN_TICKS / ESM_TICKS_PER_SEC,
 		.it_interval.tv_sec = 0,
-		.it_interval.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC
+		.it_interval.tv_nsec = ESM_SEC_IN_TICKS / ESM_TICKS_PER_SEC
 };
 
 __attribute__((weak)) void app_process(char key)
