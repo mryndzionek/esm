@@ -32,6 +32,7 @@ void platform_trace_write(uint8_t const *data, size_t size);
 } while(0)
 
 #define ESM_TICKS_PER_SEC	(1000UL)
+#define ESM_SEC_IN_TICKS	(1000000000UL)
 #define ESM_WAIT() do { \
 		platform_wait(); \
 } while(0)
