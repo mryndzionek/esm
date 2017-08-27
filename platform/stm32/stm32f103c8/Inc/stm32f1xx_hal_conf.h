@@ -74,6 +74,7 @@
 /*#define HAL_RCC_MODULE_ENABLED   */
 /*#define HAL_RTC_MODULE_ENABLED   */
 /*#define HAL_SD_MODULE_ENABLED   */
+/*#define HAL_MMC_MODULE_ENABLED   */
 /*#define HAL_SDRAM_MODULE_ENABLED   */
 /*#define HAL_SMARTCARD_MODULE_ENABLED   */
 /*#define HAL_SPI_MODULE_ENABLED   */
@@ -114,6 +115,15 @@
 #endif /* HSI_VALUE */
 
 /**
+  * @brief Internal Low Speed oscillator (LSI) value.
+  */
+#if !defined  (LSI_VALUE) 
+ #define LSI_VALUE               40000U    /*!< LSI Typical Value in Hz */
+#endif /* LSI_VALUE */                     /*!< Value of the Internal Low Speed oscillator in Hz
+                                                The real value may vary depending on the variations
+                                                in voltage and temperature. */
+
+/**
   * @brief External Low Speed oscillator (LSE) value.
   *        This value is used by the UART, RTC HAL module to compute the system frequency
   */
@@ -133,7 +143,7 @@
   * @brief This is the HAL system configuration section
   */     
 #define  VDD_VALUE                    ((uint32_t)3300) /*!< Value of VDD in mv */           
-#define  TICK_INT_PRIORITY            ((uint32_t)0)    /*!< tick interrupt priority (lowest by default)  */            
+#define  TICK_INT_PRIORITY            ((uint32_t)1)    /*!< tick interrupt priority (lowest by default)  */            
 #define  USE_RTOS                     0
 #define  PREFETCH_ENABLE              1
 
@@ -284,6 +294,10 @@
 #ifdef HAL_SD_MODULE_ENABLED
  #include "stm32f1xx_hal_sd.h"
 #endif /* HAL_SD_MODULE_ENABLED */  
+
+#ifdef HAL_MMC_MODULE_ENABLED
+ #include "stm32f1xx_hal_mmc.h"
+#endif /* HAL_MMC_MODULE_ENABLED */
 
 #ifdef HAL_NAND_MODULE_ENABLED
  #include "stm32f1xx_hal_nand.h"
