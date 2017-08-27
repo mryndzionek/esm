@@ -24,6 +24,11 @@ static const struct itimerspec timeout = {
 		.it_interval.tv_nsec = 1000000000UL / ESM_TICKS_PER_SEC
 };
 
+__attribute__((weak)) void app_process(char key)
+{
+	(void)key;
+}
+
 void platform_init(void)
 {
 	int ret;
@@ -82,7 +87,7 @@ void platform_wait(void)
 		char key;
 		ret = read(STDIN_FILENO, &key, 1);
 		ESM_ASSERT(ret == 1);
-		ESM_PRINTF("Pressed: %c\r\n", key);
+		app_process(key);
 	}
 }
 
