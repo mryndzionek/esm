@@ -16,10 +16,10 @@ typedef struct {
 #define ESM_INIT_SUB	(ESM_SIG_MASK(esm_sig_tmout) | \
       ESM_SIG_MASK(esm_sig_pause))
 
-ESM_DEFINE_H_STATE(active, top);
-ESM_DEFINE_H_STATE(on, active);
-ESM_DEFINE_H_STATE(off, active);
-ESM_DEFINE_H_STATE(paused, top);
+ESM_COMPLEX_STATE(active, top);
+ESM_LEAF_STATE(on, active);
+ESM_LEAF_STATE(off, active);
+ESM_LEAF_STATE(paused, top);
 
 static void esm_active_init(esm_t *const esm)
 {
@@ -40,11 +40,6 @@ static void esm_active_handle(esm_t *const esm, esm_signal_t *sig)
 {
 	(void)esm;
 	(void)sig;
-}
-
-static void esm_on_init(esm_t *const esm)
-{
-	(void)esm;
 }
 
 static void esm_on_entry(esm_t *const esm)
@@ -81,11 +76,6 @@ static void esm_on_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
-static void esm_off_init(esm_t *const esm)
-{
-	(void)esm;
-}
-
 static void esm_off_entry(esm_t *const esm)
 {
 	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
@@ -120,11 +110,6 @@ static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
-static void esm_paused_init(esm_t *const esm)
-{
-	(void)esm;
-}
-
 static void esm_paused_entry(esm_t *const esm)
 {
 	(void)esm;
@@ -152,4 +137,4 @@ static const blink_cfg_t blink_cfg = {
 		.delay = 3000UL
 };
 
-ESM_H_REGISTER(blink, blink, active, 1);
+ESM_COMPLEX_REGISTER(blink, blink, active, 1);
