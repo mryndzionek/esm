@@ -17,24 +17,24 @@ uint16_t platform_rnd(uint16_t range);
 #define ESM_BUG_REPORT( _cond, _format, _args ... )
 
 #define ESM_ASSERT(_cond) do { if(!(_cond)) { \
-		ESM_BUG_REPORT(_cond, ""); \
-		ESM_RESET();}} while(0)
+      ESM_BUG_REPORT(_cond, ""); \
+      ESM_RESET();}} while(0)
 
 #define ESM_ASSERT_MSG( _cond, _format, _args ... ) \
-		do { if(!(_cond)) { ESM_BUG_REPORT( _cond, _format, ##_args ); \
-		ESM_RESET(); } } while(0)
+      do { if(!(_cond)) { ESM_BUG_REPORT( _cond, _format, ##_args ); \
+      ESM_RESET(); } } while(0)
 
 #define ESM_INIT do { \
-} while(0)
+      } while(0)
 
 #define ESM_TICKS_PER_SEC	(1000UL)
 #define ESM_WAIT() do { \
       HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_SET); \
       ESM_CRITICAL_ENTER(); \
       if(!esm_sig_count) \
-	  { \
+      { \
          HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI); \
-	  } \
+      } \
       ESM_CRITICAL_EXIT(); \
       HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET); \
 } while(0)
@@ -45,22 +45,22 @@ uint16_t platform_rnd(uint16_t range);
 #define ESM_CRITICAL_EXIT() __enable_irq()
 
 #define ESM_DEBUG_init(_p_esm, ...) do { \
-		trace_init(_p_esm->id); \
+      trace_init(_p_esm->id); \
 } while (0)
 
 #define ESM_DEBUG_trans(_p_esm, _sig, ...) do { \
-		trace_trans(_p_esm->id, _sig->type, _p_esm->curr_state->name,  _p_esm->next_state->name); \
+      trace_trans(_p_esm->id, _sig->type, _p_esm->curr_state->name,  _p_esm->next_state->name); \
 } while (0)
 
 #define ESM_DEBUG_receive(_p_esm, _sig, ...) do { \
-		trace_receive(_p_esm->id, _sig->type, _p_esm->curr_state->name); \
+      trace_receive(_p_esm->id, _sig->type, _p_esm->curr_state->name); \
 } while (0)
 
 #define ESM_DEBUG(_p_esm, _action, ...) \
-		ESM_DEBUG_##_action(_p_esm, __VA_ARGS__)
+      ESM_DEBUG_##_action(_p_esm, __VA_ARGS__)
 
 #define ESM_IDLE() do { \
-} while(0)
+      } while(0)
 
 #define ESM_TRACE_BUF_SIZE		(256)
 #define ESM_TRACE_CHUNK_SIZE	(16)
