@@ -1,6 +1,8 @@
 set(ESM_TARGET smokers)
-add_library(${ESM_TARGET}Src STATIC "${ESM_CORE}")
+add_library(${ESM_TARGET}Src STATIC "")
+include("${CMAKE_SOURCE_DIR}/Core.cmake")
 include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
+
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"
@@ -8,7 +10,6 @@ target_include_directories(${ESM_TARGET}Src
 
 add_esm_executable(
     ${ESM_TARGET}
-    ${ESM_CORE}
     src/table.c
     src/smoker.c
 )
