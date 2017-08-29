@@ -41,7 +41,7 @@
 
 #define ESM_TRANSITION(_state) do { \
 		ESM_ASSERT(esm); \
-		esm->next_state = _state; \
+		esm->next_state = (esm_state_t *)_state; \
 } while(0)
 
 #define ESM_SUBSCRIBE(_sig) esm->subscribed |= (1UL << _sig)

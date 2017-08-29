@@ -1,4 +1,4 @@
-#include "esm/esm.h"
+#include "esm/hesm.h"
 #include "esm/esm_timer.h"
 
 ESM_THIS_FILE;
@@ -8,7 +8,7 @@ typedef struct {
 } blink_cfg_t;
 
 typedef struct {
-	esm_t esm;
+	hesm_t esm;
 	esm_timer_t timer;
 	blink_cfg_t const *const cfg;
 } blink_esm_t;
@@ -16,9 +16,36 @@ typedef struct {
 #define ESM_INIT_SUB	(ESM_SIG_MASK(esm_sig_tmout) | \
       ESM_SIG_MASK(esm_sig_pause))
 
-ESM_DEFINE_STATE(on);
-ESM_DEFINE_STATE(off);
-ESM_DEFINE_STATE(paused);
+ESM_DEFINE_H_STATE(active, top);
+ESM_DEFINE_H_STATE(on, active);
+ESM_DEFINE_H_STATE(off, active);
+ESM_DEFINE_H_STATE(paused, top);
+
+static void esm_active_init(esm_t *const esm)
+{
+	(void)esm;
+}
+
+static void esm_active_entry(esm_t *const esm)
+{
+	(void)esm;
+}
+
+static void esm_active_exit(esm_t *const esm)
+{
+	(void)esm;
+}
+
+static void esm_active_handle(esm_t *const esm, esm_signal_t *sig)
+{
+	(void)esm;
+	(void)sig;
+}
+
+static void esm_on_init(esm_t *const esm)
+{
+	(void)esm;
+}
 
 static void esm_on_entry(esm_t *const esm)
 {
@@ -52,6 +79,11 @@ static void esm_on_handle(esm_t *const esm, esm_signal_t *sig)
 		ESM_TRANSITION(&esm_unhandled_sig);
 		break;
 	}
+}
+
+static void esm_off_init(esm_t *const esm)
+{
+	(void)esm;
 }
 
 static void esm_off_entry(esm_t *const esm)
@@ -88,6 +120,11 @@ static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_paused_init(esm_t *const esm)
+{
+	(void)esm;
+}
+
 static void esm_paused_entry(esm_t *const esm)
 {
 	(void)esm;
@@ -115,4 +152,4 @@ static const blink_cfg_t blink_cfg = {
 		.delay = 3000UL
 };
 
-ESM_REGISTER(blink, blink, off, 1);
+ESM_H_REGISTER(blink, blink, active, 1);

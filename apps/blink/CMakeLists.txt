@@ -1,4 +1,5 @@
 set(ESM_TARGET blink)
+set(ESM_HSM ON)
 add_library(${ESM_TARGET}Src STATIC "")
 include("${CMAKE_SOURCE_DIR}/Core.cmake")
 include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
