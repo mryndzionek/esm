@@ -43,8 +43,9 @@ void platform_trace_write(uint8_t const *data, size_t size);
 #define ESM_CRITICAL_EXIT()
 
 #define ESM_DEBUG_init(_p_esm, ...) do { \
-		trace_init(_p_esm->id); \
-		ESM_PRINTF("[%010u] [%s] Initializing\r\n", esm_global_time, _p_esm->name); \
+      trace_init(_p_esm->id); \
+      ESM_PRINTF("[%010u] [%s] Initializing (%s)\r\n", esm_global_time, _p_esm->name, \
+                 _p_esm->curr_state->name); \
 } while (0)
 
 #define ESM_DEBUG_trans(_p_esm, _sig, ...) do { \
