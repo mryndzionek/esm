@@ -44,7 +44,7 @@ static esm_t esm_tick = {
 		.sig_queue = (esm_signal_t[1]){0},
 };
 esm_t * const tick_esm
-__attribute((__section__("esm_section")))
+__attribute((__section__("esm_simple")))
 __attribute((__used__)) = &esm_tick;
 
 static uint8_t data[ESM_TRACE_CHUNK_SIZE];
@@ -87,5 +87,5 @@ static esm_t esm_trace = {
 		.sig_queue = (esm_signal_t[2]){0},
 };
 esm_t * const trace_esm
-__attribute((__section__("esm_section")))
+__attribute((__section__("esm_simple")))
 __attribute((__used__)) = &esm_trace;

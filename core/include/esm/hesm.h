@@ -48,7 +48,7 @@
       .cfg = &_name##_cfg \
       }; \
       esm_t * const _name##_esm \
-      __attribute((__section__("esm_section"))) \
+      __attribute((__section__("esm_complex"))) \
       __attribute((__used__)) = (esm_t *)&_name##_ctx.esm;
 
 typedef struct _hesm hesm_t;

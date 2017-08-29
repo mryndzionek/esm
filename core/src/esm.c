@@ -6,8 +6,13 @@
 
 ESM_THIS_FILE;
 
-extern esm_t * const __start_esm_section;
-extern esm_t * const __stop_esm_section;
+extern esm_t * const __attribute__((weak)) __start_esm_simple;
+extern esm_t * const __attribute__((weak)) __stop_esm_simple;
+
+#ifdef ESM_HSM
+extern esm_t * const __start_esm_complex;
+extern esm_t * const __stop_esm_complex;
+#endif
 
 extern bool esm_is_tracing;
 
@@ -40,17 +45,73 @@ const esm_state_t esm_self_transition = {
 		.name = "esm_internal",
 };
 
+static void simple_process(esm_t * const esm)
+{
+	if(esm->sig_len)
+	{
+		esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
+
+		if(esm->id > esm_id_trace)
+		{
+			ESM_DEBUG(sig->receiver, receive, sig);
+		}
+
+		esm->next_state = esm->curr_state;
+		esm->curr_state->handle(esm, sig);
+
+		ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
+				"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
+				esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
+
+		if(esm->curr_state != esm->next_state)
+		{
+			if(esm->id > esm_id_trace)
+			{
+				ESM_DEBUG(esm, trans, sig);
+			}
+
+			esm->curr_state->exit(esm);
+			esm->next_state->entry(esm);
+			esm->curr_state = esm->next_state;
+		}
+
+		ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
+				"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
+				esm_global_time, esm->name);
+
+		ESM_CRITICAL_ENTER();
+		if(++esm->sig_tail == esm->sig_queue_size)
+		{
+			esm->sig_tail = 0;
+		}
+		--esm->sig_len;
+		if(esm->sig_len == 0)
+		{
+			esm_sig_count--;
+		}
+		ESM_CRITICAL_EXIT();
+	}
+}
+
 void esm_process(void)
 {
 	esm_t * const * sec;
 
 	ESM_INIT;
 
-	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
+	for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
 		esm_t * const esm = *sec;
 		ESM_DEBUG(esm, init);
 		esm->curr_state->entry(esm);
 	}
+
+#ifdef ESM_HSM
+	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
+		esm_t * const esm = *sec;
+		ESM_DEBUG(esm, init);
+		esm->curr_state->entry(esm);
+	}
+#endif
 
 	while(1)
 	{
@@ -58,59 +119,15 @@ void esm_process(void)
 
 		while(esm_sig_count)
 		{
-			for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
-				esm_t * const esm = *sec;
-
-				if(esm->sig_len)
-				{
-					esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
-
-					if(esm->id > esm_id_trace)
-					{
-						ESM_DEBUG(sig->receiver, receive, sig);
-					}
-
-					esm->next_state = esm->curr_state;
-					esm->curr_state->handle(esm, sig);
-
-					ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
-							"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
-							esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
-
-					if(esm->curr_state != esm->next_state)
-					{
-						if(esm->id > esm_id_trace)
-						{
-							ESM_DEBUG(esm, trans, sig);
-						}
-
-						esm->curr_state->exit(esm);
-						esm->next_state->entry(esm);
-						esm->curr_state = esm->next_state;
-					}
-
-					ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
-							"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
-							esm_global_time, esm->name);
-
-					ESM_CRITICAL_ENTER();
-					if(++esm->sig_tail == esm->sig_queue_size)
-					{
-						esm->sig_tail = 0;
-					}
-					--esm->sig_len;
-					if(esm->sig_len == 0)
-					{
-						esm_sig_count--;
-					}
-					ESM_CRITICAL_EXIT();
-				}
-
-				if(!esm_sig_count)
-				{
-					break;
-				}
+			for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
+				simple_process(*sec);
 			}
+
+#ifdef ESM_HSM
+			for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
+				simple_process(*sec);
+			}
+#endif
 		}
 		if(!esm_is_tracing)
 		{
@@ -160,7 +177,7 @@ void esm_broadcast_signal(esm_signal_t *sig)
 {
 	esm_t * const * sec;
 	bool ret = false;
-	for (sec = &__start_esm_section; sec < &__stop_esm_section; ++sec) {
+	for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
 		sig->receiver = *sec;
 		ret |= esm_send_signal(sig);
 	}
