@@ -1,6 +1,6 @@
 enable_language(ASM)
 target_compile_definitions(${ESM_TARGET}Src
-    PRIVATE
+    PUBLIC
         -DUSE_HAL_DRIVER -DSTM32F103xB
 )
 
