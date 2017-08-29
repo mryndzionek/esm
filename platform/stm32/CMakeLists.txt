@@ -1,6 +1,6 @@
 enable_language(ASM)
 target_compile_definitions(${ESM_TARGET}Src
-    PUBLIC
+    PRIVATE
         -DUSE_HAL_DRIVER -DSTM32F103xB
 )
 
@@ -10,7 +10,7 @@ file(GLOB_RECURSE HAL_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/STM32F1xx_HAL_Driver/Src/*.c")
 
 target_sources(${ESM_TARGET}Src
-    PUBLIC
+    PRIVATE
         "${USER_SOURCES}"
         "${HAL_SOURCES}"
         "${CMAKE_CURRENT_LIST_DIR}/src/platform.c"

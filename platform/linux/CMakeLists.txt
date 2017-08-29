@@ -1,5 +1,5 @@
 target_sources(${ESM_TARGET}Src
-    PUBLIC
+    PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/src/main.c"
         "${CMAKE_CURRENT_LIST_DIR}/src/platform.c"
         "${CMAKE_CURRENT_LIST_DIR}/include/platform.h"
@@ -11,7 +11,7 @@ target_include_directories(${ESM_TARGET}Src
 
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/${ESM_PLATFORM}_app.c")
     target_sources(${ESM_TARGET}Src
-        PUBLIC
+        PRIVATE
             "${CMAKE_CURRENT_SOURCE_DIR}/src/${ESM_PLATFORM}_app.c"
     )
 endif()

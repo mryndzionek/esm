@@ -1,5 +1,5 @@
 target_sources(${ESM_TARGET}Src
-    PUBLIC
+    PRIVATE
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm.c"
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm_internal.c"
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm_list.c"
@@ -11,8 +11,13 @@ target_sources(${ESM_TARGET}Src
 
 if(${ESM_HSM})
     target_sources(${ESM_TARGET}Src
-        PUBLIC
+        PRIVATE
             "${CMAKE_CURRENT_LIST_DIR}/core/src/hesm.c"
+    )
+
+    target_compile_definitions(${ESM_TARGET}Src
+        PRIVATE
+            -DESM_HSM
     )
 endif()
 
