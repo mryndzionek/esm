@@ -13,4 +13,4 @@ add_esm_executable(
     src/table.c
     src/smoker.c
 )
-target_link_libraries(smokers ${ESM_TARGET}Src)
+target_link_libraries(${ESM_TARGET} ${ESM_TARGET}Src)

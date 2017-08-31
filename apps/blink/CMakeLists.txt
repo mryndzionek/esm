@@ -13,4 +13,4 @@ add_esm_executable(
     ${ESM_TARGET}
     src/blink.c
 )
-target_link_libraries(blink ${ESM_TARGET}Src)
+target_link_libraries(${ESM_TARGET} ${ESM_TARGET}Src)
