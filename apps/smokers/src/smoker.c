@@ -44,14 +44,14 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 		self->has |= 1UL << sig->params.resource;
 		if((self->has & 0x07) == 0x07)
 		{
-			ESM_TRANSITION(&esm_smoking_state);
+			ESM_TRANSITION(smoking);
 		}
 		break;
 	case esm_sig_done:
-		ESM_TRANSITION(&esm_self_transition);
+		ESM_TRANSITION(self);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -83,10 +83,10 @@ static void esm_smoking_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		ESM_TRANSITION(&esm_idle_state);
+		ESM_TRANSITION(idle);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }

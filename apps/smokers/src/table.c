@@ -53,10 +53,10 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		ESM_TRANSITION(&esm_requesting_state);
+		ESM_TRANSITION(requesting);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -99,10 +99,10 @@ static void esm_requesting_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_done:
-		ESM_TRANSITION(&esm_idle_state);
+		ESM_TRANSITION(idle);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }

@@ -39,9 +39,9 @@
 		__attribute((__section__("esm_simple"))) \
 		__attribute((__used__)) = &_name##_ctx.esm;
 
-#define ESM_TRANSITION(_state) do { \
+#define ESM_TRANSITION(_s) do { \
 		ESM_ASSERT(esm); \
-		esm->next_state = (esm_state_t const * const)_state; \
+		esm->next_state = (esm_state_t const * const)&esm_##_s##_state; \
 } while(0)
 
 #define ESM_SUBSCRIBE(_sig) esm->subscribed |= (1UL << _sig)
@@ -101,8 +101,8 @@ struct _esm {
 	esm_signal_t *sig_queue;
 };
 
-extern const esm_state_t esm_unhandled_sig;
-extern const esm_state_t esm_self_transition;
+extern const esm_state_t esm_unhandled_state;
+extern const esm_state_t esm_self_state;
 
 void esm_process(void);
 void esm_broadcast_signal(esm_signal_t *sig);

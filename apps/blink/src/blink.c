@@ -25,7 +25,7 @@ ESM_LEAF_STATE(paused, top);
 static void esm_active_init(esm_t *const esm)
 {
 	(void)esm;
-	ESM_TRANSITION(&esm_on_state);
+	ESM_TRANSITION(on);
 }
 
 static void esm_active_entry(esm_t *const esm)
@@ -46,10 +46,10 @@ static void esm_active_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_pause:
-		ESM_TRANSITION(&esm_paused_state);
+		ESM_TRANSITION(paused);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -76,10 +76,10 @@ static void esm_on_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		ESM_TRANSITION(&esm_off_state);
+		ESM_TRANSITION(off);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -106,10 +106,10 @@ static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		ESM_TRANSITION(&esm_on_state);
+		ESM_TRANSITION(on);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -129,10 +129,10 @@ static void esm_paused_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_pause:
-		ESM_TRANSITION(&esm_active_state);
+		ESM_TRANSITION(active);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }

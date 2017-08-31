@@ -19,7 +19,7 @@ extern esm_t * const __stop_esm_complex;
 
 extern bool esm_is_tracing;
 
-const esm_state_t esm_unhandled_sig = {
+const esm_state_t esm_unhandled_state = {
 		.entry = (void*)0,
 		.handle = (void*)0,
 		.exit = (void*)0,
@@ -41,11 +41,11 @@ static void self_entry(esm_t *const esm)
 	esm->next_state->entry(esm);
 }
 
-const esm_state_t esm_self_transition = {
+const esm_state_t esm_self_state = {
 		.entry = self_entry,
 		.handle = (void*)0,
 		.exit = (void*)0,
-		.name = "esm_internal",
+		.name = "esm_self",
 };
 
 static void simple_process(esm_t * const esm)
@@ -62,7 +62,7 @@ static void simple_process(esm_t * const esm)
 		esm->next_state = esm->curr_state;
 		esm->curr_state->handle(esm, sig);
 
-		ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_sig,
+		ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_state,
 				"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
 				esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
 
@@ -109,7 +109,7 @@ static void complex_process(esm_t * const esm)
 
 		// if signal is not handled by the current state
 		// check if it's handles by any of the parent states
-		while(esm->next_state == &esm_unhandled_sig)
+		while(esm->next_state == &esm_unhandled_state)
 		{
 			esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
 			ESM_ASSERT_MSG(s->parent != &esm_top_state,

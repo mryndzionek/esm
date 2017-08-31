@@ -113,7 +113,7 @@ static void esm_serving_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 	break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
