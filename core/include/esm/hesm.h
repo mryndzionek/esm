@@ -3,7 +3,7 @@
 
 #include "esm/esm.h"
 
-#define ESM_COMPLEX_STATE(_name, _parent) \
+#define ESM_COMPLEX_STATE(_name, _parent, _depth) \
       static void esm_##_name##_entry(esm_t *const esm); \
       static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
       static void esm_##_name##_exit(esm_t *const esm); \
@@ -16,10 +16,11 @@
                   .name = #_name, \
       }, \
       .parent = &esm_##_parent##_state, \
-      .init = esm_##_name##_init \
+      .init = esm_##_name##_init, \
+      .depth = _depth \
       }
 
-#define ESM_LEAF_STATE(_name, _parent) \
+#define ESM_LEAF_STATE(_name, _parent, _depth) \
       static void esm_##_name##_entry(esm_t *const esm); \
       static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
       static void esm_##_name##_exit(esm_t *const esm); \
@@ -31,7 +32,8 @@
                   .name = #_name, \
       }, \
       .parent = &esm_##_parent##_state, \
-      .init = NULL \
+      .init = NULL, \
+	  .depth = _depth \
       }
 
 #define ESM_COMPLEX_REGISTER(_type, _name, _init, _sigq_size, _depth) \
@@ -64,6 +66,7 @@ struct _hesmstate {
 	esm_state_t super;
 	struct _hesmstate const * const parent;
 	void (*init)(esm_t *const esm);
+	const uint8_t depth;
 };
 
 extern const esm_hstate_t esm_top_state;
