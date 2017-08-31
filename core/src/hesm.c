@@ -6,5 +6,5 @@ const esm_hstate_t esm_top_state = {
 				.handle = (void*)0,
 				.exit = (void*)0,
 				.name = "esm_top",
-		}
+		},
 };

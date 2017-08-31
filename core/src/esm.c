@@ -1,4 +1,7 @@
 #include "esm/esm.h"
+#ifdef ESM_HSM
+#include "esm/hesm.h"
+#endif
 #include "esm/esm_timer.h"
 #include "trace.h"
 
@@ -93,6 +96,97 @@ static void simple_process(esm_t * const esm)
 	}
 }
 
+#ifdef ESM_HSM
+static void complex_process(esm_t * const esm)
+{
+	if(esm->sig_len)
+	{
+		esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
+		esm_state_t const *start = esm->next_state = esm->curr_state;
+		esm_state_t const *end, *pivot;
+
+		start->handle(esm, sig);
+
+		// if signal is not handled by the current state
+		// check if it's handles by any of the parent states
+		while(esm->next_state == &esm_unhandled_sig)
+		{
+			esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
+			ESM_ASSERT_MSG(s->parent != &esm_top_state,
+					"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
+					esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
+
+			esm->next_state = esm->curr_state = &s->parent->super;
+			esm->curr_state->handle(esm, sig);
+		}
+
+		pivot = &((esm_hstate_t const *)esm->curr_state)->parent->super;
+		end = esm->next_state;
+
+		if(esm->id > esm_id_trace)
+		{
+			ESM_DEBUG(esm, trans, sig);
+		}
+
+		esm_hstate_t const *s = (esm_hstate_t const *)start;
+		while(&s->super != pivot)
+		{
+			ESM_PRINTF("[%010u] [%s] Exiting %s\r\n", esm_global_time, esm->name, s->super.name);
+			s->super.exit(esm);
+			s = s->parent;
+		}
+
+		esm_hstate_t const *path[((hesm_t const * const)esm)->depth];
+		uint8_t i = 0;
+		s = (esm_hstate_t const *)end;
+		while(&s->super != pivot)
+		{
+			path[i++] = s;
+			ESM_ASSERT(i < ((hesm_t const * const)esm)->depth);
+			s = s->parent;
+		}
+
+		do
+		{
+			s = path[--i];
+			ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, s->super.name);
+			s->super.entry(esm);
+		}
+		while(i);
+
+		esm->curr_state = end;
+
+		s = (esm_hstate_t const *)esm->curr_state;
+		while(s->init)
+		{
+			esm->next_state = esm->curr_state;
+
+			ESM_PRINTF("[%010u] [%s] Initial %s\r\n", esm_global_time, esm->name, s->super.name);
+
+			s->init(esm);
+			ESM_ASSERT(esm->curr_state != esm->next_state);
+
+			ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, esm->next_state->name);
+			esm->next_state->entry(esm);
+			esm->curr_state = esm->next_state;
+			s = (esm_hstate_t * const)esm->curr_state;
+		}
+
+		ESM_CRITICAL_ENTER();
+		if(++esm->sig_tail == esm->sig_queue_size)
+		{
+			esm->sig_tail = 0;
+		}
+		--esm->sig_len;
+		if(esm->sig_len == 0)
+		{
+			esm_sig_count--;
+		}
+		ESM_CRITICAL_EXIT();
+	}
+}
+#endif
+
 void esm_process(void)
 {
 	esm_t * const * sec;
@@ -108,8 +202,18 @@ void esm_process(void)
 #ifdef ESM_HSM
 	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
 		esm_t * const esm = *sec;
-		ESM_DEBUG(esm, init);
-		esm->curr_state->entry(esm);
+		ESM_DEBUG((*sec), init);
+		esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
+
+		while(s->init)
+		{
+			esm->next_state = esm->curr_state;
+			s->init(esm);
+			ESM_ASSERT(esm->curr_state != esm->next_state);
+			esm->next_state->entry(esm);
+			esm->curr_state = esm->next_state;
+			s = (esm_hstate_t * const)esm->curr_state;
+		}
 	}
 #endif
 
@@ -119,13 +223,13 @@ void esm_process(void)
 
 		while(esm_sig_count)
 		{
-			for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
+			for (sec = &__start_esm_simple; esm_sig_count && (sec < &__stop_esm_simple); ++sec) {
 				simple_process(*sec);
 			}
 
 #ifdef ESM_HSM
-			for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
-				simple_process(*sec);
+			for (sec = &__start_esm_complex; esm_sig_count && (sec < &__stop_esm_complex); ++sec) {
+				complex_process(*sec);
 			}
 #endif
 		}
