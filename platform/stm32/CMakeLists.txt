@@ -1,26 +1,33 @@
 enable_language(ASM)
+
+if(NOT ESM_BOARD)
+    message( FATAL_ERROR "ESM_BOARD not defined" )
+endif()
+
 target_compile_definitions(${ESM_TARGET}Src
     PUBLIC
         -DUSE_HAL_DRIVER -DSTM32F103xB
 )
 
-file(GLOB_RECURSE USER_SOURCES
-    "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Src/*.c")
+file(GLOB_RECURSE BOARD_SOURCES
+    "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/Src/*.c"
+    "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/*.s"
+)
+
 file(GLOB_RECURSE HAL_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/STM32F1xx_HAL_Driver/Src/*.c")
 
 target_sources(${ESM_TARGET}Src
     PUBLIC
-        "${USER_SOURCES}"
+        "${BOARD_SOURCES}"
         "${HAL_SOURCES}"
         "${CMAKE_CURRENT_LIST_DIR}/src/platform.c"
         "${CMAKE_CURRENT_LIST_DIR}/include/platform.h"
-        "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/startup_stm32f103xb.s"
 )
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"
-        "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Inc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/Inc"
         "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/STM32F1xx_HAL_Driver/Inc"
         "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy"
         "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/CMSIS/Include"
