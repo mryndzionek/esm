@@ -9,6 +9,13 @@ target_sources(${ESM_TARGET}Src
         "${CMAKE_CURRENT_LIST_DIR}/trace/src/rb.c"
 )
 
+if(${ESM_HSM})
+    target_sources(${ESM_TARGET}Src
+        PUBLIC
+            "${CMAKE_CURRENT_LIST_DIR}/core/src/hesm.c"
+    )
+endif()
+
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/core/include"
