@@ -44,10 +44,10 @@ static void esm_thinking_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		ESM_TRANSITION(&esm_hungry_state);
+		ESM_TRANSITION(hungry);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -74,10 +74,10 @@ static void esm_hungry_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_eat:
-		ESM_TRANSITION(&esm_eating_state);
+		ESM_TRANSITION(eating);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
@@ -111,10 +111,10 @@ static void esm_eating_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		ESM_TRANSITION(&esm_thinking_state);
+		ESM_TRANSITION(thinking);
 		break;
 	default:
-		ESM_TRANSITION(&esm_unhandled_sig);
+		ESM_TRANSITION(unhandled);
 		break;
 	}
 }
