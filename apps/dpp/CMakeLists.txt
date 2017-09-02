@@ -13,4 +13,4 @@ add_esm_executable(
     src/philo.c
     src/table.c
 )
-target_link_libraries(dpp ${ESM_TARGET}Src)
+target_link_libraries(${ESM_TARGET} ${ESM_TARGET}Src)
