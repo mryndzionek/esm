@@ -7,7 +7,7 @@ void app_process(char key)
 	case ' ':
 	{
 		esm_signal_t sig = {
-				.type = esm_sig_pause,
+				.type = esm_sig_button,
 				.sender = NULL,
 				.receiver = blink_esm
 		};

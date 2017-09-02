@@ -15,7 +15,7 @@ typedef struct {
 
 #define ESM_INIT_SUB \
       (ESM_SIG_MASK(esm_sig_tmout) | \
-            ESM_SIG_MASK(esm_sig_pause))
+            ESM_SIG_MASK(esm_sig_button))
 
 ESM_COMPLEX_STATE(active, top);
 ESM_LEAF_STATE(on, active);
@@ -45,7 +45,7 @@ static void esm_active_handle(esm_t *const esm, esm_signal_t *sig)
 
 	switch(sig->type)
 	{
-	case esm_sig_pause:
+	case esm_sig_button:
 		ESM_TRANSITION(paused);
 		break;
 	default:
@@ -128,7 +128,7 @@ static void esm_paused_handle(esm_t *const esm, esm_signal_t *sig)
 {
 	switch(sig->type)
 	{
-	case esm_sig_pause:
+	case esm_sig_button:
 		ESM_TRANSITION(active);
 		break;
 	default:
