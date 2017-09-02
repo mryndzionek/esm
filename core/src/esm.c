@@ -38,6 +38,7 @@ static uint8_t esm_sig_count;
 static void self_entry(esm_t *const esm)
 {
 	esm->next_state = esm->curr_state;
+	ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, esm->next_state->name);
 	esm->next_state->entry(esm);
 }
 
@@ -102,10 +103,11 @@ static void complex_process(esm_t * const esm)
 	if(esm->sig_len)
 	{
 		esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
-		esm_state_t const *start = esm->next_state = esm->curr_state;
-		esm_state_t const *end, *pivot;
+		esm_hstate_t const *start = (esm_hstate_t const *)esm->curr_state;
+		esm_hstate_t const *end;
 
-		start->handle(esm, sig);
+		esm->next_state = esm->curr_state;
+		start->super.handle(esm, sig);
 
 		// if signal is not handled by the current state
 		// check if it's handles by any of the parent states
@@ -120,56 +122,69 @@ static void complex_process(esm_t * const esm)
 			esm->curr_state->handle(esm, sig);
 		}
 
-		pivot = &((esm_hstate_t const *)esm->curr_state)->parent->super;
-		end = esm->next_state;
-
-		if(esm->id > esm_id_trace)
+		if(esm->next_state == &esm_self_state)
 		{
-			ESM_DEBUG(esm, trans, sig);
-		}
-
-		esm_hstate_t const *s = (esm_hstate_t const *)start;
-		while(&s->super != pivot)
-		{
-			ESM_PRINTF("[%010u] [%s] Exiting %s\r\n", esm_global_time, esm->name, s->super.name);
-			s->super.exit(esm);
-			s = s->parent;
-		}
-
-		esm_hstate_t const *path[((hesm_t const * const)esm)->depth];
-		uint8_t i = 0;
-		s = (esm_hstate_t const *)end;
-		while(&s->super != pivot)
-		{
-			path[i++] = s;
-			ESM_ASSERT(i < ((hesm_t const * const)esm)->depth);
-			s = s->parent;
-		}
-
-		do
-		{
-			s = path[--i];
-			ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, s->super.name);
-			s->super.entry(esm);
-		}
-		while(i);
-
-		esm->curr_state = end;
-
-		s = (esm_hstate_t const *)esm->curr_state;
-		while(s->init)
-		{
-			esm->next_state = esm->curr_state;
-
-			ESM_PRINTF("[%010u] [%s] Initial %s\r\n", esm_global_time, esm->name, s->super.name);
-
-			s->init(esm);
-			ESM_ASSERT(esm->curr_state != esm->next_state);
-
-			ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, esm->next_state->name);
 			esm->next_state->entry(esm);
-			esm->curr_state = esm->next_state;
-			s = (esm_hstate_t * const)esm->curr_state;
+		}
+
+		if(esm->curr_state != esm->next_state)
+		{
+			end = (esm_hstate_t const *)esm->next_state;
+
+			if(esm->id > esm_id_trace)
+			{
+				ESM_DEBUG(esm, trans, sig);
+			}
+
+			{
+				uint8_t depth = start->depth > end->depth ? start->depth : end->depth;
+				uint8_t i = 0;
+				esm_hstate_t const *path[((hesm_t const * const)esm)->depth];
+
+				while(end != start)
+				{
+					if(start->depth == depth)
+					{
+						ESM_PRINTF("[%010u] [%s] Exiting %s\r\n", esm_global_time, esm->name, start->super.name);
+						start->super.exit(esm);
+						start = start->parent;
+					}
+
+					if(end->depth == depth)
+					{
+						path[i++] = end;
+						end = end->parent;
+					}
+					depth--;
+				}
+
+				while(i)
+				{
+					start = path[--i];
+					ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, start->super.name);
+					start->super.entry(esm);
+				}
+			}
+
+			esm->curr_state = &start->super;
+			while(start->init)
+			{
+				esm->next_state = esm->curr_state;
+
+				ESM_PRINTF("[%010u] [%s] Initial %s\r\n", esm_global_time, esm->name, start->super.name);
+
+				start->init(esm);
+				ESM_ASSERT(esm->curr_state != esm->next_state);
+
+				ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, esm->next_state->name);
+				esm->next_state->entry(esm);
+				esm->curr_state = esm->next_state;
+				start = (esm_hstate_t * const)esm->curr_state;
+			}
+		}
+		else
+		{
+			esm->curr_state = &start->super;
 		}
 
 		ESM_CRITICAL_ENTER();
@@ -203,6 +218,7 @@ void esm_process(void)
 	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
 		esm_t * const esm = *sec;
 		ESM_DEBUG((*sec), init);
+		esm->curr_state->entry(esm);
 		esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
 
 		while(s->init)

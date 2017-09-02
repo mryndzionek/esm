@@ -17,10 +17,11 @@ typedef struct {
       (ESM_SIG_MASK(esm_sig_tmout) | \
             ESM_SIG_MASK(esm_sig_button))
 
-ESM_COMPLEX_STATE(active, top);
-ESM_LEAF_STATE(on, active);
-ESM_LEAF_STATE(off, active);
-ESM_LEAF_STATE(paused, top);
+ESM_COMPLEX_STATE(active, top, 1);
+ESM_LEAF_STATE(paused, top, 1);
+
+ESM_LEAF_STATE(on, active, 2);
+ESM_LEAF_STATE(off, active, 2);
 
 static void esm_active_init(esm_t *const esm)
 {
@@ -141,4 +142,4 @@ static const blink_cfg_t blink_cfg = {
 		.delay = 3000UL
 };
 
-ESM_COMPLEX_REGISTER(blink, blink, active, 1, 3);
+ESM_COMPLEX_REGISTER(blink, blink, active, 1, 2);
