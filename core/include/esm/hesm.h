@@ -3,7 +3,7 @@
 
 #include "esm/esm.h"
 
-#define ESM_DEFINE_H_STATE(_name, _parent) \
+#define ESM_COMPLEX_STATE(_name, _parent) \
       static void esm_##_name##_entry(esm_t *const esm); \
       static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
       static void esm_##_name##_exit(esm_t *const esm); \
@@ -19,7 +19,21 @@
       .init = esm_##_name##_init \
       }
 
-#define ESM_H_REGISTER(_type, _name, _init, _sigq_size) \
+#define ESM_LEAF_STATE(_name, _parent) \
+      static void esm_##_name##_entry(esm_t *const esm); \
+      static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
+      static void esm_##_name##_exit(esm_t *const esm); \
+      static const esm_lstate_t esm_##_name##_state = { \
+            .super = { \
+                  .entry = esm_##_name##_entry, \
+                  .handle = esm_##_name##_handle, \
+                  .exit = esm_##_name##_exit, \
+                  .name = #_name, \
+      }, \
+      .parent = &esm_##_parent##_state, \
+      }
+
+#define ESM_COMPLEX_REGISTER(_type, _name, _init, _sigq_size) \
       static _type##_esm_t _name##_ctx = { \
             .esm = { \
                   .super = { \
@@ -45,6 +59,11 @@ struct _hesmstate {
 	struct _hesmstate const * const parent;
 	void (*init)(esm_t *const esm);
 };
+
+typedef struct {
+	esm_state_t super;
+	struct _hesmstate const * const parent;
+} esm_lstate_t;
 
 struct _hesm {
 	esm_t super;
