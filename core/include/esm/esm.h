@@ -36,7 +36,7 @@
 		.cfg = &_name##_cfg \
 		}; \
 		esm_t * const _name##_esm \
-		__attribute((__section__("esm_section"))) \
+		__attribute((__section__("esm_simple"))) \
 		__attribute((__used__)) = &_name##_ctx.esm;
 
 #define ESM_TRANSITION(_state) do { \
