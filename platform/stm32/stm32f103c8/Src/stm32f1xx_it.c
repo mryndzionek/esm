@@ -173,12 +173,7 @@ void SysTick_Handler(void)
   HAL_IncTick();
   HAL_SYSTICK_IRQHandler();
   /* USER CODE BEGIN SysTick_IRQn 1 */
-  esm_signal_t sig = {
-		  .type = esm_sig_alarm,
-		  .sender = (void*)0,
-		  .receiver = tick_esm,
-  };
-  esm_send_signal(&sig);
+
   /* USER CODE END SysTick_IRQn 1 */
 }
 
