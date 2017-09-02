@@ -41,7 +41,6 @@
 
 /* USER CODE BEGIN Includes */
 #include "esm/esm.h"
-
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -101,7 +100,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    esm_process();
+	  esm_process();
   /* USER CODE END WHILE */
 
   /* USER CODE BEGIN 3 */
@@ -218,8 +217,6 @@ static void MX_GPIO_Init(void)
 void _Error_Handler(char * file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
-	(void)file;
-	(void)line;
   /* User can add his own implementation to report the HAL error return state */
   while(1) 
   {
