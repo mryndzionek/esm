@@ -36,7 +36,6 @@ static void debouncer_arm(void)
 
 static const debouncer_cfg_t debouncer_cfg = {
 		.period = 30UL,
-		.state = 1,
 		.handle = debouncer_handle,
 		.arm = debouncer_arm
 };

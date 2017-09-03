@@ -6,7 +6,6 @@
 
 typedef struct {
 	uint8_t period;
-	uint8_t state;
 	void (*handle)(void);
 	void (*arm)(void);
 } debouncer_cfg_t;

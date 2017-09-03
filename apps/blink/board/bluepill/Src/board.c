@@ -13,6 +13,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 				.receiver = debouncer_esm
 		};
 		esm_send_signal(&sig);
+		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
 	}
 }
 
@@ -36,7 +37,6 @@ static void debouncer_arm(void)
 
 static const debouncer_cfg_t debouncer_cfg = {
 		.period = 30UL,
-		.state = 1,
 		.handle = debouncer_handle,
 		.arm = debouncer_arm
 };
