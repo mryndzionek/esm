@@ -36,12 +36,13 @@
 	  .depth = _depth \
       }
 
-#define ESM_COMPLEX_REGISTER(_type, _name, _sigq_size, _depth) \
+#define ESM_COMPLEX_REGISTER(_type, _name, _group, _sigq_size, _depth) \
       static _type##_esm_t _name##_ctx = { \
             .esm = { \
                   .super = { \
                         .name = #_name, \
                         .id = esm_id_##_name, \
+                        .group = esm_group_##_group, \
 						.init = esm_##_type##_init, \
                         .sig_queue_size = _sigq_size, \
                         .sig_queue = (esm_signal_t[_sigq_size]){0}, \
