@@ -16,6 +16,7 @@ configure_file (
 
 if(NOT ESM_PLATFORM)
   set(ESM_PLATFORM linux)
+  set(ESM_BOARD native)
 endif()
 
 add_subdirectory(apps/blink)
