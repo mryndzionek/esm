@@ -19,10 +19,6 @@ typedef struct {
 #define FLASH_TOUT_MS	(1000UL)
 #define FLASH_COUNT		(5UL)
 
-#define ESM_INIT_SUB \
-      (ESM_SIG_MASK(esm_sig_tmout) | \
-            ESM_SIG_MASK(esm_sig_button))
-
 ESM_COMPLEX_STATE(operational, top, 1);
 
 ESM_COMPLEX_STATE(pedestrians, operational, 2);

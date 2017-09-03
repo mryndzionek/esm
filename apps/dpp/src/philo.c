@@ -13,11 +13,6 @@ typedef struct {
 	philo_cfg_t const *const cfg;
 } philo_esm_t;
 
-#define ESM_INIT_SUB ( \
-		ESM_SIG_MASK(esm_sig_tmout) | \
-		ESM_SIG_MASK(esm_sig_eat) \
-)
-
 ESM_DEFINE_STATE(thinking);
 ESM_DEFINE_STATE(hungry);
 ESM_DEFINE_STATE(eating);

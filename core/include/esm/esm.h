@@ -28,7 +28,6 @@
 				.esm = { \
 						.name = #_name, \
 						.id = esm_id_##_name, \
-						.subscribed = ESM_INIT_SUB, \
 						.curr_state = &esm_##_init##_state, \
 						.sig_queue_size = _sigq_size, \
 						.sig_queue = (esm_signal_t[_sigq_size]){0}, \
@@ -43,9 +42,6 @@
 		ESM_ASSERT(esm); \
 		esm->next_state = (esm_state_t const * const)&esm_##_s##_state; \
 } while(0)
-
-#define ESM_SUBSCRIBE(_sig) esm->subscribed |= (1UL << _sig)
-#define ESM_UNSUBSCRIBE(_sig) esm->subscribed &= ~(1UL << _sig)
 
 #define ESM_SIG_MASK(_sig) (1UL << _sig)
 
@@ -91,7 +87,6 @@ typedef struct {
 struct _esm {
 	char const *const name;
 	const uint8_t id;
-	uint32_t subscribed;
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;
 	const uint8_t sig_queue_size;
