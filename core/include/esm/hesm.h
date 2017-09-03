@@ -42,7 +42,6 @@
                   .super = { \
                         .name = #_name, \
                         .id = esm_id_##_name, \
-                        .subscribed = ESM_INIT_SUB, \
                         .curr_state = (esm_state_t const * const)&esm_##_init##_state, \
                         .sig_queue_size = _sigq_size, \
                         .sig_queue = (esm_signal_t[_sigq_size]){0}, \

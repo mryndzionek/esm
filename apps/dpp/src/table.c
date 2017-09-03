@@ -22,12 +22,6 @@ typedef struct {
 	table_cfg_t const *const cfg;
 } table_esm_t;
 
-#define ESM_INIT_SUB ( \
-		ESM_SIG_MASK(esm_sig_tmout) | \
-		ESM_SIG_MASK(esm_sig_hungry) | \
-		ESM_SIG_MASK(esm_sig_done) \
-)
-
 ESM_DEFINE_STATE(serving);
 
 static void esm_serving_entry(esm_t *const esm)

@@ -268,26 +268,23 @@ bool esm_send_signal(esm_signal_t *sig)
 	bool ret = false;
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
-	if(sig->receiver->subscribed & (1UL << sig->type))
+	if(sig->receiver->sig_len)
 	{
-		if(sig->receiver->sig_len)
-		{
-			ESM_ASSERT_MSG(sig->receiver->sig_head != sig->receiver->sig_tail,
-					"Event queue for %s overrun\r\n", sig->receiver->name);
-		}
-
-		sig->receiver->sig_queue[sig->receiver->sig_head++] = *sig;
-		if(sig->receiver->sig_head == sig->receiver->sig_queue_size)
-		{
-			sig->receiver->sig_head = 0;
-		}
-		if(!sig->receiver->sig_len)
-		{
-			esm_sig_count++;
-		}
-		++sig->receiver->sig_len;
-		ret = true;
+		ESM_ASSERT_MSG(sig->receiver->sig_head != sig->receiver->sig_tail,
+				"Event queue for %s overrun\r\n", sig->receiver->name);
 	}
+
+	sig->receiver->sig_queue[sig->receiver->sig_head++] = *sig;
+	if(sig->receiver->sig_head == sig->receiver->sig_queue_size)
+	{
+		sig->receiver->sig_head = 0;
+	}
+	if(!sig->receiver->sig_len)
+	{
+		esm_sig_count++;
+	}
+	++sig->receiver->sig_len;
+	ret = true;
 	ESM_CRITICAL_EXIT();
 
 	return ret;
