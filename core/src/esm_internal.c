@@ -74,7 +74,7 @@ const esm_state_t trace = {
 		.entry = empty_en_ex,
 		.handle = trace_handle,
 		.exit = empty_en_ex,
-		.name = "tick",
+		.name = "trace",
 };
 
 static esm_t esm_trace = {
