@@ -5,16 +5,14 @@ Introduction
 ------------
 This repository gathers all the ideas and implementation tricks I had around lightweight, efficient
 statecharts implementation in C. Inspired by [QP framework](https://state-machine.com/doc/concepts).
-Provided are three examples: simple blink state machine transitioning between two states,
-classic dining philosophers problem and cigarette smokers problem.
+Provided are four examples: simple blink state machine transitioning between two states,
+classic dining philosophers problem, cigarette smokers problem and pelican crossing simulation.
 
 
 TODO
 ----
 
- - adding hierarchical state machine support
- - add proper platform (BSP) separation
- - change to more flexible build system
+ - add more examples
 
 License
 -------
