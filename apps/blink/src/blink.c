@@ -1,5 +1,6 @@
 #include "esm/hesm.h"
 #include "esm/esm_timer.h"
+#include "board.h"
 
 ESM_THIS_FILE;
 
@@ -61,6 +62,8 @@ static void esm_on_entry(esm_t *const esm)
 	};
 	esm_timer_add(&self->timer,
 			self->cfg->delay, &sig);
+
+	BOARD_LED_ON();
 }
 
 static void esm_on_exit(esm_t *const esm)
@@ -91,6 +94,7 @@ static void esm_off_entry(esm_t *const esm)
 	};
 	esm_timer_add(&self->timer,
 			self->cfg->delay, &sig);
+	BOARD_LED_OFF();
 }
 
 static void esm_off_exit(esm_t *const esm)
@@ -114,6 +118,7 @@ static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)
 static void esm_paused_entry(esm_t *const esm)
 {
 	(void)esm;
+	BOARD_LED_OFF();
 }
 
 static void esm_paused_exit(esm_t *const esm)
@@ -140,7 +145,7 @@ static void esm_blink_init(esm_t *const esm)
 }
 
 static const blink_cfg_t blink_cfg = {
-		.delay = 3000UL
+		.delay = 300UL
 };
 
 ESM_COMPLEX_REGISTER(blink, blink, 1, 2);

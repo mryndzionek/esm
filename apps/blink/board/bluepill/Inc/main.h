@@ -48,6 +48,11 @@
 
 #define IDLE_LED_Pin GPIO_PIN_13
 #define IDLE_LED_GPIO_Port GPIOC
+#define BLINK_LED_Pin GPIO_PIN_6
+#define BLINK_LED_GPIO_Port GPIOB
+#define BLINK_BUTTON_Pin GPIO_PIN_7
+#define BLINK_BUTTON_GPIO_Port GPIOB
+#define BLINK_BUTTON_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 
