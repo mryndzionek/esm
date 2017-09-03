@@ -1,0 +1,22 @@
+#ifndef APPS_PELICAN_BOARD_NATIVE_INC_BOARD_H_
+#define APPS_PELICAN_BOARD_NATIVE_INC_BOARD_H_
+
+#define BOARD_CARS_RED() do { \
+      ESM_PRINTF("BOARD_CARS_RED\r\n"); \
+} while(0)
+
+#define BOARD_CARS_GREEN() do { \
+      ESM_PRINTF("BOARD_CARS_GREEN\r\n"); \
+} while(0)
+
+#define BOARD_CARS_YELLOW() do { \
+      ESM_PRINTF("BOARD_CARS_YELLOW\r\n"); \
+} while(0)
+
+#define BOARD_PEDS_DONT_WALK() \
+      ESM_PRINTF("BOARD_PEDS_DONT_WALK\r\n");
+
+#define BOARD_PEDS_WALK() \
+      ESM_PRINTF("BOARD_PEDS_WALK\r\n");
+
+#endif /* APPS_PELICAN_BOARD_NATIVE_INC_BOARD_H_ */

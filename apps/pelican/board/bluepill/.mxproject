@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=/home/mariusz/projects/esm/apps/blink/board/bluepill/Inc
+HeaderPath=/home/mariusz/projects/esm/apps/pelican/board/bluepill/Inc
 HeaderFiles=stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=/home/mariusz/projects/esm/apps/blink/board/bluepill/Src
+SourcePath=/home/mariusz/projects/esm/apps/pelican/board/bluepill/Src
 SourceFiles=stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 
 [PreviousLibFiles]
