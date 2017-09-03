@@ -85,6 +85,11 @@ static void esm_smoking_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_smoker_init(esm_t *const esm)
+{
+	ESM_TRANSITION(idle);
+}
+
 static const smoker_cfg_t tobacco_smoker_cfg = {
 		.resource = tobacco
 };
@@ -97,6 +102,6 @@ static const smoker_cfg_t matches_smoker_cfg = {
 		.resource = matches
 };
 
-ESM_REGISTER(smoker, tobacco_smoker, idle, 2);
-ESM_REGISTER(smoker, paper_smoker, idle, 2);
-ESM_REGISTER(smoker, matches_smoker, idle, 2);
+ESM_REGISTER(smoker, tobacco_smoker, 2);
+ESM_REGISTER(smoker, paper_smoker, 2);
+ESM_REGISTER(smoker, matches_smoker, 2);

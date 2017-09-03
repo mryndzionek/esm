@@ -134,8 +134,13 @@ static void esm_paused_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_blink_init(esm_t *const esm)
+{
+	ESM_TRANSITION(active);
+}
+
 static const blink_cfg_t blink_cfg = {
 		.delay = 3000UL
 };
 
-ESM_COMPLEX_REGISTER(blink, blink, active, 1, 2);
+ESM_COMPLEX_REGISTER(blink, blink, 1, 2);
