@@ -38,7 +38,7 @@ static uint8_t esm_sig_count;
 static void self_entry(esm_t *const esm)
 {
 	esm->next_state = esm->curr_state;
-	ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, esm->next_state->name);
+	ESM_TRACE(esm, enter, esm->next_state->name);
 	esm->next_state->entry(esm);
 }
 
@@ -57,7 +57,7 @@ static void simple_process(esm_t * const esm)
 
 		if(esm->id > esm_id_trace)
 		{
-			ESM_DEBUG(sig->receiver, receive, sig);
+			ESM_TRACE(sig->receiver, receive, sig);
 		}
 
 		esm->next_state = esm->curr_state;
@@ -71,10 +71,13 @@ static void simple_process(esm_t * const esm)
 		{
 			if(esm->id > esm_id_trace)
 			{
-				ESM_DEBUG(esm, trans, sig);
+				ESM_TRACE(esm, trans, sig);
 			}
 
+			ESM_TRACE(esm, exit, esm->curr_state->name);
 			esm->curr_state->exit(esm);
+
+			ESM_TRACE(esm, enter, esm->next_state->name);
 			esm->next_state->entry(esm);
 			esm->curr_state = esm->next_state;
 		}
@@ -133,7 +136,7 @@ static void complex_process(esm_t * const esm)
 
 			if(esm->id > esm_id_trace)
 			{
-				ESM_DEBUG(esm, trans, sig);
+				ESM_TRACE(esm, trans, sig);
 			}
 
 			{
@@ -145,7 +148,7 @@ static void complex_process(esm_t * const esm)
 				{
 					if(start->depth == depth)
 					{
-						ESM_PRINTF("[%010u] [%s] Exiting %s\r\n", esm_global_time, esm->name, start->super.name);
+						ESM_TRACE(esm, exit, start->super.name);
 						start->super.exit(esm);
 						start = start->parent;
 					}
@@ -161,7 +164,7 @@ static void complex_process(esm_t * const esm)
 				while(i)
 				{
 					start = path[--i];
-					ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, start->super.name);
+					ESM_TRACE(esm, enter, start->super.name);
 					start->super.entry(esm);
 				}
 			}
@@ -176,7 +179,7 @@ static void complex_process(esm_t * const esm)
 				start->init(esm);
 				ESM_ASSERT(esm->curr_state != esm->next_state);
 
-				ESM_PRINTF("[%010u] [%s] Entering %s\r\n", esm_global_time, esm->name, esm->next_state->name);
+				ESM_TRACE(esm, enter, esm->next_state->name);
 				esm->next_state->entry(esm);
 				esm->curr_state = esm->next_state;
 				start = (esm_hstate_t * const)esm->curr_state;
@@ -216,7 +219,7 @@ void esm_process(void)
 			ESM_ASSERT(esm->next_state);
 			esm->curr_state = esm->next_state;
 		}
-		ESM_DEBUG(esm, init);
+		ESM_TRACE(esm, init);
 		esm->curr_state->entry(esm);
 	}
 
@@ -229,7 +232,7 @@ void esm_process(void)
 			ESM_ASSERT(esm->next_state);
 			esm->curr_state = esm->next_state;
 		}
-		ESM_DEBUG((*sec), init);
+		ESM_TRACE((*sec), init);
 		esm->curr_state->entry(esm);
 		esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
 
