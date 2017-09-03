@@ -372,7 +372,13 @@ static void esm_flash_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_pelican_init(esm_t *const esm)
+{
+	ESM_TRANSITION(operational);
+}
+
+
 static const pelican_cfg_t pelican_cfg = {
 };
 
-ESM_COMPLEX_REGISTER(pelican, pelican, operational, 1, 5);
+ESM_COMPLEX_REGISTER(pelican, pelican, 1, 5);

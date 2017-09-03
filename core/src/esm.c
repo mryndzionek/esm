@@ -210,6 +210,12 @@ void esm_process(void)
 
 	for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
 		esm_t * const esm = *sec;
+		if(esm->init)
+		{
+			esm->init(esm);
+			ESM_ASSERT(esm->next_state);
+			esm->curr_state = esm->next_state;
+		}
 		ESM_DEBUG(esm, init);
 		esm->curr_state->entry(esm);
 	}
@@ -217,6 +223,12 @@ void esm_process(void)
 #ifdef ESM_HSM
 	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
 		esm_t * const esm = *sec;
+		if(esm->init)
+		{
+			esm->init(esm);
+			ESM_ASSERT(esm->next_state);
+			esm->curr_state = esm->next_state;
+		}
 		ESM_DEBUG((*sec), init);
 		esm->curr_state->entry(esm);
 		esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;

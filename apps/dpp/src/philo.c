@@ -114,6 +114,11 @@ static void esm_eating_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_philo_init(esm_t *const esm)
+{
+	ESM_TRANSITION(thinking);
+}
+
 static const philo_cfg_t philo_1_cfg = {
 		.num = 0
 };
@@ -134,8 +139,8 @@ static const philo_cfg_t philo_5_cfg = {
 		.num = 4
 };
 
-ESM_REGISTER(philo, philo_1, thinking, 1);
-ESM_REGISTER(philo, philo_2, thinking, 1);
-ESM_REGISTER(philo, philo_3, thinking, 1);
-ESM_REGISTER(philo, philo_4, thinking, 1);
-ESM_REGISTER(philo, philo_5, thinking, 1);
+ESM_REGISTER(philo, philo_1, 1);
+ESM_REGISTER(philo, philo_2, 1);
+ESM_REGISTER(philo, philo_3, 1);
+ESM_REGISTER(philo, philo_4, 1);
+ESM_REGISTER(philo, philo_5, 1);

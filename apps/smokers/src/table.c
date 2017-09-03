@@ -102,7 +102,12 @@ static void esm_requesting_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_table_init(esm_t *const esm)
+{
+	ESM_TRANSITION(idle);
+}
+
 static const table_cfg_t table_cfg = {
 };
 
-ESM_REGISTER(table, table, idle, N_SMOKERS);
+ESM_REGISTER(table, table, N_SMOKERS);

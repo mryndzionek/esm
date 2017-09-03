@@ -112,7 +112,12 @@ static void esm_serving_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
+static void esm_table_init(esm_t *const esm)
+{
+	ESM_TRANSITION(serving);
+}
+
 static const table_cfg_t table_cfg = {
 };
 
-ESM_REGISTER(table, table, serving, N_PHILO);
+ESM_REGISTER(table, table, N_PHILO);
