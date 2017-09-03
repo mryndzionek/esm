@@ -197,11 +197,30 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(BLINK_LED_GPIO_Port, BLINK_LED_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : IDLE_LED_Pin */
   GPIO_InitStruct.Pin = IDLE_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(IDLE_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BLINK_LED_Pin */
+  GPIO_InitStruct.Pin = BLINK_LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(BLINK_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BLINK_BUTTON_Pin */
+  GPIO_InitStruct.Pin = BLINK_BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BLINK_BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
