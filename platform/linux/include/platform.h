@@ -42,13 +42,23 @@ void platform_trace_write(uint8_t const *data, size_t size);
 #define ESM_CRITICAL_ENTER()
 #define ESM_CRITICAL_EXIT()
 
-#define ESM_DEBUG_init(_p_esm, ...) do { \
+#define ESM_TRACE_init(_p_esm, ...) do { \
 		trace_init(_p_esm->id); \
 		ESM_PRINTF("[%010u] [%s] Initializing (%s)\r\n", esm_global_time, _p_esm->name, \
 				_p_esm->curr_state->name); \
 } while (0)
 
-#define ESM_DEBUG_trans(_p_esm, _sig, ...) do { \
+#define ESM_TRACE_enter(_p_esm, _name, ...) do { \
+		ESM_PRINTF("[%010u] [%s] Entering (%s)\r\n", esm_global_time, _p_esm->name, \
+				_name); \
+} while (0)
+
+#define ESM_TRACE_exit(_p_esm, _name, ...) do { \
+		ESM_PRINTF("[%010u] [%s] Exiting (%s)\r\n", esm_global_time, _p_esm->name, \
+				_name); \
+} while (0)
+
+#define ESM_TRACE_trans(_p_esm, _sig, ...) do { \
 		trace_trans(_p_esm->id, _sig->type, _p_esm->curr_state->name,  _p_esm->next_state->name); \
 		ESM_PRINTF("[%010u] [%s] Transition %s --%s--> %s\r\n", \
 				esm_global_time, \
@@ -58,14 +68,14 @@ void platform_trace_write(uint8_t const *data, size_t size);
 				_p_esm->next_state->name); \
 } while (0)
 
-#define ESM_DEBUG_receive(_p_esm, _sig, ...) do { \
+#define ESM_TRACE_receive(_p_esm, _sig, ...) do { \
 		trace_receive(_p_esm->id, _sig->type, _p_esm->curr_state->name); \
 		ESM_PRINTF("[%010u] [%s] Receiving signal '%s' (%s)\r\n", esm_global_time, \
 				_p_esm->name, esm_sig_name[_sig->type], _p_esm->curr_state->name); \
 } while (0)
 
-#define ESM_DEBUG(_p_esm, _action, ...) \
-		ESM_DEBUG_##_action(_p_esm, __VA_ARGS__)
+#define ESM_TRACE(_p_esm, _action, ...) \
+		ESM_TRACE_##_action(_p_esm, __VA_ARGS__)
 
 #define ESM_IDLE() do { \
 		} while(0)
