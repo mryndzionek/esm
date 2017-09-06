@@ -1,5 +1,6 @@
 #include "esm/hesm.h"
 #include "esm/esm_timer.h"
+#include "board.h"
 
 ESM_THIS_FILE;
 
@@ -16,8 +17,8 @@ typedef struct {
 #define GREEN_TOUT_MS	(10000UL)
 #define YELLOW_TOUT_MS	(3000UL)
 #define WALK_TOUT_MS	(5000UL)
-#define FLASH_TOUT_MS	(1000UL)
-#define FLASH_COUNT		(5UL)
+#define FLASH_TOUT_MS	(300UL)
+#define FLASH_COUNT		(10UL)
 
 ESM_COMPLEX_STATE(operational, top, 1);
 
@@ -44,8 +45,8 @@ static void esm_operational_init(esm_t *const esm)
 static void esm_operational_entry(esm_t *const esm)
 {
 	(void)esm;
-	ESM_PRINTF("[%010u] [%s] CARS_RED\r\n", esm_global_time, esm->name);
-	ESM_PRINTF("[%010u] [%s] PEDS_DONT_WALK\r\n", esm_global_time, esm->name);
+	BOARD_CARS_RED();
+	BOARD_PEDS_DONT_WALK();
 }
 
 static void esm_operational_exit(esm_t *const esm)
@@ -77,13 +78,13 @@ static void esm_cars_init(esm_t *const esm)
 static void esm_cars_entry(esm_t *const esm)
 {
 	(void)esm;
-	ESM_PRINTF("[%010u] [%s] CARS_GREEN\r\n", esm_global_time, esm->name);
+	BOARD_CARS_GREEN();
 }
 
 static void esm_cars_exit(esm_t *const esm)
 {
 	(void)esm;
-	ESM_PRINTF("[%010u] [%s] CARS_RED\r\n", esm_global_time, esm->name);
+	BOARD_CARS_RED();
 }
 
 static void esm_cars_handle(esm_t *const esm, esm_signal_t *sig)
@@ -146,7 +147,7 @@ static void esm_yellow_entry(esm_t *const esm)
 	esm_timer_add(&self->timer,
 			YELLOW_TOUT_MS, &sig);
 
-	ESM_PRINTF("[%010u] [%s] CARS_YELLOW\r\n", esm_global_time, esm->name);
+	BOARD_CARS_YELLOW();
 }
 
 static void esm_yellow_exit(esm_t *const esm)
@@ -187,10 +188,7 @@ static void esm_green_no_ped_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_button:
-		if(sig->params.key == ' ')
-		{
-			ESM_TRANSITION(green_ped_wait);
-		}
+		ESM_TRANSITION(green_ped_wait);
 		break;
 	case esm_sig_tmout:
 		ESM_TRANSITION(green_int);
@@ -219,10 +217,7 @@ static void esm_green_int_handle(esm_t *const esm, esm_signal_t *sig)
 	switch(sig->type)
 	{
 	case esm_sig_button:
-		if(sig->params.key == ' ')
-		{
-			ESM_TRANSITION(yellow);
-		}
+		ESM_TRANSITION(yellow);
 		break;
 	default:
 		ESM_TRANSITION(unhandled);
@@ -271,7 +266,7 @@ static void esm_pedestrians_entry(esm_t *const esm)
 static void esm_pedestrians_exit(esm_t *const esm)
 {
 	(void)esm;
-	ESM_PRINTF("[%010u] [%s] PEDS_DONT_WALK\r\n", esm_global_time, esm->name);
+	BOARD_PEDS_DONT_WALK();
 }
 
 static void esm_pedestrians_handle(esm_t *const esm, esm_signal_t *sig)
@@ -298,13 +293,15 @@ static void esm_walk_entry(esm_t *const esm)
 	esm_timer_add(&self->timer,
 			WALK_TOUT_MS, &sig);
 
-	ESM_PRINTF("[%010u] [%s] PEDS_WALK\r\n", esm_global_time, esm->name);
+	BOARD_PEDS_WALK();
 }
 
 static void esm_walk_exit(esm_t *const esm)
 {
 	pelican_esm_t *self = ESM_CONTAINER_OF(esm, pelican_esm_t, esm);
 	self->flash_count = FLASH_COUNT;
+
+	BOARD_PEDS_DONT_WALK();
 }
 
 static void esm_walk_handle(esm_t *const esm, esm_signal_t *sig)
@@ -337,11 +334,11 @@ static void esm_flash_entry(esm_t *const esm)
 
 	if(self->flash_count & 1UL)
 	{
-		ESM_PRINTF("[%010u] [%s] ** PEDS_DONT_WALK **\r\n", esm_global_time, esm->name);
+		BOARD_PEDS_WALK();
 	}
 	else
 	{
-		ESM_PRINTF("[%010u] [%s]    PEDS_DONT_WALK   \r\n", esm_global_time, esm->name);
+		BOARD_PEDS_DONT_WALK();
 	}
 }
 

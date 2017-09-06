@@ -7,6 +7,12 @@ include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"
+        "${CMAKE_SOURCE_DIR}/modules/include"
+)
+
+target_sources(${ESM_TARGET}Src
+    PRIVATE
+        "${CMAKE_SOURCE_DIR}/modules/src/debouncer.c"
 )
 
 add_esm_executable(

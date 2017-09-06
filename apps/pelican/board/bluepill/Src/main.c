@@ -197,11 +197,30 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, PEDESTRIAN_WALK_Pin|CARS_GREEN_Pin|CARS_YELLOW_Pin|CARS_RED_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : IDLE_LED_Pin */
   GPIO_InitStruct.Pin = IDLE_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(IDLE_LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PEDESTRIAN_WALK_Pin CARS_GREEN_Pin CARS_YELLOW_Pin CARS_RED_Pin */
+  GPIO_InitStruct.Pin = PEDESTRIAN_WALK_Pin|CARS_GREEN_Pin|CARS_YELLOW_Pin|CARS_RED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : BUTTON_Pin */
+  GPIO_InitStruct.Pin = BUTTON_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(BUTTON_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI9_5_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
 
 }
 
