@@ -8,11 +8,38 @@ statecharts implementation in C. Inspired by [QP framework](https://state-machin
 Provided are four examples: simple blink state machine transitioning between two states,
 classic dining philosophers problem, cigarette smokers problem and pelican crossing simulation.
 
+Build instructions
+------------------
+
+Standard CMake routine with some configuration options.
+Project setup for native Linux:
+
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug ..
+```
+
+For STM32 target (bluepill board):
+
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release -DESM_PLATFORM=stm32 -DESM_BOARD=bluepill -DCMAKE_TOOLCHAIN_FILE=../platform/stm32/Toolchain.cmake ..
+```
+
+Build step:
+```sh
+make
+```
 
 TODO
 ----
 
  - add more examples
+ - handle timer rollover
+ - evaluate usefulness of publish-subscribe (efficient implementation limits signal types to 31)
+ - check what impact switching from array to list in main scheduler loop will have
 
 License
 -------
