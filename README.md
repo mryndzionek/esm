@@ -25,7 +25,8 @@ For STM32 target (bluepill board):
 ```sh
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DESM_PLATFORM=stm32 -DESM_BOARD=bluepill -DCMAKE_TOOLCHAIN_FILE=../platform/stm32/Toolchain.cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release -DESM_PLATFORM=stm32 -DESM_BOARD=bluepill \
+      -DCMAKE_TOOLCHAIN_FILE=../platform/stm32/Toolchain.cmake ..
 ```
 
 Build step:
