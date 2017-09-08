@@ -23,11 +23,12 @@
 				.name = #_name, \
 		}
 
-#define ESM_REGISTER(_type, _name, _sigq_size) \
+#define ESM_REGISTER(_type, _name, _group, _sigq_size) \
 		static _type##_esm_t _name##_ctx = { \
 				.esm = { \
 						.name = #_name, \
 						.id = esm_id_##_name, \
+						.group = esm_group_##_group, \
 						.init = esm_##_type##_init, \
 						.sig_queue_size = _sigq_size, \
 						.sig_queue = (esm_signal_t[_sigq_size]){0}, \
@@ -69,6 +70,13 @@ extern esm_t * const trace_esm;
 ESM_IDS
 #undef ESM_ID
 
+#define ESM_GROUP(_name) esm_group_##_name,
+typedef enum {
+	esm_group_common = 0,
+	ESM_GROUPS
+} esm_group_e;
+#undef ESM_GROUP
+
 typedef struct
 {
 	esm_signal_e type;
@@ -87,6 +95,7 @@ typedef struct {
 struct _esm {
 	char const *const name;
 	const uint8_t id;
+	const uint8_t group;
 	void (*init)(esm_t *const esm);
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;
@@ -101,7 +110,7 @@ extern const esm_state_t esm_unhandled_state;
 extern const esm_state_t esm_self_state;
 
 void esm_process(void);
-void esm_broadcast_signal(esm_signal_t *sig);
+void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group);
 bool esm_send_signal(esm_signal_t *sig);
 
 #endif /* INCLUDE_ESM_ESM_H_ */

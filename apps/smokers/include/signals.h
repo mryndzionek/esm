@@ -12,6 +12,9 @@
       ESM_ID(matches_smoker) \
       ESM_ID(table)
 
+#define ESM_GROUPS \
+      ESM_GROUP(smokers)
+
 typedef enum
 {
 	tobacco,

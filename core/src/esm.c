@@ -305,13 +305,16 @@ bool esm_send_signal(esm_signal_t *sig)
 	return ret;
 }
 
-void esm_broadcast_signal(esm_signal_t *sig)
+void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group)
 {
 	esm_t * const * sec;
 	bool ret = false;
 	for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
-		sig->receiver = *sec;
-		ret |= esm_send_signal(sig);
+		if((*sec)->group == group)
+		{
+			sig->receiver = *sec;
+			ret |= esm_send_signal(sig);
+		}
 	}
 	sig->receiver = (void *)0;
 
