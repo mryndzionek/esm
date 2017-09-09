@@ -42,7 +42,7 @@
                   .super = { \
                         .name = #_name, \
                         .id = esm_id_##_name, \
-                        .group = esm_group_##_group, \
+                        .group = _group, \
 						.init = esm_##_type##_init, \
                         .sig_queue_size = _sigq_size, \
                         .sig_queue = (esm_signal_t[_sigq_size]){0}, \

@@ -139,8 +139,8 @@ static const philo_cfg_t philo_5_cfg = {
 		.num = 4
 };
 
-ESM_REGISTER(philo, philo_1, common, 1);
-ESM_REGISTER(philo, philo_2, common, 1);
-ESM_REGISTER(philo, philo_3, common, 1);
-ESM_REGISTER(philo, philo_4, common, 1);
-ESM_REGISTER(philo, philo_5, common, 1);
+ESM_REGISTER(philo, philo_1, esm_gr_none, 1);
+ESM_REGISTER(philo, philo_2, esm_gr_none, 1);
+ESM_REGISTER(philo, philo_3, esm_gr_none, 1);
+ESM_REGISTER(philo, philo_4, esm_gr_none, 1);
+ESM_REGISTER(philo, philo_5, esm_gr_none, 1);

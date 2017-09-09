@@ -78,10 +78,10 @@ static void esm_requesting_entry(esm_t *const esm)
 			.params.resource = resource_1
 	};
 
-	esm_broadcast_signal(&sig, esm_group_smokers);
+	esm_broadcast_signal(&sig, esm_gr_smokers);
 
 	sig.params.resource = resource_2;
-	esm_broadcast_signal(&sig, esm_group_smokers);
+	esm_broadcast_signal(&sig, esm_gr_smokers);
 }
 
 static void esm_requesting_exit(esm_t *const esm)
@@ -110,4 +110,4 @@ static void esm_table_init(esm_t *const esm)
 static const table_cfg_t table_cfg = {
 };
 
-ESM_REGISTER(table, table, common, N_SMOKERS);
+ESM_REGISTER(table, table, esm_gr_agents, N_SMOKERS);

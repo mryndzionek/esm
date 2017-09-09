@@ -28,7 +28,7 @@
 				.esm = { \
 						.name = #_name, \
 						.id = esm_id_##_name, \
-						.group = esm_group_##_group, \
+						.group = _group, \
 						.init = esm_##_type##_init, \
 						.sig_queue_size = _sigq_size, \
 						.sig_queue = (esm_signal_t[_sigq_size]){0}, \
@@ -43,8 +43,6 @@
 		ESM_ASSERT(esm); \
 		esm->next_state = (esm_state_t const * const)&esm_##_s##_state; \
 } while(0)
-
-#define ESM_SIG_MASK(_sig) (1UL << _sig)
 
 #define ESM_SIGNAL(_name) esm_sig_##_name,
 typedef enum
@@ -70,9 +68,9 @@ extern esm_t * const trace_esm;
 ESM_IDS
 #undef ESM_ID
 
-#define ESM_GROUP(_name) esm_group_##_name,
+#define ESM_GROUP(_name) esm_gr_##_name = (1UL << __COUNTER__),
 typedef enum {
-	esm_group_common = 0,
+	esm_gr_none = 0,
 	ESM_GROUPS
 } esm_group_e;
 #undef ESM_GROUP

@@ -13,7 +13,8 @@
       ESM_ID(table)
 
 #define ESM_GROUPS \
-      ESM_GROUP(smokers)
+      ESM_GROUP(agents) \
+      ESM_GROUP(smokers) \
 
 typedef enum
 {
