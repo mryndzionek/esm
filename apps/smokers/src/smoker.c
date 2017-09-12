@@ -69,8 +69,7 @@ static void esm_smoking_exit(esm_t *const esm)
 			.sender = esm,
 			.receiver = table_esm,
 	};
-	esm_send_signal(&sig);
-	esm_broadcast_signal(&sig, esm_group_smokers);
+	esm_broadcast_signal(&sig, esm_gr_agents);
 }
 
 static void esm_smoking_handle(esm_t *const esm, esm_signal_t *sig)
@@ -103,6 +102,6 @@ static const smoker_cfg_t matches_smoker_cfg = {
 		.resource = matches
 };
 
-ESM_REGISTER(smoker, tobacco_smoker, smokers, 2);
-ESM_REGISTER(smoker, paper_smoker, smokers, 2);
-ESM_REGISTER(smoker, matches_smoker, smokers, 2);
+ESM_REGISTER(smoker, tobacco_smoker, esm_gr_smokers | esm_gr_agents, 2);
+ESM_REGISTER(smoker, paper_smoker, esm_gr_smokers | esm_gr_agents, 2);
+ESM_REGISTER(smoker, matches_smoker, esm_gr_smokers | esm_gr_agents, 2);

@@ -148,4 +148,4 @@ static const blink_cfg_t blink_cfg = {
 		.delay = 300UL
 };
 
-ESM_COMPLEX_REGISTER(blink, blink, common, 1, 3);
+ESM_COMPLEX_REGISTER(blink, blink, esm_gr_none, 1, 3);
