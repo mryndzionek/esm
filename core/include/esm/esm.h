@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include "esm_list.h"
 #include "platform.h"
 #include "signals.h"
 
@@ -28,6 +29,7 @@
 				.esm = { \
 						.name = #_name, \
 						.id = esm_id_##_name, \
+						.is_cplx = false, \
 						.group = _group, \
 						.init = esm_##_type##_init, \
 						.sig_queue_size = _sigq_size, \
@@ -81,6 +83,7 @@ typedef struct
 	esm_t *receiver;
 	esm_t *sender;
 	esm_sig_params_t params;
+	esm_list_item_t item;
 } esm_signal_t;
 
 typedef struct {
@@ -93,6 +96,7 @@ typedef struct {
 struct _esm {
 	char const *const name;
 	const uint8_t id;
+	const bool is_cplx;
 	const uint8_t group;
 	void (*init)(esm_t *const esm);
 	esm_state_t const *curr_state;
