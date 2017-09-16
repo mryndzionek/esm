@@ -44,9 +44,11 @@
                         .id = esm_id_##_name, \
 						.is_cplx = true, \
                         .group = _group, \
-						.init = esm_##_type##_init, \
-                        .sig_queue_size = _sigq_size, \
-                        .sig_queue = (esm_signal_t[_sigq_size]){0}, \
+                        .init = esm_##_type##_init, \
+                        .queue = { \
+                              .size = _sigq_size, \
+                              .data = (esm_signal_t[_sigq_size]){0}, \
+                  }\
             }, \
             .depth = _depth, \
       }, \
