@@ -9,6 +9,7 @@
 
 ESM_THIS_FILE;
 
+static esm_list_t esm_signals = {0};
 extern esm_t * const __attribute__((weak)) __start_esm_simple;
 extern esm_t * const __attribute__((weak)) __stop_esm_simple;
 
@@ -32,8 +33,6 @@ static char const * const esm_sig_name[] = {
 		ESM_SIGNALS
 };
 #undef ESM_SIGNAL
-
-static uint8_t esm_sig_count;
 
 static void self_entry(esm_t *const esm)
 {
@@ -90,10 +89,6 @@ static void simple_process(esm_t * const esm)
 		esm->sig_tail = 0;
 	}
 	--esm->sig_len;
-	if(esm->sig_len == 0)
-	{
-		esm_sig_count--;
-	}
 	ESM_CRITICAL_EXIT();
 }
 
@@ -191,10 +186,6 @@ static void complex_process(esm_t * const esm)
 		esm->sig_tail = 0;
 	}
 	--esm->sig_len;
-	if(esm->sig_len == 0)
-	{
-		esm_sig_count--;
-	}
 	ESM_CRITICAL_EXIT();
 }
 #endif
@@ -246,23 +237,21 @@ void esm_process(void)
 	{
 		ESM_WAIT();
 
-		while(esm_sig_count)
+		while(!esm_list_empty(&esm_signals))
 		{
-			for (sec = &__start_esm_simple; esm_sig_count && (sec < &__stop_esm_simple); ++sec) {
-				if((*sec)->sig_len)
-				{
-					simple_process(*sec);
-				}
-			}
-
+			esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals),
+					esm_signal_t, item);
+			if(sig->receiver->is_cplx)
+			{
 #ifdef ESM_HSM
-			for (sec = &__start_esm_complex; esm_sig_count && (sec < &__stop_esm_complex); ++sec) {
-				if((*sec)->sig_len)
-				{
-					complex_process(*sec);
-				}
-			}
+				complex_process(sig->receiver);
 #endif
+			}
+			else
+			{
+				simple_process(sig->receiver);
+			}
+			esm_list_erase(&esm_signals, &sig->item);
 		}
 		if(!esm_is_tracing)
 		{
@@ -289,14 +278,11 @@ bool esm_send_signal(esm_signal_t *sig)
 				"Event queue for %s overrun\r\n", sig->receiver->name);
 	}
 
-	sig->receiver->sig_queue[sig->receiver->sig_head++] = *sig;
+	sig->receiver->sig_queue[sig->receiver->sig_head] = *sig;
+	esm_list_insert(&esm_signals, &sig->receiver->sig_queue[sig->receiver->sig_head++].item, NULL);
 	if(sig->receiver->sig_head == sig->receiver->sig_queue_size)
 	{
 		sig->receiver->sig_head = 0;
-	}
-	if(!sig->receiver->sig_len)
-	{
-		esm_sig_count++;
 	}
 	++sig->receiver->sig_len;
 	ret = true;
@@ -316,6 +302,15 @@ void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group)
 			ret |= esm_send_signal(sig);
 		}
 	}
+#ifdef ESM_HSM
+	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
+		if((*sec)->group & group)
+		{
+			sig->receiver = *sec;
+			ret |= esm_send_signal(sig);
+		}
+	}
+#endif
 	sig->receiver = (void *)0;
 
 	ESM_ASSERT_MSG(ret,
