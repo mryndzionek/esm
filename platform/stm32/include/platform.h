@@ -31,7 +31,7 @@ uint16_t platform_rnd(uint16_t range);
 #define ESM_WAIT() do { \
 		HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_SET); \
 		ESM_CRITICAL_ENTER(); \
-		if(!esm_sig_count) \
+		if(esm_list_empty(&esm_signals)) \
 		{ \
 			HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI); \
 		} \
