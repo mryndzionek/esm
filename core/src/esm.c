@@ -10,13 +10,8 @@
 ESM_THIS_FILE;
 
 static esm_list_t esm_signals = {0};
-extern esm_t * const __attribute__((weak)) __start_esm_simple;
-extern esm_t * const __attribute__((weak)) __stop_esm_simple;
-
-#ifdef ESM_HSM
-extern esm_t * const __start_esm_complex;
-extern esm_t * const __stop_esm_complex;
-#endif
+extern esm_t * const __attribute__((weak)) __start_esm_sec;
+extern esm_t * const __attribute__((weak)) __stop_esm_sec;
 
 extern bool esm_is_tracing;
 
@@ -196,42 +191,44 @@ void esm_process(void)
 
 	ESM_INIT;
 
-	for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
+	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
 		esm_t * const esm = *sec;
-		if(esm->init)
+		if(esm->is_cplx)
 		{
-			esm->init(esm);
-			ESM_ASSERT(esm->next_state);
-			esm->curr_state = esm->next_state;
-		}
-		ESM_TRACE(esm, init);
-		esm->curr_state->entry(esm);
-	}
-
 #ifdef ESM_HSM
-	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
-		esm_t * const esm = *sec;
-		if(esm->init)
-		{
-			esm->init(esm);
-			ESM_ASSERT(esm->next_state);
-			esm->curr_state = esm->next_state;
-		}
-		ESM_TRACE((*sec), init);
-		esm->curr_state->entry(esm);
-		esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
+			if(esm->init)
+			{
+				esm->init(esm);
+				ESM_ASSERT(esm->next_state);
+				esm->curr_state = esm->next_state;
+			}
+			ESM_TRACE((*sec), init);
+			esm->curr_state->entry(esm);
+			esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
 
-		while(s->init)
+			while(s->init)
+			{
+				esm->next_state = esm->curr_state;
+				s->init(esm);
+				ESM_ASSERT(esm->curr_state != esm->next_state);
+				esm->next_state->entry(esm);
+				esm->curr_state = esm->next_state;
+				s = (esm_hstate_t * const)esm->curr_state;
+			}
+#endif
+		}
+		else
 		{
-			esm->next_state = esm->curr_state;
-			s->init(esm);
-			ESM_ASSERT(esm->curr_state != esm->next_state);
-			esm->next_state->entry(esm);
-			esm->curr_state = esm->next_state;
-			s = (esm_hstate_t * const)esm->curr_state;
+			if(esm->init)
+			{
+				esm->init(esm);
+				ESM_ASSERT(esm->next_state);
+				esm->curr_state = esm->next_state;
+			}
+			ESM_TRACE(esm, init);
+			esm->curr_state->entry(esm);
 		}
 	}
-#endif
 
 	while(1)
 	{
@@ -295,22 +292,13 @@ void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group)
 {
 	esm_t * const * sec;
 	bool ret = false;
-	for (sec = &__start_esm_simple; sec < &__stop_esm_simple; ++sec) {
+	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
 		if((*sec)->group & group)
 		{
 			sig->receiver = *sec;
 			ret |= esm_send_signal(sig);
 		}
 	}
-#ifdef ESM_HSM
-	for (sec = &__start_esm_complex; sec < &__stop_esm_complex; ++sec) {
-		if((*sec)->group & group)
-		{
-			sig->receiver = *sec;
-			ret |= esm_send_signal(sig);
-		}
-	}
-#endif
 	sig->receiver = (void *)0;
 
 	ESM_ASSERT_MSG(ret,
