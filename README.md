@@ -39,7 +39,7 @@ TODO
 
  - add more examples
  - handle timer rollover
- - evaluate usefulness of publish-subscribe (efficient implementation limits signal types to 31)
+ - research and implement efficient priority support
  - check what impact switching from array to list in main scheduler loop will have
 
 License
