@@ -77,14 +77,6 @@ static void simple_process(esm_t * const esm)
 	ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
 			"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
 			esm_global_time, esm->name);
-
-	ESM_CRITICAL_ENTER();
-	if(++esm->sig_tail == esm->sig_queue_size)
-	{
-		esm->sig_tail = 0;
-	}
-	--esm->sig_len;
-	ESM_CRITICAL_EXIT();
 }
 
 #ifdef ESM_HSM
@@ -174,14 +166,6 @@ static void complex_process(esm_t * const esm)
 	{
 		esm->curr_state = &start->super;
 	}
-
-	ESM_CRITICAL_ENTER();
-	if(++esm->sig_tail == esm->sig_queue_size)
-	{
-		esm->sig_tail = 0;
-	}
-	--esm->sig_len;
-	ESM_CRITICAL_EXIT();
 }
 #endif
 
@@ -248,7 +232,14 @@ void esm_process(void)
 			{
 				simple_process(sig->receiver);
 			}
+			ESM_CRITICAL_ENTER();
+			if(++sig->receiver->sig_tail == sig->receiver->sig_queue_size)
+			{
+				sig->receiver->sig_tail = 0;
+			}
+			--sig->receiver->sig_len;
 			esm_list_erase(&esm_signals, &sig->item);
+			ESM_CRITICAL_EXIT();
 		}
 		if(!esm_is_tracing)
 		{
