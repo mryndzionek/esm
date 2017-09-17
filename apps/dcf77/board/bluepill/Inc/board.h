@@ -9,6 +9,7 @@
 #define BOARD_TICK do { \
 		static uint8_t count; \
 		static uint8_t bin; \
+		static uint8_t tick; \
 		GPIO_PinState s = HAL_GPIO_ReadPin(DCF77_Input_GPIO_Port, DCF77_Input_Pin); \
 		HAL_GPIO_WritePin(DCF77_RawLED_GPIO_Port, DCF77_RawLED_Pin, s); \
 		bin += s; \
@@ -16,6 +17,11 @@
 		{ \
 			sig.receiver = debug_esm; \
 			sig.params.bin = bin; \
+			sig.params.tick = tick; \
+			if(++tick == DCF77_BIN_SIZE) \
+			{ \
+				tick = 0; \
+			} \
 			esm_send_signal(&sig); \
 			count = bin = 0; \
 		} \

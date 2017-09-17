@@ -8,6 +8,7 @@
 
 typedef struct
 {
+	uint16_t tick;
 	uint8_t bin;
 } esm_sig_params_t;
 

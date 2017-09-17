@@ -9,7 +9,6 @@ typedef struct {
 typedef struct {
 	esm_t esm;
 	char bins[DCF77_BIN_SIZE + 2]; // +2 is for line end, see 'esm_debug_init'
-	uint8_t curr_bin;
 	debug_cfg_t const *const cfg;
 } debug_esm_t;
 
@@ -33,30 +32,23 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 	{
 	case esm_sig_alarm:
 	{
+		char *bin = &self->bins[sig->params.tick];
 		if(sig->params.bin == 0)
 		{
-			if((self->curr_bin % DCF77_BIN_EVERY) == 0)
-			{
-				self->bins[self->curr_bin] = '+';
-			}
-			else
-			{
-				self->bins[self->curr_bin] = '-';
-			}
+			*bin = ((sig->params.tick % DCF77_BIN_EVERY) == 0) ? '+' : '-';
 		}
 		else if(sig->params.bin == DCF77_BIN_EVERY)
 		{
-			self->bins[self->curr_bin] = 'X';
+			*bin = 'X';
 		}
 		else
 		{
-			self->bins[self->curr_bin] = '0' + sig->params.bin;
+			*bin = '0' + sig->params.bin;
 		}
-		if(++self->curr_bin == DCF77_BIN_SIZE)
+		if(++sig->params.tick == DCF77_BIN_SIZE)
 		{
 			HAL_StatusTypeDef r = HAL_UART_Transmit_IT(&huart2, (uint8_t *)self->bins, sizeof(self->bins));
 			ESM_ASSERT(r == HAL_OK);
-			self->curr_bin = 0;
 		}
 	}
 	break;
