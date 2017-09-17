@@ -32,23 +32,23 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 	{
 	case esm_sig_alarm:
 	{
-		char *bin = &self->bins[sig->params.tick];
-		if(sig->params.bin == 0)
+		char *bin = &self->bins[sig->params.tick.tick];
+
+		if(sig->params.tick.bin == 0)
 		{
-			*bin = ((sig->params.tick % DCF77_BIN_EVERY) == 0) ? '+' : '-';
+			*bin = ((sig->params.tick.tick % DCF77_BIN_EVERY) == 0) ? '+' : '-';
 		}
-		else if(sig->params.bin == DCF77_BIN_EVERY)
+		else if(sig->params.tick.bin == DCF77_BIN_EVERY)
 		{
 			*bin = 'X';
 		}
 		else
 		{
-			*bin = '0' + sig->params.bin;
+			*bin = '0' + sig->params.tick.bin;
 		}
-		if(++sig->params.tick == DCF77_BIN_SIZE)
+		if(++sig->params.tick.tick == DCF77_BIN_SIZE)
 		{
-			HAL_StatusTypeDef r = HAL_UART_Transmit_IT(&huart2, (uint8_t *)self->bins, sizeof(self->bins));
-			ESM_ASSERT(r == HAL_OK);
+			BOARD_DEBUG_OUT();
 		}
 	}
 	break;

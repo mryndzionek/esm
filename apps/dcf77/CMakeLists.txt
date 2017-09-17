@@ -10,6 +10,8 @@ target_include_directories(${ESM_TARGET}Src
 
 add_esm_executable(
     ${ESM_TARGET}
+    src/phase.c
+    src/led.c
     src/debug.c
 )
 target_link_libraries(${ESM_TARGET} ${ESM_TARGET}Src)
