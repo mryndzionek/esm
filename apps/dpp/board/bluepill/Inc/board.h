@@ -1,0 +1,6 @@
+#ifndef APPS_DPP_BOARD_BLUEPILL_INC_BOARD_H_
+#define APPS_DPP_BOARD_BLUEPILL_INC_BOARD_H_
+
+#include "stm32f1xx_hal.h"
+
+#endif /* APPS_DPP_BOARD_BLUEPILL_INC_BOARD_H_ */
