@@ -3,6 +3,7 @@ target_sources(${ESM_TARGET}Src
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm.c"
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm_internal.c"
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm_list.c"
+        "${CMAKE_CURRENT_LIST_DIR}/core/src/esm_queue.c"
         "${CMAKE_CURRENT_LIST_DIR}/core/src/esm_timer.c"
 
         "${CMAKE_CURRENT_LIST_DIR}/trace/src/trace.c"

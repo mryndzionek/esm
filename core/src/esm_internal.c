@@ -39,8 +39,10 @@ static esm_t esm_tick = {
 		.name = "esm_tick",
 		.id = esm_id_tick,
 		.curr_state = &tick,
-		.sig_queue_size = 1,
-		.sig_queue = (esm_signal_t[1]){0},
+		.queue = {
+				.size = 1,
+				.data = (esm_signal_t[1]){0}
+		}
 };
 esm_t * const tick_esm
 __attribute((__section__("esm_simple")))
@@ -81,8 +83,10 @@ static esm_t esm_trace = {
 		.name = "esm_trace",
 		.id = esm_id_trace,
 		.curr_state = &trace,
-		.sig_queue_size = 2,
-		.sig_queue = (esm_signal_t[2]){0},
+		.queue = {
+				.size = 2,
+				.data = (esm_signal_t[2]){0}
+		}
 };
 esm_t * const trace_esm
 __attribute((__section__("esm_simple")))

@@ -32,8 +32,10 @@
 						.is_cplx = false, \
 						.group = _group, \
 						.init = esm_##_type##_init, \
-						.sig_queue_size = _sigq_size, \
-						.sig_queue = (esm_signal_t[_sigq_size]){0}, \
+						.queue = { \
+						      .size = _sigq_size, \
+						      .data = (esm_signal_t[_sigq_size]){0}, \
+				}\
 		}, \
 		.cfg = &_name##_cfg \
 		}; \
@@ -87,6 +89,14 @@ typedef struct
 } esm_signal_t;
 
 typedef struct {
+	const uint8_t size;
+	uint8_t len;
+	uint8_t head;
+	uint8_t tail;
+	esm_signal_t *data;
+} esm_queue_t;
+
+typedef struct {
 	char const *const name;
 	void (*entry)(esm_t *const esm);
 	void (*handle)(esm_t *const esm, esm_signal_t *sig);
@@ -101,11 +111,7 @@ struct _esm {
 	void (*init)(esm_t *const esm);
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;
-	const uint8_t sig_queue_size;
-	uint8_t sig_len;
-	uint8_t sig_head;
-	uint8_t sig_tail;
-	esm_signal_t *sig_queue;
+	esm_queue_t queue;
 };
 
 extern const esm_state_t esm_unhandled_state;

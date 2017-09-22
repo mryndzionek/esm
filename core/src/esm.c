@@ -3,6 +3,7 @@
 #include "esm/hesm.h"
 #endif
 #include "esm/esm_timer.h"
+#include "esm/esm_queue.h"
 #include "trace.h"
 
 #include <stdio.h>
@@ -45,7 +46,7 @@ const esm_state_t esm_self_state = {
 
 static void simple_process(esm_t * const esm)
 {
-	esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
+	esm_signal_t *sig = esm_queue_tail(&esm->queue);
 
 	if(esm->id > esm_id_trace)
 	{
@@ -82,7 +83,7 @@ static void simple_process(esm_t * const esm)
 #ifdef ESM_HSM
 static void complex_process(esm_t * const esm)
 {
-	esm_signal_t *sig = &esm->sig_queue[esm->sig_tail];
+	esm_signal_t *sig = esm_queue_tail(&esm->queue);
 	esm_hstate_t const *start = (esm_hstate_t const *)esm->curr_state;
 	esm_hstate_t const *end;
 
@@ -233,11 +234,7 @@ void esm_process(void)
 				simple_process(sig->receiver);
 			}
 			ESM_CRITICAL_ENTER();
-			if(++sig->receiver->sig_tail == sig->receiver->sig_queue_size)
-			{
-				sig->receiver->sig_tail = 0;
-			}
-			--sig->receiver->sig_len;
+			esm_queue_pop(&sig->receiver->queue);
 			esm_list_erase(&esm_signals, &sig->item);
 			ESM_CRITICAL_EXIT();
 		}
@@ -260,19 +257,10 @@ bool esm_send_signal(esm_signal_t *sig)
 	bool ret = false;
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
-	if(sig->receiver->sig_len)
-	{
-		ESM_ASSERT_MSG(sig->receiver->sig_head != sig->receiver->sig_tail,
-				"Event queue for %s overrun\r\n", sig->receiver->name);
-	}
 
-	sig->receiver->sig_queue[sig->receiver->sig_head] = *sig;
-	esm_list_insert(&esm_signals, &sig->receiver->sig_queue[sig->receiver->sig_head++].item, NULL);
-	if(sig->receiver->sig_head == sig->receiver->sig_queue_size)
-	{
-		sig->receiver->sig_head = 0;
-	}
-	++sig->receiver->sig_len;
+	esm_list_insert(&esm_signals, &(esm_queue_head(&sig->receiver->queue))->item, NULL);
+	esm_queue_push(&sig->receiver->queue, sig);
+
 	ret = true;
 	ESM_CRITICAL_EXIT();
 
