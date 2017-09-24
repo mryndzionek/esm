@@ -9,7 +9,7 @@
 #define ESM_IDS \
       ESM_ID(producer_1) \
       ESM_ID(producer_2) \
-      ESM_ID(synchronizer) \
+      ESM_ID(bus) \
       ESM_ID(consumer)
 
 typedef struct

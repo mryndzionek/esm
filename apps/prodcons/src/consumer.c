@@ -61,7 +61,7 @@ static void esm_busy_exit(esm_t *const esm)
 	esm_signal_t sig = {
 			.type = esm_sig_response,
 			.sender = esm,
-			.receiver = synchronizer_esm
+			.receiver = bus_esm
 	};
 	esm_send_signal(&sig);
 }

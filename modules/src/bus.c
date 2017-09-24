@@ -1,4 +1,4 @@
-#include "synchronizer.h"
+#include "../include/bus.h"
 
 ESM_THIS_FILE;
 
@@ -17,7 +17,7 @@ static void esm_idle_exit(esm_t *const esm)
 
 static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 {
-	synchronizer_esm_t *self = ESM_CONTAINER_OF(esm, synchronizer_esm_t, esm);
+	bus_esm_t *self = ESM_CONTAINER_OF(esm, bus_esm_t, esm);
 
 	if(self->cfg->req == sig->type)
 	{
@@ -42,7 +42,7 @@ static void esm_busy_exit(esm_t *const esm)
 
 static void esm_busy_handle(esm_t *const esm, esm_signal_t *sig)
 {
-	synchronizer_esm_t *self = ESM_CONTAINER_OF(esm, synchronizer_esm_t, esm);
+	bus_esm_t *self = ESM_CONTAINER_OF(esm, bus_esm_t, esm);
 
 	if(self->cfg->rsp == sig->type)
 	{
@@ -59,7 +59,7 @@ static void esm_busy_handle(esm_t *const esm, esm_signal_t *sig)
 	}
 }
 
-void esm_synchronizer_init(esm_t *const esm)
+void esm_bus_init(esm_t *const esm)
 {
 	ESM_TRANSITION(idle);
 }

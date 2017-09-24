@@ -11,7 +11,7 @@ target_include_directories(${ESM_TARGET}Src
 
 target_sources(${ESM_TARGET}Src
     PRIVATE
-        "${CMAKE_SOURCE_DIR}/modules/src/synchronizer.c"
+        "${CMAKE_SOURCE_DIR}/modules/src/bus.c"
 )
 
 add_esm_executable(
