@@ -1,4 +1,4 @@
-#include "../include/bus.h"
+#include "bus.h"
 
 ESM_THIS_FILE;
 
@@ -21,7 +21,9 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 
 	if(self->cfg->req == sig->type)
 	{
-		self->cfg->request(sig);
+		self->xfer = sig->params.xfer;
+		esm_list_insert(self->cfg->queue, &self->xfer->item, NULL);
+		self->xfer->tx(self->xfer);
 		ESM_TRANSITION(busy);
 	}
 	else
@@ -46,12 +48,22 @@ static void esm_busy_handle(esm_t *const esm, esm_signal_t *sig)
 
 	if(self->cfg->rsp == sig->type)
 	{
-		self->cfg->respond(sig);
-		ESM_TRANSITION(idle);
+		self->xfer->rx(self->xfer);
+		esm_list_erase(self->cfg->queue, &self->xfer->item);
+		if(esm_list_empty(self->cfg->queue))
+		{
+			ESM_TRANSITION(idle);
+		}
+		else
+		{
+			self->xfer = ESM_CONTAINER_OF(
+					esm_list_begin(self->cfg->queue), bus_xfer_t, item);
+			self->xfer->tx(self->xfer);
+		}
 	}
 	else if(self->cfg->req == sig->type)
 	{
-		esm_queue_push(self->cfg->queue, sig);
+		esm_list_insert(self->cfg->queue, &sig->params.xfer->item, NULL);
 	}
 	else
 	{
