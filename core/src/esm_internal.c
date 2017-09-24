@@ -11,7 +11,7 @@ void empty_en_ex(esm_t *const esm)
 	(void)esm;
 }
 
-static void tick_handle(esm_t *const esm, esm_signal_t *sig)
+static void tick_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
@@ -49,7 +49,7 @@ __attribute((__section__("esm_simple")))
 __attribute((__used__)) = &esm_tick;
 
 static uint8_t data[ESM_TRACE_CHUNK_SIZE];
-static void trace_handle(esm_t *const esm, esm_signal_t *sig)
+static void trace_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{

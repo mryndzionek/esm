@@ -37,7 +37,7 @@ static void esm_active_exit(esm_t *const esm)
 	esm_timer_rm(&self->timer);
 }
 
-static void esm_active_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_active_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -71,7 +71,7 @@ static void esm_on_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_on_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_on_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
@@ -102,7 +102,7 @@ static void esm_off_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_off_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_off_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
@@ -126,7 +126,7 @@ static void esm_paused_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_paused_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_paused_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{

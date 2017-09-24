@@ -15,7 +15,7 @@
 
 #define ESM_DEFINE_STATE(_name) \
 		static void esm_##_name##_entry(esm_t *const esm); \
-		static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
+		static void esm_##_name##_handle(esm_t *const esm, const esm_signal_t * const sig); \
 		static void esm_##_name##_exit(esm_t *const esm); \
 		static const esm_state_t esm_##_name##_state = { \
 				.entry = esm_##_name##_entry, \
@@ -115,7 +115,7 @@ typedef struct {
 typedef struct {
 	char const *const name;
 	void (*entry)(esm_t *const esm);
-	void (*handle)(esm_t *const esm, esm_signal_t *sig);
+	void (*handle)(esm_t *const esm, const esm_signal_t * const sig);
 	void (*exit)(esm_t *const esm);
 } esm_state_t;
 

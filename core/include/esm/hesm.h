@@ -5,7 +5,7 @@
 
 #define ESM_COMPLEX_STATE(_name, _parent, _depth) \
       static void esm_##_name##_entry(esm_t *const esm); \
-      static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
+      static void esm_##_name##_handle(esm_t *const esm, const esm_signal_t * const sig); \
       static void esm_##_name##_exit(esm_t *const esm); \
       static void esm_##_name##_init(esm_t *const esm); \
       static const esm_hstate_t esm_##_name##_state = { \
@@ -22,7 +22,7 @@
 
 #define ESM_LEAF_STATE(_name, _parent, _depth) \
       static void esm_##_name##_entry(esm_t *const esm); \
-      static void esm_##_name##_handle(esm_t *const esm, esm_signal_t *sig); \
+      static void esm_##_name##_handle(esm_t *const esm, const esm_signal_t * const sig); \
       static void esm_##_name##_exit(esm_t *const esm); \
       static const esm_hstate_t esm_##_name##_state = { \
             .super = { \
