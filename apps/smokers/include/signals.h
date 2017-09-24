@@ -23,9 +23,7 @@ typedef enum
 	matches
 } smoker_resource_e;
 
-typedef struct
-{
-	smoker_resource_e resource;
-} esm_sig_params_t;
+#define ESM_SIG_PARAMS \
+      smoker_resource_e resource;
 
 #endif /* INCLUDE_SIGNALS_H_ */

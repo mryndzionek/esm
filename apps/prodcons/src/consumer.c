@@ -13,7 +13,6 @@ typedef struct {
 typedef struct {
 	esm_t esm;
 	esm_timer_t timer;
-	esm_t *sender;
 	consumer_cfg_t const *const cfg;
 } consumer_esm_t;
 
@@ -32,12 +31,9 @@ static void esm_idle_exit(esm_t *const esm)
 
 static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 {
-	consumer_esm_t *self = ESM_CONTAINER_OF(esm, consumer_esm_t, esm);
-
 	switch(sig->type)
 	{
 	case esm_sig_request:
-		self->sender = sig->sender;
 		ESM_TRANSITION(busy);
 		break;
 	default:
@@ -61,12 +57,10 @@ static void esm_busy_entry(esm_t *const esm)
 
 static void esm_busy_exit(esm_t *const esm)
 {
-	consumer_esm_t *self = ESM_CONTAINER_OF(esm, consumer_esm_t, esm);
-
 	esm_signal_t sig = {
 			.type = esm_sig_response,
 			.sender = esm,
-			.receiver = self->sender
+			.receiver = bus_esm
 	};
 	esm_send_signal(&sig);
 }
