@@ -9,8 +9,4 @@
       ESM_ID(debouncer) \
       ESM_ID(pelican)
 
-typedef struct
-{
-} esm_sig_params_t;
-
 #endif /* INCLUDE_SIGNALS_H_ */

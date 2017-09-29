@@ -66,6 +66,13 @@ typedef enum {
 
 typedef struct _esm esm_t;
 
+typedef struct _bus_xfer bus_xfer_t;
+struct _bus_xfer {
+	esm_t *receiver;
+	void (*exec)(bus_xfer_t *xfer);
+	esm_list_item_t item;
+};
+
 #define ESM_ID(_name) extern esm_t * const _name##_esm;
 extern esm_t * const tick_esm;
 extern esm_t * const trace_esm;
@@ -78,6 +85,15 @@ typedef enum {
 	ESM_GROUPS
 } esm_group_e;
 #undef ESM_GROUP
+
+#ifndef ESM_SIG_PARAMS
+#define ESM_SIG_PARAMS
+#endif
+
+typedef struct
+{
+	ESM_SIG_PARAMS
+} esm_sig_params_t;
 
 typedef struct
 {

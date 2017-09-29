@@ -15,9 +15,8 @@
       ESM_ID(philo_5) \
       ESM_ID(table)
 
-typedef struct
-{
-	uint8_t num;
-} esm_sig_params_t;
+#define ESM_SIG_PARAMS \
+      uint8_t num;
+
 
 #endif /* INCLUDE_SIGNALS_H_ */

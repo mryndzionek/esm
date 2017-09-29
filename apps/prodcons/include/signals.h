@@ -12,16 +12,7 @@
       ESM_ID(bus) \
       ESM_ID(consumer)
 
-typedef struct _bus_xfer bus_xfer_t;
-struct _bus_xfer {
-	void (*const tx)(bus_xfer_t *xfer);
-	void (*const rx)(bus_xfer_t *xfer);
-	esm_list_item_t item;
-};
-
-typedef struct
-{
+#define ESM_SIG_PARAMS \
 	bus_xfer_t *xfer;
-} esm_sig_params_t;
 
 #endif /* INCLUDE_SIGNALS_H_ */

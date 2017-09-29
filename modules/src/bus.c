@@ -23,7 +23,7 @@ static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
 	{
 		self->xfer = sig->params.xfer;
 		esm_list_insert(self->cfg->queue, &self->xfer->item, NULL);
-		self->xfer->tx(self->xfer);
+		self->xfer->exec(self->xfer);
 		ESM_TRANSITION(busy);
 	}
 	else
@@ -48,7 +48,12 @@ static void esm_busy_handle(esm_t *const esm, esm_signal_t *sig)
 
 	if(self->cfg->rsp == sig->type)
 	{
-		self->xfer->rx(self->xfer);
+		esm_signal_t s = {
+				.type = sig->type,
+				.sender = sig->sender,
+				.receiver = self->xfer->receiver,
+		};
+		esm_send_signal(&s);
 		esm_list_erase(self->cfg->queue, &self->xfer->item);
 		if(esm_list_empty(self->cfg->queue))
 		{
@@ -58,7 +63,7 @@ static void esm_busy_handle(esm_t *const esm, esm_signal_t *sig)
 		{
 			self->xfer = ESM_CONTAINER_OF(
 					esm_list_begin(self->cfg->queue), bus_xfer_t, item);
-			self->xfer->tx(self->xfer);
+			self->xfer->exec(self->xfer);
 		}
 	}
 	else if(self->cfg->req == sig->type)
