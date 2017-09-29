@@ -1,5 +1,5 @@
 #include "platform.h"
-
+#include "board.h"
 #include "esm/esm.h"
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
@@ -20,6 +20,9 @@ void HAL_SYSTICK_Callback(void)
 			.receiver = tick_esm,
 	};
 	esm_send_signal(&sig);
+#ifdef BOARD_TICK
+	BOARD_TICK;
+#endif
 }
 
 uint16_t platform_rnd(uint16_t range)
