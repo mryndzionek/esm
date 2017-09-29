@@ -43,7 +43,7 @@ static void esm_idle_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_idle_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
@@ -89,7 +89,7 @@ static void esm_requesting_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_requesting_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_requesting_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{

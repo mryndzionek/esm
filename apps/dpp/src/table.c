@@ -35,7 +35,7 @@ static void esm_serving_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_serving_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_serving_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	table_esm_t *self = ESM_CONTAINER_OF(esm, table_esm_t, esm);
 

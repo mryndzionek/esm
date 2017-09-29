@@ -15,7 +15,7 @@ static void esm_idle_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_idle_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_idle_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -48,7 +48,7 @@ static void esm_active_exit(esm_t *const esm)
 	self->cfg->arm();
 }
 
-static void esm_active_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_active_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	debouncer_esm_t *self = ESM_CONTAINER_OF(esm, debouncer_esm_t, esm);
 

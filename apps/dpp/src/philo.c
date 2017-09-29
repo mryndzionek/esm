@@ -34,7 +34,7 @@ static void esm_thinking_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_thinking_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_thinking_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
@@ -64,7 +64,7 @@ static void esm_hungry_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_hungry_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_hungry_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
@@ -101,7 +101,7 @@ static void esm_eating_exit(esm_t *const esm)
 	esm_send_signal(&sig);
 }
 
-static void esm_eating_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_eating_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{

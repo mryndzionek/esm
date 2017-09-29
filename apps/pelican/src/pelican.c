@@ -54,7 +54,7 @@ static void esm_operational_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_operational_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_operational_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -87,7 +87,7 @@ static void esm_cars_exit(esm_t *const esm)
 	BOARD_CARS_RED();
 }
 
-static void esm_cars_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_cars_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -123,7 +123,7 @@ static void esm_green_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_green_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_green_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -155,7 +155,7 @@ static void esm_yellow_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_yellow_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_yellow_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -181,7 +181,7 @@ static void esm_green_no_ped_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_green_no_ped_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_green_no_ped_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -210,7 +210,7 @@ static void esm_green_int_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_green_int_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_green_int_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -236,7 +236,7 @@ static void esm_green_ped_wait_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_green_ped_wait_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_green_ped_wait_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -269,7 +269,7 @@ static void esm_pedestrians_exit(esm_t *const esm)
 	BOARD_PEDS_DONT_WALK();
 }
 
-static void esm_pedestrians_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_pedestrians_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -304,7 +304,7 @@ static void esm_walk_exit(esm_t *const esm)
 	BOARD_PEDS_DONT_WALK();
 }
 
-static void esm_walk_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_walk_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	(void)esm;
 
@@ -347,7 +347,7 @@ static void esm_flash_exit(esm_t *const esm)
 	(void)esm;
 }
 
-static void esm_flash_handle(esm_t *const esm, esm_signal_t *sig)
+static void esm_flash_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	pelican_esm_t *self = ESM_CONTAINER_OF(esm, pelican_esm_t, esm);
 
