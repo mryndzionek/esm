@@ -8,6 +8,16 @@ statecharts implementation in C. Inspired by [QP framework](https://state-machin
 Provided are four examples: simple blink state machine transitioning between two states,
 classic dining philosophers problem, cigarette smokers problem and pelican crossing simulation.
 
+Recommended reading
+-------------------
+
+- [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
+
+- [Practical UML Statecharts in C/C++, 2nd Edition:
+Event-Driven Programming for Embedded Systems](https://www.state-machine.com/psicc2/)
+
+- [Introduction to Embedded Systems](http://leeseshia.org/releases/LeeSeshia_DigitalV2_2.pdf)
+
 Build instructions
 ------------------
 
