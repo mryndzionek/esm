@@ -8,6 +8,115 @@ statecharts implementation in C. Inspired by [QP framework](https://state-machin
 Provided are four examples: simple blink state machine transitioning between two states,
 classic dining philosophers problem, cigarette smokers problem and pelican crossing simulation.
 
+Example
+-------
+
+
+```c
+// Blink state machine configuration structure
+// It's kept in read-only memory and holds the delay
+// the machine will stay in state before transitioning to another
+
+typedef struct {
+	const uint32_t delay;
+} blink_cfg_t;
+
+// Structure representing the machine object (active object)
+// Timer is used to schedule timeout signal on which machine changes state
+
+typedef struct {
+	hesm_t esm;
+	esm_timer_t timer;
+	blink_cfg_t const *const cfg;
+} blink_esm_t;
+
+// Define two states (state structures) 'on' and 'off'
+
+ESM_DEFINE_STATE(on);
+ESM_DEFINE_STATE(off);
+
+// Entry action of 'on' state:
+// - run action corresponding to turning the LED on
+// - schedule a timer signal with configured delay
+
+static void esm_on_entry(esm_t *const esm)
+{
+	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
+
+	BOARD_LED_ON();
+
+	esm_signal_t sig = {
+			.type = esm_sig_tmout,
+			.sender = esm,
+			.receiver = esm
+	};
+	esm_timer_add(&self->timer,
+			self->cfg->delay, &sig);
+}
+
+// Signal handler of 'on' state
+// - on 'timeout' signal transition to 'off' state
+
+static void esm_on_handle(esm_t *const esm, const esm_signal_t * const sig)
+{
+	switch(sig->type)
+	{
+	case esm_sig_tmout:
+		ESM_TRANSITION(off);
+		break;
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
+
+// Entry action of 'off' state:
+// - run action corresponding to turning the LED off
+// - schedule a timer signal with configured delay
+
+static void esm_off_entry(esm_t *const esm)
+{
+	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
+
+	BOARD_LED_OFF();
+
+	esm_signal_t sig = {
+			.type = esm_sig_tmout,
+			.sender = esm,
+			.receiver = esm
+	};
+	esm_timer_add(&self->timer,
+			self->cfg->delay, &sig);
+}
+
+// Signal handler of 'off' state
+// - on 'timeout' signal transition to 'on' state
+
+static void esm_off_handle(esm_t *const esm, const esm_signal_t * const sig)
+{
+	switch(sig->type)
+	{
+	case esm_sig_tmout:
+		ESM_TRANSITION(on);
+		break;
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
+
+// Configuration structure of machine instance 'blink_1'
+
+static const blink_cfg_t blink_1_cfg = {
+		.delay = 300UL
+};
+
+// Register instance 'blink_1' of the blink machine with the framework
+// Last argument is the input signals queue length
+
+ESM_REGISTER(blink, blink_1, esm_gr_none, 1);
+```
+
 Recommended reading
 -------------------
 
