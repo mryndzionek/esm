@@ -20,7 +20,7 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
-For STM32 target (bluepill board):
+For STM32 target ([bluepill board](http://wiki.stm32duino.com/index.php?title=Blue_Pill)):
 
 ```sh
 mkdir build
