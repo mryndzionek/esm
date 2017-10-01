@@ -37,13 +37,16 @@
       }
 
 #define ESM_COMPLEX_REGISTER(_type, _name, _group, _sigq_size, _depth) \
+      static const esm_cfg_t esm_##_name##_cfg = { \
+            .name = #_name, \
+            .id = esm_id_##_name, \
+            .is_cplx = true, \
+            .group = _group, \
+      }; \
       static _type##_esm_t _name##_ctx = { \
             .esm = { \
                   .super = { \
-                        .name = #_name, \
-                        .id = esm_id_##_name, \
-						.is_cplx = true, \
-                        .group = _group, \
+                        .cfg = &esm_##_name##_cfg, \
                         .init = esm_##_type##_init, \
                         .queue = { \
                               .size = _sigq_size, \

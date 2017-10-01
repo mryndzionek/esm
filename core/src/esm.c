@@ -10,7 +10,7 @@
 
 ESM_THIS_FILE;
 
-static esm_list_t esm_signals = {0};
+static esm_list_t esm_signals[ESM_MAX_PRIO];
 extern esm_t * const __attribute__((weak)) __start_esm_sec;
 extern esm_t * const __attribute__((weak)) __stop_esm_sec;
 
@@ -48,7 +48,7 @@ static void simple_process(esm_t * const esm)
 {
 	esm_signal_t *sig = esm_queue_tail(&esm->queue);
 
-	if(esm->id > esm_id_trace)
+	if(esm->cfg->id > esm_id_trace)
 	{
 		ESM_TRACE(sig->receiver, receive, sig);
 	}
@@ -58,11 +58,11 @@ static void simple_process(esm_t * const esm)
 
 	ESM_ASSERT_MSG(esm->next_state != &esm_unhandled_state,
 			"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
-			esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
+			esm_global_time, esm->cfg->name, esm_sig_name[sig->type], esm->curr_state->name);
 
 	if(esm->curr_state != esm->next_state)
 	{
-		if(esm->id > esm_id_trace)
+		if(esm->cfg->id > esm_id_trace)
 		{
 			ESM_TRACE(esm, trans, sig);
 		}
@@ -77,7 +77,7 @@ static void simple_process(esm_t * const esm)
 
 	ESM_ASSERT_MSG(esm->curr_state == esm->next_state,
 			"[%010u] [%s] Transitioning from entry/exit not allowed\r\n",
-			esm_global_time, esm->name);
+			esm_global_time, esm->cfg->name);
 }
 
 #ifdef ESM_HSM
@@ -97,7 +97,7 @@ static void complex_process(esm_t * const esm)
 		esm_hstate_t const *s = (esm_hstate_t const *)esm->curr_state;
 		ESM_ASSERT_MSG(s->parent != &esm_top_state,
 				"[%010u] [%s] Unhandled signal: %s (%s)\r\n",
-				esm_global_time, esm->name, esm_sig_name[sig->type], esm->curr_state->name);
+				esm_global_time, esm->cfg->name, esm_sig_name[sig->type], esm->curr_state->name);
 
 		esm->next_state = esm->curr_state = &s->parent->super;
 		esm->curr_state->handle(esm, sig);
@@ -112,7 +112,7 @@ static void complex_process(esm_t * const esm)
 	{
 		end = (esm_hstate_t const *)esm->next_state;
 
-		if(esm->id > esm_id_trace)
+		if(esm->cfg->id > esm_id_trace)
 		{
 			ESM_TRACE(esm, trans, sig);
 		}
@@ -152,7 +152,7 @@ static void complex_process(esm_t * const esm)
 		{
 			esm->next_state = esm->curr_state;
 
-			ESM_PRINTF("[%010u] [%s] Initial %s\r\n", esm_global_time, esm->name, start->super.name);
+			ESM_PRINTF("[%010u] [%s] Initial %s\r\n", esm_global_time, esm->cfg->name, start->super.name);
 
 			start->init(esm);
 			ESM_ASSERT(esm->curr_state != esm->next_state);
@@ -178,7 +178,7 @@ void esm_process(void)
 
 	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
 		esm_t * const esm = *sec;
-		if(esm->is_cplx)
+		if(esm->cfg->is_cplx)
 		{
 #ifdef ESM_HSM
 			if(esm->init)
@@ -217,26 +217,32 @@ void esm_process(void)
 
 	while(1)
 	{
+		uint16_t prio;
+
 		ESM_WAIT();
 
-		while(!esm_list_empty(&esm_signals))
+		for(prio = 0; prio < ESM_MAX_PRIO; prio++)
 		{
-			esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals),
-					esm_signal_t, item);
-			if(sig->receiver->is_cplx)
+			while(!esm_list_empty(&esm_signals[prio]))
 			{
+				prio = 0;
+				esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
+						esm_signal_t, item);
+				if(sig->receiver->cfg->is_cplx)
+				{
 #ifdef ESM_HSM
-				complex_process(sig->receiver);
+					complex_process(sig->receiver);
 #endif
+				}
+				else
+				{
+					simple_process(sig->receiver);
+				}
+				ESM_CRITICAL_ENTER();
+				esm_queue_pop(&sig->receiver->queue);
+				esm_list_erase(&esm_signals[prio], &sig->item);
+				ESM_CRITICAL_EXIT();
 			}
-			else
-			{
-				simple_process(sig->receiver);
-			}
-			ESM_CRITICAL_ENTER();
-			esm_queue_pop(&sig->receiver->queue);
-			esm_list_erase(&esm_signals, &sig->item);
-			ESM_CRITICAL_EXIT();
 		}
 		if(!esm_is_tracing)
 		{
@@ -258,7 +264,7 @@ bool esm_send_signal(esm_signal_t *sig)
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
 
-	esm_list_insert(&esm_signals, &(esm_queue_head(&sig->receiver->queue))->item, NULL);
+	esm_list_insert(&esm_signals[0], &(esm_queue_head(&sig->receiver->queue))->item, NULL);
 	esm_queue_push(&sig->receiver->queue, sig);
 
 	ret = true;
@@ -272,7 +278,7 @@ void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group)
 	esm_t * const * sec;
 	bool ret = false;
 	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
-		if((*sec)->group & group)
+		if((*sec)->cfg->group & group)
 		{
 			sig->receiver = *sec;
 			ret |= esm_send_signal(sig);

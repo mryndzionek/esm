@@ -7,6 +7,10 @@
 #include "platform.h"
 #include "signals.h"
 
+#ifndef ESM_MAX_PRIO
+#define ESM_MAX_PRIO	(1)
+#endif
+
 #define ESM_CONTAINER_OF(ptr, type, field) \
 		((type *)(((char *)(ptr)) - offsetof(type, field)))
 
@@ -25,12 +29,15 @@
 		}
 
 #define ESM_REGISTER(_type, _name, _group, _sigq_size) \
+        static const esm_cfg_t esm_##_name##_cfg = { \
+            .name = #_name, \
+            .id = esm_id_##_name, \
+            .is_cplx = false, \
+            .group = _group, \
+		}; \
 		static _type##_esm_t _name##_ctx = { \
 				.esm = { \
-						.name = #_name, \
-						.id = esm_id_##_name, \
-						.is_cplx = false, \
-						.group = _group, \
+						.cfg = &esm_##_name##_cfg, \
 						.init = esm_##_type##_init, \
 						.queue = { \
 						      .size = _sigq_size, \
@@ -63,6 +70,15 @@ typedef enum {
 	ESM_IDS
 } esm_id_e;
 #undef ESM_ID
+
+typedef struct
+{
+	char const *const name;
+	const uint8_t id;
+	const bool is_cplx;
+	const uint8_t group;
+	const uint16_t prio;
+} esm_cfg_t;
 
 typedef struct _esm esm_t;
 
@@ -120,10 +136,7 @@ typedef struct {
 } esm_state_t;
 
 struct _esm {
-	char const *const name;
-	const uint8_t id;
-	const bool is_cplx;
-	const uint8_t group;
+	const esm_cfg_t *const cfg;
 	void (*init)(esm_t *const esm);
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;
