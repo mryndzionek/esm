@@ -44,10 +44,8 @@ const esm_state_t esm_self_state = {
 		.name = "esm_self",
 };
 
-static void simple_process(esm_t * const esm)
+static void simple_process(esm_t * const esm, const esm_signal_t *const sig)
 {
-	esm_signal_t *sig = esm_queue_tail(&esm->queue);
-
 	if(esm->cfg->id > esm_id_trace)
 	{
 		ESM_TRACE(sig->receiver, receive, sig);
@@ -81,9 +79,8 @@ static void simple_process(esm_t * const esm)
 }
 
 #ifdef ESM_HSM
-static void complex_process(esm_t * const esm)
+static void complex_process(esm_t * const esm, const esm_signal_t *const sig)
 {
-	esm_signal_t *sig = esm_queue_tail(&esm->queue);
 	esm_hstate_t const *start = (esm_hstate_t const *)esm->curr_state;
 	esm_hstate_t const *end;
 
@@ -227,15 +224,16 @@ void esm_process(void)
 			{
 				esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 						esm_signal_t, item);
+				ESM_ASSERT(sig == esm_queue_tail(&sig->receiver->queue));
 				if(sig->receiver->cfg->is_cplx)
 				{
 #ifdef ESM_HSM
-					complex_process(sig->receiver);
+					complex_process(sig->receiver, sig);
 #endif
 				}
 				else
 				{
-					simple_process(sig->receiver);
+					simple_process(sig->receiver, sig);
 				}
 				ESM_CRITICAL_ENTER();
 				esm_queue_pop(&sig->receiver->queue);
