@@ -120,4 +120,4 @@ static void esm_table_init(esm_t *const esm)
 static const table_cfg_t table_cfg = {
 };
 
-ESM_REGISTER(table, table, esm_gr_none, N_PHILO);
+ESM_REGISTER(table, table, esm_gr_none, N_PHILO, 0);

@@ -36,12 +36,13 @@
 	  .depth = _depth \
       }
 
-#define ESM_COMPLEX_REGISTER(_type, _name, _group, _sigq_size, _depth) \
+#define ESM_COMPLEX_REGISTER(_type, _name, _group, _sigq_size, _depth, _prio) \
       static const esm_cfg_t esm_##_name##_cfg = { \
             .name = #_name, \
             .id = esm_id_##_name, \
             .is_cplx = true, \
             .group = _group, \
+            .prio = _prio + 1, \
       }; \
       static _type##_esm_t _name##_ctx = { \
             .esm = { \

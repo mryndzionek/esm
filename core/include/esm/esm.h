@@ -8,7 +8,9 @@
 #include "signals.h"
 
 #ifndef ESM_MAX_PRIO
-#define ESM_MAX_PRIO	(1)
+#error "ESM_MAX_PRIO undefined !!!"
+#else
+#define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 2)
 #endif
 
 #define ESM_CONTAINER_OF(ptr, type, field) \
@@ -28,12 +30,13 @@
 				.name = #_name, \
 		}
 
-#define ESM_REGISTER(_type, _name, _group, _sigq_size) \
+#define ESM_REGISTER(_type, _name, _group, _sigq_size, _prio) \
         static const esm_cfg_t esm_##_name##_cfg = { \
             .name = #_name, \
             .id = esm_id_##_name, \
             .is_cplx = false, \
             .group = _group, \
+			.prio = _prio + 1, \
 		}; \
 		static _type##_esm_t _name##_ctx = { \
 				.esm = { \
@@ -77,7 +80,7 @@ typedef struct
 	const uint8_t id;
 	const bool is_cplx;
 	const uint8_t group;
-	const uint16_t prio;
+	const uint8_t prio;
 } esm_cfg_t;
 
 typedef struct _esm esm_t;

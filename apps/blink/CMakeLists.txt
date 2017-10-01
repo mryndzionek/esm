@@ -4,6 +4,11 @@ add_library(${ESM_TARGET}Src STATIC "")
 include("${CMAKE_SOURCE_DIR}/Core.cmake")
 include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
 
+target_compile_definitions(${ESM_TARGET}Src
+    PUBLIC
+        -DESM_MAX_PRIO=2
+)
+
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"

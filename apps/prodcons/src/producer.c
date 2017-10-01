@@ -134,11 +134,11 @@ static const producer_cfg_t producer_1_cfg = {
 		.operation = read_sensor
 };
 
-ESM_REGISTER(producer, producer_1, esm_gr_none, 1);
+ESM_REGISTER(producer, producer_1, esm_gr_none, 1, 0);
 
 static const producer_cfg_t producer_2_cfg = {
 		.num = 1,
 		.operation = write_actuator
 };
 
-ESM_REGISTER(producer, producer_2, esm_gr_none, 1);
+ESM_REGISTER(producer, producer_2, esm_gr_none, 1, 0);
