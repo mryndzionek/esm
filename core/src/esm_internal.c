@@ -38,6 +38,7 @@ const esm_state_t tick = {
 static const esm_cfg_t tick_cfg = {
 		.name = "esm_tick",
 		.id = esm_id_tick,
+		.prio = (_ESM_MAX_PRIO - 1)
 };
 
 static esm_t esm_tick = {
@@ -86,7 +87,6 @@ const esm_state_t trace = {
 static const esm_cfg_t trace_cfg = {
 		.name = "esm_trace",
 		.id = esm_id_trace,
-		.prio = (_ESM_MAX_PRIO - 1)
 };
 
 static esm_t esm_trace = {
