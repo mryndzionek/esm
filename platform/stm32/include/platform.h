@@ -31,9 +31,14 @@ uint16_t platform_rnd(uint16_t range);
 #define ESM_WAIT() do { \
 		HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_SET); \
 		ESM_CRITICAL_ENTER(); \
-		if(esm_list_empty(&esm_signals)) \
+		for(prio = _ESM_MAX_PRIO - 1; prio >= 0; prio--) \
 		{ \
-			HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI); \
+		   if(!esm_list_empty(&esm_signals[prio])) { \
+			   break; \
+		   } \
+		} \
+		if(prio < 0) { \
+		   HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI); \
 		} \
 		ESM_CRITICAL_EXIT(); \
 		HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET); \
@@ -45,7 +50,7 @@ uint16_t platform_rnd(uint16_t range);
 #define ESM_CRITICAL_EXIT() __enable_irq()
 
 #define ESM_TRACE_init(_p_esm, ...) do { \
-		trace_init(_p_esm->id); \
+		trace_init(_p_esm->cfg->id); \
 } while (0)
 
 #define ESM_TRACE_enter(_p_esm, _name, ...) do { \
@@ -55,15 +60,15 @@ uint16_t platform_rnd(uint16_t range);
 } while (0)
 
 #define ESM_TRACE_init(_p_esm, ...) do { \
-		trace_init(_p_esm->id); \
+		trace_init(_p_esm->cfg->id); \
 } while (0)
 
 #define ESM_TRACE_trans(_p_esm, _sig, ...) do { \
-		trace_trans(_p_esm->id, _sig->type, _p_esm->curr_state->name,  _p_esm->next_state->name); \
+		trace_trans(_p_esm->cfg->id, _sig->type, _p_esm->curr_state->name,  _p_esm->next_state->name); \
 } while (0)
 
 #define ESM_TRACE_receive(_p_esm, _sig, ...) do { \
-		trace_receive(_p_esm->id, _sig->type, _p_esm->curr_state->name); \
+		trace_receive(_p_esm->cfg->id, _sig->type, _p_esm->curr_state->name); \
 } while (0)
 
 #define ESM_TRACE(_p_esm, _action, ...) \
