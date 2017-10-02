@@ -67,7 +67,7 @@ static void esm_requesting_entry(esm_t *const esm)
 
 	ESM_PRINTF("[%010u] [%s] Requesting '%s' and '%s'\r\n",
 			esm_global_time,
-			esm->name,
+			esm->cfg->name,
 			resource2str[resource_1],
 			resource2str[resource_2]);
 

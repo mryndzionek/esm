@@ -7,7 +7,7 @@ void esm_queue_push(esm_queue_t *self, esm_signal_t *sig)
 	if(self->len)
 	{
 		ESM_ASSERT_MSG(self->head != self->tail,
-				"Event queue for %s overrun\r\n", sig->receiver->name);
+				"Event queue for %s overrun\r\n", sig->receiver->cfg->name);
 	}
 
 	self->data[self->head++] = *sig;
