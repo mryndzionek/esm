@@ -378,4 +378,4 @@ static void esm_pelican_init(esm_t *const esm)
 static const pelican_cfg_t pelican_cfg = {
 };
 
-ESM_COMPLEX_REGISTER(pelican, pelican, esm_gr_none, 1, 5);
+ESM_COMPLEX_REGISTER(pelican, pelican, esm_gr_none, 1, 5, 0);

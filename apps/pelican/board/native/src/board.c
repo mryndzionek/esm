@@ -40,4 +40,4 @@ static const debouncer_cfg_t debouncer_cfg = {
 		.arm = debouncer_arm
 };
 
-ESM_REGISTER(debouncer, debouncer, esm_gr_none, 1);
+ESM_REGISTER(debouncer, debouncer, esm_gr_none, 1, 1);

@@ -89,4 +89,4 @@ static const consumer_cfg_t consumer_cfg = {
 		.num = 0
 };
 
-ESM_REGISTER(consumer, consumer, esm_gr_none, 1);
+ESM_REGISTER(consumer, consumer, esm_gr_none, 1, 0);

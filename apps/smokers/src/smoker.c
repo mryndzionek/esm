@@ -102,6 +102,6 @@ static const smoker_cfg_t matches_smoker_cfg = {
 		.resource = matches
 };
 
-ESM_REGISTER(smoker, tobacco_smoker, esm_gr_smokers | esm_gr_agents, 2);
-ESM_REGISTER(smoker, paper_smoker, esm_gr_smokers | esm_gr_agents, 2);
-ESM_REGISTER(smoker, matches_smoker, esm_gr_smokers | esm_gr_agents, 2);
+ESM_REGISTER(smoker, tobacco_smoker, esm_gr_smokers | esm_gr_agents, 2, 0);
+ESM_REGISTER(smoker, paper_smoker, esm_gr_smokers | esm_gr_agents, 2, 0);
+ESM_REGISTER(smoker, matches_smoker, esm_gr_smokers | esm_gr_agents, 2, 0);

@@ -86,7 +86,7 @@ const esm_state_t trace = {
 static const esm_cfg_t trace_cfg = {
 		.name = "esm_trace",
 		.id = esm_id_trace,
-		.prio = (ESM_MAX_PRIO - 1)
+		.prio = (_ESM_MAX_PRIO - 1)
 };
 
 static esm_t esm_trace = {
