@@ -12,4 +12,4 @@ static const bus_cfg_t bus_cfg = {
 		.queue = &bus_q,
 };
 
-ESM_REGISTER(bus, bus, esm_gr_none, 2);
+ESM_REGISTER(bus, bus, esm_gr_none, 2, 1);
