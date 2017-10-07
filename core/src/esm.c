@@ -10,6 +10,15 @@
 
 ESM_THIS_FILE;
 
+static uint8_t const log2lut[16] = {
+		0, 1, 2, 2,
+		3, 3, 3, 3,
+		4, 4, 4, 4,
+		4, 4, 4, 4
+};
+
+static uint8_t prio_mask;
+
 static esm_list_t esm_signals[_ESM_MAX_PRIO];
 extern esm_t * const __attribute__((weak)) __start_esm_sec;
 extern esm_t * const __attribute__((weak)) __stop_esm_sec;
@@ -223,9 +232,17 @@ void esm_process(void)
 
 		ESM_WAIT();
 
-		for(prio = _ESM_MAX_PRIO - 1; prio >= 0; prio--)
+		do
 		{
-			while(!esm_list_empty(&esm_signals[prio]))
+			if ((prio_mask & 0xF0) != 0) {
+				prio = log2lut[prio_mask >> 4] + 4;
+			}
+			else {
+				prio = log2lut[prio_mask];
+			}
+			ESM_ASSERT(prio);
+
+			while(!esm_list_empty(&esm_signals[--prio]))
 			{
 				esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 						esm_signal_t, item);
@@ -243,10 +260,15 @@ void esm_process(void)
 				ESM_CRITICAL_ENTER();
 				esm_queue_pop(&sig->receiver->queue);
 				esm_list_erase(&esm_signals[prio], &sig->item);
+				if(esm_list_empty(&esm_signals[prio]))
+				{
+					prio_mask &= ~(1UL << prio);
+				}
 				ESM_CRITICAL_EXIT();
-				prio = _ESM_MAX_PRIO - 1;
 			}
 		}
+		while(prio_mask);
+
 		if(!esm_is_tracing)
 		{
 			uint8_t data[ESM_TRACE_CHUNK_SIZE];
@@ -271,6 +293,7 @@ bool esm_send_signal(esm_signal_t *sig)
 	esm_list_insert(&esm_signals[sig->receiver->cfg->prio],
 			&(esm_queue_head(&sig->receiver->queue))->item, NULL);
 	esm_queue_push(&sig->receiver->queue, sig);
+	prio_mask |= (1UL << sig->receiver->cfg->prio);
 
 	ret = true;
 	ESM_CRITICAL_EXIT();
