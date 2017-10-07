@@ -228,7 +228,7 @@ void esm_process(void)
 
 	while(1)
 	{
-		int16_t prio;
+		uint8_t prio;
 
 		ESM_WAIT();
 
@@ -241,8 +241,9 @@ void esm_process(void)
 				prio = log2lut[prio_mask];
 			}
 			ESM_ASSERT(prio);
+			prio--;
 
-			while(!esm_list_empty(&esm_signals[--prio]))
+			while(!esm_list_empty(&esm_signals[prio]))
 			{
 				esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 						esm_signal_t, item);
