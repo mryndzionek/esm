@@ -2,9 +2,7 @@
 #define INCLUDE_SIGNALS_H_
 
 #define ESM_SIGNALS \
-		ESM_SIGNAL(tmout) \
-		ESM_SIGNAL(request) \
-		ESM_SIGNAL(response)
+		ESM_SIGNAL(tmout)
 
 #define ESM_IDS \
       ESM_ID(producer_1) \

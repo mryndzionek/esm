@@ -6,6 +6,7 @@ include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
 target_compile_definitions(${ESM_TARGET}Src
     PUBLIC
         -DESM_MAX_PRIO=1
+        -DESM_USE_BUS
 )
 
 target_include_directories(${ESM_TARGET}Src

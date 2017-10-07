@@ -34,7 +34,7 @@ static void read_sensor(bus_xfer_t *xfer)
 	BOARD_READ_SENSOR();
 
 	esm_signal_t sig = {
-			.type = esm_sig_request,
+			.type = esm_sig_bus_req,
 			.sender = xfer->receiver,
 			.receiver = consumer_esm
 	};
@@ -47,7 +47,7 @@ static void write_actuator(bus_xfer_t *xfer)
 	BOARD_WRITE_ACTUATOR();
 
 	esm_signal_t sig = {
-			.type = esm_sig_request,
+			.type = esm_sig_bus_req,
 			.sender = xfer->receiver,
 			.receiver = consumer_esm
 	};
@@ -94,7 +94,7 @@ static void esm_busy_entry(esm_t *const esm)
 	self->xfer.xfer.receiver = esm;
 
 	esm_signal_t sig = {
-			.type = esm_sig_request,
+			.type = esm_sig_bus_req,
 			.sender = esm,
 			.receiver = bus_esm,
 			.params = {
@@ -115,7 +115,7 @@ static void esm_busy_handle(esm_t *const esm, const esm_signal_t * const sig)
 
 	switch(sig->type)
 	{
-	case esm_sig_response:
+	case esm_sig_bus_rsp:
 		ESM_TRANSITION(idle);
 		break;
 	default:
