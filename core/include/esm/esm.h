@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include "esm_list.h"
 #include "platform.h"
+#include "esm_assert.h"
 #include "signals.h"
 
 #ifndef ESM_MAX_PRIO
@@ -12,6 +13,9 @@
 #else
 #define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 2)
 #endif
+
+// The priority mask is uint8_t, so priorities can be in range 0-7
+ESM_ASSERT_COMPILE(_ESM_MAX_PRIO < 9);
 
 #define ESM_CONTAINER_OF(ptr, type, field) \
 		((type *)(((char *)(ptr)) - offsetof(type, field)))
