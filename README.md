@@ -120,12 +120,18 @@ ESM_REGISTER(blink, blink_1, esm_gr_none, 1);
 Recommended reading
 -------------------
 
-- [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
+Books:
 
 - [Practical UML Statecharts in C/C++, 2nd Edition:
 Event-Driven Programming for Embedded Systems](https://www.state-machine.com/psicc2/)
 
 - [Introduction to Embedded Systems](http://leeseshia.org/releases/LeeSeshia_DigitalV2_2.pdf)
+
+Articles:
+
+- [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
+
+- [Managing Concurrency in Complex Embedded Systems](http://www.kellytechnologygroup.com/main/concurrent-embedded-systems-website.pdf)
 
 Build instructions
 ------------------
@@ -155,10 +161,14 @@ make
 
 TODO
 ----
-
- - add more examples
- - handle timer rollover
- - research and implement efficient priority support
+  - [x] adding hierarchical state machine support
+  - [x] add proper platform (BSP) separation
+  - [x] change to more flexible build system (CMake)
+  - [x] evaluate usefulness of publish-subscribe (efficient implementation limits signal types to 31)
+  - [x] switch from array to list in main scheduler loop
+  - [x] research and implement efficient priority support
+  - [ ] add more examples
+  - [ ] handle timer rollover
 
 License
 -------
