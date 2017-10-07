@@ -98,6 +98,11 @@ static void complex_process(esm_t * const esm, const esm_signal_t *const sig)
 	esm_hstate_t const *start = (esm_hstate_t const *)esm->curr_state;
 	esm_hstate_t const *end;
 
+	if(esm->cfg->id > esm_id_trace)
+	{
+		ESM_TRACE(sig->receiver, receive, sig);
+	}
+
 	esm->next_state = esm->curr_state;
 	start->super.handle(esm, sig);
 
