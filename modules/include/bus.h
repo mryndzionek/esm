@@ -7,8 +7,6 @@
 
 typedef struct {
 	uint16_t timeout;
-	esm_signal_e req;
-	esm_signal_e rsp;
 	esm_list_t *queue;
 } bus_cfg_t;
 

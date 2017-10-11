@@ -26,6 +26,11 @@ const esm_state_t esm_unhandled_state = {
 #define ESM_SIGNAL(_name) #_name,
 static char const * const esm_sig_name[] = {
 		"alarm",
+#ifdef ESM_USE_BUS
+		"bus_req",
+		"bus_rsp",
+		"bus_ack",
+#endif
 		ESM_SIGNALS
 };
 #undef ESM_SIGNAL

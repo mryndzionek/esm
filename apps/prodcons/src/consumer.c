@@ -33,7 +33,7 @@ static void esm_idle_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	switch(sig->type)
 	{
-	case esm_sig_request:
+	case esm_sig_bus_req:
 		ESM_TRANSITION(busy);
 		break;
 	default:
@@ -58,7 +58,7 @@ static void esm_busy_entry(esm_t *const esm)
 static void esm_busy_exit(esm_t *const esm)
 {
 	esm_signal_t sig = {
-			.type = esm_sig_response,
+			.type = esm_sig_bus_rsp,
 			.sender = esm,
 			.receiver = bus_esm
 	};
