@@ -194,9 +194,9 @@ void esm_process(void)
 
 	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
 		esm_t * const esm = *sec;
+#ifdef ESM_HSM
 		if(esm->cfg->is_cplx)
 		{
-#ifdef ESM_HSM
 			if(esm->init)
 			{
 				esm->init(esm);
@@ -216,10 +216,12 @@ void esm_process(void)
 				esm->curr_state = esm->next_state;
 				s = (esm_hstate_t * const)esm->curr_state;
 			}
-#endif
 		}
 		else
 		{
+#else
+			ESM_ASSERT(!esm->cfg->is_cplx);
+#endif
 			if(esm->init)
 			{
 				esm->init(esm);
@@ -228,7 +230,9 @@ void esm_process(void)
 			}
 			ESM_TRACE(esm, init);
 			esm->curr_state->entry(esm);
+#ifdef ESM_HSM
 		}
+#endif
 	}
 
 	while(1)
@@ -253,16 +257,18 @@ void esm_process(void)
 				esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 						esm_signal_t, item);
 				ESM_ASSERT(sig == esm_queue_tail(&sig->receiver->queue));
+#ifdef ESM_HSM
 				if(sig->receiver->cfg->is_cplx)
 				{
-#ifdef ESM_HSM
 					complex_process(sig->receiver, sig);
-#endif
 				}
 				else
 				{
+#endif
 					simple_process(sig->receiver, sig);
+#ifdef ESM_HSM
 				}
+#endif
 				ESM_CRITICAL_ENTER();
 				esm_queue_pop(&sig->receiver->queue);
 				esm_list_erase(&esm_signals[prio], &sig->item);
