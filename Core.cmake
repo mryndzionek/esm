@@ -26,4 +26,5 @@ target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/core/include"
         "${CMAKE_CURRENT_LIST_DIR}/trace/include"
+        "${CMAKE_CURRENT_LIST_DIR}/modules/include"
 )
