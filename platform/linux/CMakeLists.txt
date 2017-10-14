@@ -15,6 +15,6 @@ target_include_directories(${ESM_TARGET}Src
         "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/include"
 )
 
-function(add_esm_executable EXECUTABLE_NAME)
+function(add_esm_plat_exec EXECUTABLE_NAME)
     add_executable(${EXECUTABLE_NAME} ${ARGN})
-endfunction(add_esm_executable)
+endfunction(add_esm_plat_exec)

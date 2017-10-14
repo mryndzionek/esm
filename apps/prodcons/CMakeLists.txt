@@ -3,20 +3,16 @@ add_library(${ESM_TARGET}Src STATIC "")
 include("${CMAKE_SOURCE_DIR}/Core.cmake")
 include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
 
+include("${CMAKE_SOURCE_DIR}/modules/bus.cmake")
+
 target_compile_definitions(${ESM_TARGET}Src
     PUBLIC
         -DESM_MAX_PRIO=1
-        -DESM_USE_BUS
 )
 
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"
-)
-
-target_sources(${ESM_TARGET}Src
-    PRIVATE
-        "${CMAKE_SOURCE_DIR}/modules/src/bus.c"
 )
 
 add_esm_executable(
