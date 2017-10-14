@@ -3,13 +3,33 @@ Efficient State Machine framework
 
 Introduction
 ------------
-This repository gathers all the ideas and implementation tricks I had around lightweight, efficient
-statecharts implementation in C. Inspired by [QP framework](https://state-machine.com/doc/concepts).
-Provided are four examples: simple blink state machine transitioning between two states,
-classic dining philosophers problem, cigarette smokers problem and pelican crossing simulation.
+Good system design is often about knowing what to avoid.
+Unrestricted use of traditional techniques for writing concurrent software like preemptive threading almost always
+results in systems that are unpredictable and unreliable. Degradation of those two aspects
+is specially problematic in embedded systems where predictability and reliability is even
+more important than performance and/or expressiveness.
 
-Example
--------
+**Active Object Model** brings the same improvements to behavioral design as
+**Object Orientation** to architectural design. Active objects are objects that encapsulate own flow of control and
+are designed as message pumps with **Run-to-completion** (RTC) semantics and explicit state machine structure.
+
+Adapting **Active Object Model** allows for construction of comprehensible concurrent programs.
+Resulting conceptual integrity has also added benefit of making it possible to spend effort on design instead of implementation.
+Implementation step in such a setting is, for the most part, mechanical process and, as such, can be automated.
+
+This repository gathers all the ideas and implementation tricks around lightweight, efficient
+statecharts and AOM implementation in C. Inspired by [QP framework](https://state-machine.com/doc/concepts).
+It's basically a simple cooperative priority-based scheduler and a (hierarchical) state machine framework.
+Some implementation techniques and design patterns (like 'Embedded Anchor' and linker-section-based 'plugin' system) are borrowed from Linux kernel.
+
+Provided are four examples/demos:
+ - simple blink hierarchical state machine transitioning between two states and reacting to a button press
+ - Dining Philosophers Problem (DPP) - originally formulated in 1965 by Edsger Dijkstra
+ - cigarette smokers problem - classical problem originally described in 1971 by Suhas Patil
+ - pelican crossing simulation - simplest safety-critical system simulation
+
+Simplest Example
+----------------
 
 
 ```c
@@ -132,6 +152,8 @@ Articles:
 - [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
 
 - [Managing Concurrency in Complex Embedded Systems](http://www.kellytechnologygroup.com/main/concurrent-embedded-systems-website.pdf)
+
+- [Problem with threads](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-1.pdf)
 
 Build instructions
 ------------------
