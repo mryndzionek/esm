@@ -66,11 +66,7 @@ ESM_ASSERT_COMPILE(_ESM_MAX_PRIO < 9);
 typedef enum
 {
 	esm_sig_alarm = 0,
-#ifdef ESM_USE_BUS
-	esm_sig_bus_req,
-	esm_sig_bus_rsp,
-	esm_sig_bus_ack,
-#endif
+	ESM_MODULE_SIGNALS
 	ESM_SIGNALS
 } esm_signal_e;
 #undef ESM_SIGNAL
