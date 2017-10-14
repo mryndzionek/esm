@@ -6,7 +6,6 @@
 #include "esm/esm_timer.h"
 
 typedef struct {
-	uint16_t timeout;
 	esm_list_t *queue;
 } bus_cfg_t;
 
