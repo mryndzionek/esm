@@ -159,6 +159,7 @@ Build instructions
 ------------------
 
 Standard CMake routine with some configuration options.
+
 Project setup for native Linux:
 
 ```sh
