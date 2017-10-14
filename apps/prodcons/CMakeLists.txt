@@ -12,7 +12,6 @@ target_compile_definitions(${ESM_TARGET}Src
 target_include_directories(${ESM_TARGET}Src
     PUBLIC
         "${CMAKE_CURRENT_LIST_DIR}/include"
-        "${CMAKE_SOURCE_DIR}/modules/include"
 )
 
 target_sources(${ESM_TARGET}Src
