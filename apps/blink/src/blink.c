@@ -6,6 +6,7 @@ ESM_THIS_FILE;
 
 typedef struct {
 	const uint32_t delay;
+	const uint8_t led_num;
 } blink_cfg_t;
 
 typedef struct {
@@ -61,9 +62,9 @@ static void esm_on_entry(esm_t *const esm)
 			.receiver = esm
 	};
 	esm_timer_add(&self->timer,
-			self->cfg->delay, &sig);
+			self->cfg->delay>>3, &sig);
 
-	BOARD_LED_ON();
+	BOARD_LED_ON(self->cfg->led_num);
 }
 
 static void esm_on_exit(esm_t *const esm)
@@ -94,7 +95,7 @@ static void esm_off_entry(esm_t *const esm)
 	};
 	esm_timer_add(&self->timer,
 			self->cfg->delay, &sig);
-	BOARD_LED_OFF();
+	BOARD_LED_OFF(self->cfg->led_num);
 }
 
 static void esm_off_exit(esm_t *const esm)
@@ -117,8 +118,8 @@ static void esm_off_handle(esm_t *const esm, const esm_signal_t * const sig)
 
 static void esm_paused_entry(esm_t *const esm)
 {
-	(void)esm;
-	BOARD_LED_OFF();
+	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
+	BOARD_LED_OFF(self->cfg->led_num);
 }
 
 static void esm_paused_exit(esm_t *const esm)
@@ -144,8 +145,23 @@ static void esm_blink_init(esm_t *const esm)
 	ESM_TRANSITION(active);
 }
 
-static const blink_cfg_t blink_cfg = {
-		.delay = 300UL
+static const blink_cfg_t blink1_cfg = {
+		.delay = 300UL,
+		.led_num = 0
 };
 
-ESM_COMPLEX_REGISTER(blink, blink, esm_gr_none, 1, 3, 0);
+ESM_COMPLEX_REGISTER(blink, blink1, esm_gr_blinkers, 2, 3, 0);
+
+static const blink_cfg_t blink2_cfg = {
+		.delay = 500UL,
+		.led_num = 1
+};
+
+ESM_COMPLEX_REGISTER(blink, blink2, esm_gr_blinkers, 2, 3, 0);
+
+static const blink_cfg_t blink3_cfg = {
+		.delay = 700UL,
+		.led_num = 2
+};
+
+ESM_COMPLEX_REGISTER(blink, blink3, esm_gr_blinkers, 2, 3, 0);

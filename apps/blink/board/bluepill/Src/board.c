@@ -2,6 +2,13 @@
 #include "esm/esm.h"
 #include "debouncer.h"
 
+const uint16_t board_leds[3] =
+{
+		BLINK1_LED_Pin,
+		BLINK2_LED_Pin,
+		BLINK3_LED_Pin
+};
+
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if(GPIO_Pin == BLINK_BUTTON_Pin)
@@ -24,9 +31,9 @@ static void debouncer_handle(void)
 		esm_signal_t sig = {
 				.type = esm_sig_button,
 				.sender = NULL,
-				.receiver = blink_esm
+				.receiver = blink1_esm
 		};
-		esm_send_signal(&sig);
+		esm_broadcast_signal(&sig, esm_gr_blinkers);
 	}
 }
 
