@@ -2,6 +2,8 @@
 
 #include <string.h>
 
+#define LIKELY(condition) __builtin_expect((condition), 1)
+
 size_t rb_size(rb_t *rb)
 {
 	return rb->size_;
@@ -18,7 +20,7 @@ size_t rb_write(rb_t *rb, const uint8_t *data, size_t bytes)
 
 	size_t capacity = rb->capacity_;
 
-	if (bytes <= capacity - rb->end_index_)
+	if (LIKELY(bytes <= capacity - rb->end_index_))
 	{
 		memcpy(rb->data_ + rb->end_index_, data, bytes);
 		rb->end_index_ += bytes;
@@ -50,7 +52,7 @@ size_t rb_read(rb_t *rb, uint8_t *data, size_t bytes)
 	size_t capacity = rb->capacity_;
 	size_t bytes_to_read = bytes > rb->size_ ? rb->size_ : bytes;
 
-	if (bytes_to_read <= capacity - rb->beg_index_)
+	if (LIKELY(bytes_to_read <= capacity - rb->beg_index_))
 	{
 		memcpy(data, rb->data_ + rb->beg_index_, bytes_to_read);
 		rb->beg_index_ += bytes_to_read;
