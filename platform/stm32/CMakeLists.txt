@@ -4,6 +4,8 @@ if(NOT ESM_BOARD)
     message( FATAL_ERROR "ESM_BOARD not defined" )
 endif()
 
+set(CMAKE_EXECUTABLE_SUFFIX ".elf")
+
 target_compile_definitions(${ESM_TARGET}Src
     PUBLIC
         -DUSE_HAL_DRIVER -DSTM32F103xB -DESM_HAS_CLZ
@@ -42,5 +44,5 @@ function(add_esm_plat_exec EXECUTABLE_NAME)
     add_custom_command(TARGET ${EXECUTABLE_NAME} POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${EXECUTABLE_NAME}> ${EXECUTABLE_NAME}.hex
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${EXECUTABLE_NAME}> ${EXECUTABLE_NAME}.bin
-        COMMENT "Building ${HEX_FILE} \nBuilding ${BIN_FILE}")
+        COMMENT "Building ${EXECUTABLE_NAME}.hex \nBuilding ${EXECUTABLE_NAME}.bin")
 endfunction(add_esm_plat_exec)
