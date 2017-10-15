@@ -198,7 +198,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(BLINK_LED_GPIO_Port, BLINK_LED_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, BLINK3_LED_Pin|BLINK2_LED_Pin|BLINK1_LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : IDLE_LED_Pin */
   GPIO_InitStruct.Pin = IDLE_LED_Pin;
@@ -206,11 +206,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(IDLE_LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : BLINK_LED_Pin */
-  GPIO_InitStruct.Pin = BLINK_LED_Pin;
+  /*Configure GPIO pins : BLINK3_LED_Pin BLINK2_LED_Pin BLINK1_LED_Pin */
+  GPIO_InitStruct.Pin = BLINK3_LED_Pin|BLINK2_LED_Pin|BLINK1_LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(BLINK_LED_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pin : BLINK_BUTTON_Pin */
   GPIO_InitStruct.Pin = BLINK_BUTTON_Pin;
