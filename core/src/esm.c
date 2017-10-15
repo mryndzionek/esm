@@ -10,12 +10,14 @@
 
 ESM_THIS_FILE;
 
+#ifndef ESM_HAS_CLZ
 static uint8_t const log2lut[16] = {
 		0, 1, 2, 2,
 		3, 3, 3, 3,
 		4, 4, 4, 4,
 		4, 4, 4, 4
 };
+#endif
 
 static uint8_t prio_mask;
 
@@ -239,12 +241,16 @@ void esm_process(void)
 
 		do
 		{
+#ifdef ESM_HAS_CLZ
+			prio = (uint8_t)(32U - __builtin_clz(prio_mask));
+#else
 			if ((prio_mask & 0xF0) != 0) {
 				prio = log2lut[prio_mask >> 4] + 4;
 			}
 			else {
 				prio = log2lut[prio_mask];
 			}
+#endif
 			ESM_ASSERT(prio);
 			prio--;
 

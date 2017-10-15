@@ -6,7 +6,7 @@ endif()
 
 target_compile_definitions(${ESM_TARGET}Src
     PUBLIC
-        -DUSE_HAL_DRIVER -DSTM32F103xB
+        -DUSE_HAL_DRIVER -DSTM32F103xB -DESM_HAS_CLZ
 )
 
 file(GLOB_RECURSE BOARD_SOURCES
