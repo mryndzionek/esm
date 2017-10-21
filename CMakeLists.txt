@@ -19,6 +19,9 @@ if(NOT ESM_PLATFORM)
   set(ESM_BOARD native)
 endif()
 
+include("${CMAKE_SOURCE_DIR}/Core.cmake")
+include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
+
 add_subdirectory(apps/blink)
 add_subdirectory(apps/dpp)
 add_subdirectory(apps/smokers)

@@ -1,23 +1,21 @@
-set(ESM_TARGET pelican)
+def_esm_app(pelican)
 set(ESM_HSM ON)
-add_library(${ESM_TARGET}Src STATIC "")
-include("${CMAKE_SOURCE_DIR}/Core.cmake")
-include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
 
 include("${CMAKE_SOURCE_DIR}/modules/debouncer.cmake")
 
-target_compile_definitions(${ESM_TARGET}Src
+target_compile_definitions(${APP_NAME}
     PUBLIC
         -DESM_MAX_PRIO=2
 )
 
-target_include_directories(${ESM_TARGET}Src
+target_include_directories(${APP_NAME}
     PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include"
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-add_esm_executable(
-    ${ESM_TARGET}
-    src/pelican.c
+target_sources(${APP_NAME}
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/pelican.c
 )
-target_link_libraries(${ESM_TARGET} ${ESM_TARGET}Src)
+
+end_esm_app()

@@ -1,21 +1,19 @@
-set(ESM_TARGET smokers)
-add_library(${ESM_TARGET}Src STATIC "")
-include("${CMAKE_SOURCE_DIR}/Core.cmake")
-include("${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/CMakeLists.txt")
+def_esm_app(smokers)
 
-target_compile_definitions(${ESM_TARGET}Src
+target_compile_definitions(${APP_NAME}
     PUBLIC
         -DESM_MAX_PRIO=1
 )
 
-target_include_directories(${ESM_TARGET}Src
+target_include_directories(${APP_NAME}
     PUBLIC
-        "${CMAKE_CURRENT_LIST_DIR}/include"
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-add_esm_executable(
-    ${ESM_TARGET}
-    src/table.c
-    src/smoker.c
+target_sources(${APP_NAME}
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/table.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/smoker.c
 )
-target_link_libraries(${ESM_TARGET} ${ESM_TARGET}Src)
+
+end_esm_app()
