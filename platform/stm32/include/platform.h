@@ -17,15 +17,15 @@ uint16_t platform_rnd(uint16_t range);
 
 #define ESM_TICKS_PER_SEC	(1000UL)
 #define ESM_WAIT() do { \
-      HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_SET); \
       do { \
+         HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_SET); \
          ESM_CRITICAL_ENTER(); \
          if(!prio_mask) { \
             HAL_PWR_EnterSLEEPMode(PWR_MAINREGULATOR_ON, PWR_STOPENTRY_WFI); \
          } \
          ESM_CRITICAL_EXIT(); \
+         HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET); \
       }while(!prio_mask); \
-      HAL_GPIO_WritePin(IDLE_LED_GPIO_Port, IDLE_LED_Pin, GPIO_PIN_RESET); \
 } while(0)
 
 #define ESM_RANDOM(_num) platform_rnd(_num)
