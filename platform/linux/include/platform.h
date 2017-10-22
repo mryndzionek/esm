@@ -20,7 +20,9 @@ void platform_trace_write(uint8_t const *data, size_t size);
 #define ESM_TICKS_PER_SEC	(1000UL)
 #define ESM_SEC_IN_TICKS	(1000000000UL)
 #define ESM_WAIT() do { \
-		platform_wait(); \
+		do { \
+			platform_wait(); \
+		} while(!prio_mask); \
 } while(0)
 
 #define ESM_RANDOM(_num) ((int) ((float) (_num) * random() / (RAND_MAX + 1.0)))

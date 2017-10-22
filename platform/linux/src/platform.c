@@ -1,6 +1,7 @@
 #include "platform.h"
 
 #include "esm/esm.h"
+#include "esm/esm_timer.h"
 
 #include <termios.h>
 #include <string.h>
@@ -74,12 +75,11 @@ void platform_wait(void)
 	ESM_ASSERT_MSG(ret != -1, "%s", strerror(errno));
 
 	if (events[0].data.fd == timerfd) {
-		esm_signal_t sig = {
-				.type = esm_sig_alarm,
-				.sender = (void*)0,
-				.receiver = tick_esm,
-		};
-		esm_send_signal(&sig);
+		esm_global_time++;
+		if(esm_timer_next() == 0)
+		{
+			esm_timer_fire();
+		}
 		ret = timerfd_settime(timerfd, 0, &timeout, NULL);
 		ESM_ASSERT(ret == 0);
 	}

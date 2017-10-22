@@ -11,7 +11,7 @@
 #ifndef ESM_MAX_PRIO
 #error "ESM_MAX_PRIO undefined !!!"
 #else
-#define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 2)
+#define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 1)
 #endif
 
 // The priority mask is uint8_t, so priorities can be in range 0-7
@@ -73,7 +73,6 @@ typedef enum
 
 #define ESM_ID(_name) esm_id_##_name,
 typedef enum {
-	esm_id_tick = 0,
 	esm_id_trace,
 	ESM_IDS
 } esm_id_e;
@@ -98,7 +97,6 @@ struct _bus_xfer {
 };
 
 #define ESM_ID(_name) extern esm_t * const _name##_esm;
-extern esm_t * const tick_esm;
 extern esm_t * const trace_esm;
 ESM_IDS
 #undef ESM_ID

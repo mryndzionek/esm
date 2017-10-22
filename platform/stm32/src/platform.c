@@ -1,6 +1,9 @@
 #include "platform.h"
-#include "board.h"
+
 #include "esm/esm.h"
+#include "esm/esm_timer.h"
+
+#include "board.h"
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
@@ -14,12 +17,11 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void HAL_SYSTICK_Callback(void)
 {
-	esm_signal_t sig = {
-			.type = esm_sig_alarm,
-			.sender = (void*)0,
-			.receiver = tick_esm,
-	};
-	esm_send_signal(&sig);
+	esm_global_time++;
+	if(esm_timer_next() == 0)
+	{
+		esm_timer_fire();
+	}
 #ifdef BOARD_TICK
 	BOARD_TICK;
 #endif
