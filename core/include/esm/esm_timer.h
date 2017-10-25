@@ -10,7 +10,7 @@ struct esm_timer {
 	/* Item in the global list of all timers. */
 	esm_list_item_t item;
 	/* The deadline when the timer expires. -1 if the timer is not active. */
-	int64_t expiry;
+	uint32_t expiry;
 	esm_signal_t sig;
 };
 

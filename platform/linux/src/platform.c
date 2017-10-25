@@ -38,10 +38,10 @@ void platform_init(void)
 
 	tcgetattr( STDIN_FILENO, &oldt);
 	newt = oldt;
-	newt.c_lflag &= ~( ICANON | ECHO );
+	newt.c_lflag &= ~(tcflag_t)( ICANON | ECHO );
 	tcsetattr( STDIN_FILENO, TCSANOW, &newt);
 
-	srand(time(NULL));
+	srand((unsigned int)time(NULL));
 	mkfifo("/tmp/esm", 0666);
 	ESM_PRINTF("Listening on '/tmp/esm'\r\n");
 	tracefd = open("/tmp/esm", O_WRONLY);
@@ -68,7 +68,7 @@ void platform_init(void)
 
 void platform_wait(void)
 {
-	int ret;
+	ssize_t ret;
 	struct epoll_event events[1];
 
 	ret = epoll_wait(epollfd, events, 1, -1);
@@ -93,7 +93,7 @@ void platform_wait(void)
 
 void platform_trace_write(uint8_t const *data, size_t size)
 {
-	int s = write(tracefd, data, size);
+	ssize_t s = write(tracefd, data, size);
 	ESM_ASSERT_MSG(s > 0, "%s", strerror(errno));
 	esm_signal_t sig = {
 			.type = esm_sig_alarm,

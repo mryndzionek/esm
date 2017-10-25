@@ -174,7 +174,7 @@ static void complex_process(esm_t * const esm, const esm_signal_t *const sig)
 			ESM_TRACE(esm, enter, esm->next_state->name);
 			esm->next_state->entry(esm);
 			esm->curr_state = esm->next_state;
-			start = (esm_hstate_t * const)esm->curr_state;
+			start = (const esm_hstate_t * const)esm->curr_state;
 		}
 	}
 	else
@@ -212,7 +212,7 @@ void esm_process(void)
 				ESM_ASSERT(esm->curr_state != esm->next_state);
 				esm->next_state->entry(esm);
 				esm->curr_state = esm->next_state;
-				s = (esm_hstate_t * const)esm->curr_state;
+				s = (const esm_hstate_t * const)esm->curr_state;
 			}
 		}
 		else
@@ -245,7 +245,7 @@ void esm_process(void)
 			prio = (uint8_t)(32U - __builtin_clz(prio_mask));
 #else
 			if ((prio_mask & 0xF0) != 0) {
-				prio = log2lut[prio_mask >> 4] + 4;
+				prio = (uint8_t)(log2lut[prio_mask >> 4] + 4);
 			}
 			else {
 				prio = log2lut[prio_mask];
@@ -276,7 +276,7 @@ void esm_process(void)
 				esm_list_erase(&esm_signals[prio], &sig->item);
 				if(esm_list_empty(&esm_signals[prio]))
 				{
-					prio_mask &= ~(1UL << prio);
+					prio_mask &= (uint8_t)(~(1UL << prio));
 				}
 				ESM_CRITICAL_EXIT();
 			}
@@ -307,7 +307,7 @@ bool esm_send_signal(esm_signal_t *sig)
 	esm_list_insert(&esm_signals[sig->receiver->cfg->prio],
 			&(esm_queue_head(&sig->receiver->queue))->item, NULL);
 	esm_queue_push(&sig->receiver->queue, sig);
-	prio_mask |= (1UL << sig->receiver->cfg->prio);
+	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
 
 	ret = true;
 	ESM_CRITICAL_EXIT();

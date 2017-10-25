@@ -108,21 +108,21 @@ typedef enum {
 } esm_group_e;
 #undef ESM_GROUP
 
-#ifndef ESM_SIG_PARAMS
-#define ESM_SIG_PARAMS
-#endif
-
+#ifdef ESM_SIG_PARAMS
 typedef struct
 {
 	ESM_SIG_PARAMS
 } esm_sig_params_t;
+#endif
 
 typedef struct
 {
 	esm_signal_e type;
 	esm_t *receiver;
 	esm_t *sender;
+#ifdef ESM_SIG_PARAMS
 	esm_sig_params_t params;
+#endif
 	esm_list_item_t item;
 } esm_signal_t;
 
