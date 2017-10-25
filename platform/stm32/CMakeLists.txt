@@ -25,6 +25,11 @@ set(ESM_PLATFORM_HEADERS
     "${CMAKE_CURRENT_LIST_DIR}/stm32f103c8/Drivers/CMSIS/Device/ST/STM32F1xx/Include"
 )
 
+set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra \
+-O2 -Wshadow -Wformat=2 -Wfloat-equal \
+-Wlogical-op -Wcast-qual"
+)
+
 set(CMAKE_EXE_LINKER_FLAGS
     "-specs=nano.specs ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${ESM_TARGET}.map,--cref -lc -lm -lnosys")
 

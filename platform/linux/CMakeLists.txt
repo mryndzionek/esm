@@ -4,9 +4,8 @@ endif()
 
 set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra \
 -O2 -Wshadow -Wformat=2 -Wfloat-equal \
--Wlogical-op -Wcast-qual -Wno-variadic-macros \
--Wcast-align -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC \
--D_FORTIFY_SOURCE=2 -fsanitize=address \
+-Wlogical-op -Wcast-qual \
+-Wcast-align -D_FORTIFY_SOURCE=2 -fsanitize=address \
 -fsanitize=undefined -fno-sanitize-recover \
 -fstack-protector"
 )
