@@ -30,8 +30,8 @@ uint16_t platform_rnd(uint16_t range);
 
 #define ESM_RANDOM(_num) platform_rnd(_num)
 
-#define ESM_CRITICAL_ENTER() __disable_irq()
-#define ESM_CRITICAL_EXIT() __enable_irq()
+#define ESM_CRITICAL_ENTER() asm volatile ("cpsid i" : : : "memory")
+#define ESM_CRITICAL_EXIT()  asm volatile ("cpsie i" : : : "memory")
 
 #define ESM_TRACE_init(_p_esm, ...) do { \
 		trace_init(_p_esm->cfg->id); \
