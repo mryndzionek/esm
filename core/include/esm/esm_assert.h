@@ -1,7 +1,7 @@
 #ifndef CORE_INCLUDE_ESM_ESM_ASSERT_H_
 #define CORE_INCLUDE_ESM_ESM_ASSERT_H_
 
-#define ESM_RESET() {while(1) {}}
+#define ESM_RESET() {ESM_CRITICAL_ENTER(); while(1) {}}
 
 #define ESM_BUG_REPORT( _cond, _format, _args ... ) \
 		ESM_PRINTF("Assert (%s) failed at %s:%d : " _format"\r\n", \
