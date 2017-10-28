@@ -256,7 +256,6 @@ void esm_process(void)
 
 			esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 					esm_signal_t, item);
-			ESM_ASSERT(sig == esm_queue_tail(&sig->receiver->queue));
 #ifdef ESM_HSM
 			if(sig->receiver->cfg->is_cplx)
 			{

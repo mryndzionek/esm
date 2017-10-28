@@ -130,7 +130,6 @@ typedef struct {
 	const uint8_t size;
 	uint8_t len;
 	uint8_t head;
-	uint8_t tail;
 	esm_signal_t *data;
 } esm_queue_t;
 
