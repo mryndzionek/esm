@@ -1,5 +1,6 @@
 #include "esm/esm_timer.h"
 #include "signal.h"
+#include "util.h"
 
 ESM_THIS_FILE;
 
@@ -28,8 +29,8 @@ void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig) {
 
 void esm_timer_rm(esm_timer_t *timer) {
 	ESM_CRITICAL_ENTER();
-	if(!(timer->item.next || timer->item.prev) &&
-			(&timer->item != esm_timers.first))
+	if(UNLIKELY(!(timer->item.next || timer->item.prev) &&
+			(&timer->item != esm_timers.first)))
 	{
 		ESM_ASSERT(timer->mem);
 		esm_cancel_signal(timer->mem);

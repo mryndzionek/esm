@@ -1,8 +1,7 @@
 #include "rb.h"
+#include "util.h"
 
 #include <string.h>
-
-#define LIKELY(condition) __builtin_expect((condition), 1)
 
 size_t rb_size(rb_t *rb)
 {

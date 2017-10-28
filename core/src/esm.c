@@ -269,14 +269,7 @@ void esm_process(void)
 #ifdef ESM_HSM
 			}
 #endif
-			ESM_CRITICAL_ENTER();
-			esm_queue_pop(&sig->receiver->queue);
-			esm_list_erase(&esm_signals[prio], &sig->item);
-			if(esm_list_empty(&esm_signals[prio]))
-			{
-				prio_mask &= (uint8_t)(~(1UL << prio));
-			}
-			ESM_CRITICAL_EXIT();
+			esm_cancel_signal(sig);
 		}
 		while(prio_mask);
 
@@ -325,7 +318,7 @@ void esm_cancel_signal(esm_signal_t * const sig)
 	ESM_CRITICAL_EXIT();
 }
 
-void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group)
+void esm_broadcast_signal(esm_signal_t * const sig, esm_group_e group)
 {
 	esm_t * const * sec;
 	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
