@@ -2,20 +2,26 @@
 #include "esm/esm.h"
 #include "debouncer.h"
 
+static bool armed = true;
+
 void app_process(char key)
 {
-	switch(key)
+	if(armed)
 	{
-	case ' ':
-	{
-		esm_signal_t sig = {
-				.type = esm_sig_alarm,
-				.sender = NULL,
-				.receiver = debouncer_esm
-		};
-		esm_send_signal(&sig);
-	}
-	break;
+		switch(key)
+		{
+		case ' ':
+		{
+			armed = false;
+			esm_signal_t sig = {
+					.type = esm_sig_alarm,
+					.sender = NULL,
+					.receiver = debouncer_esm
+			};
+			esm_send_signal(&sig);
+		}
+		break;
+		}
 	}
 }
 
@@ -24,14 +30,14 @@ static void debouncer_handle(void)
 	esm_signal_t sig = {
 			.type = esm_sig_button,
 			.sender = NULL,
-			.receiver = blink1_esm
+			.receiver = NULL
 	};
 	esm_broadcast_signal(&sig, esm_gr_blinkers);
 }
 
 static void debouncer_arm(void)
 {
-
+	armed = true;
 }
 
 static const debouncer_cfg_t debouncer_cfg = {

@@ -68,26 +68,37 @@ void platform_init(void)
 
 void platform_wait(void)
 {
-	ssize_t ret;
-	struct epoll_event events[1];
+	ssize_t evs, ret;
+	uint8_t nm = 0;
+	struct epoll_event events[2];
 
-	ret = epoll_wait(epollfd, events, 1, -1);
-	ESM_ASSERT_MSG(ret != -1, "%s", strerror(errno));
+	evs = epoll_wait(epollfd, events, 2, -1);
+	ESM_ASSERT_MSG(evs != -1, "%s", strerror(errno));
 
-	if (events[0].data.fd == timerfd) {
-		esm_global_time++;
-		if(esm_timer_next() == 0)
-		{
-			esm_timer_fire();
+	for(uint8_t i = 0; i < evs; i++)
+	{
+		uint8_t n;
+
+		do {
+			n = ESM_RANDOM(evs);
+		} while(nm & (1UL << n));
+		nm |= (1UL << n);
+
+		if (events[n].data.fd == timerfd) {
+			esm_global_time++;
+			if(esm_timer_next() == 0)
+			{
+				esm_timer_fire();
+			}
+			ret = timerfd_settime(timerfd, 0, &timeout, NULL);
+			ESM_ASSERT(ret == 0);
 		}
-		ret = timerfd_settime(timerfd, 0, &timeout, NULL);
-		ESM_ASSERT(ret == 0);
-	}
-	else if(events[0].data.fd == STDIN_FILENO) {
-		char key;
-		ret = read(STDIN_FILENO, &key, 1);
-		ESM_ASSERT(ret == 1);
-		app_process(key);
+		else if(events[n].data.fd == STDIN_FILENO) {
+			char key;
+			ret = read(STDIN_FILENO, &key, 1);
+			ESM_ASSERT(ret == 1);
+			app_process(key);
+		}
 	}
 }
 
