@@ -4,9 +4,9 @@ Efficient State Machine framework
 Introduction
 ------------
 Good system design is often about knowing what to avoid.
-Unrestricted use of traditional techniques for writing concurrent software like preemptive threading almost always
+Unrestricted use of traditional techniques for writing concurrent software, like preemptive threading, almost always
 results in systems that are unpredictable and unreliable. Degradation of those two aspects
-is specially problematic in embedded systems where predictability and reliability is even
+is specially problematic in embedded systems where predictability and reliability are even
 more important than performance and/or expressiveness.
 
 **Active Object Model** brings the same improvements to behavioral design as
@@ -192,6 +192,7 @@ TODO
   - [x] research and implement efficient priority support
   - [ ] add more examples
   - [ ] handle timer rollover
+  - [ ] add automatic tests
 
 License
 -------
