@@ -2,7 +2,7 @@ if(NOT ESM_BOARD)
     message( FATAL_ERROR "ESM_BOARD not defined" )
 endif()
 
-set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra \
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} \
 -O2 -Wshadow -Wformat=2 -Wfloat-equal \
 -Wlogical-op -Wcast-qual \
 -Wcast-align -D_FORTIFY_SOURCE=2 -fsanitize=address \
