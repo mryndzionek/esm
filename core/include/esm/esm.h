@@ -153,6 +153,7 @@ extern const esm_state_t esm_self_state;
 
 void esm_process(void);
 void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group);
-bool esm_send_signal(esm_signal_t *sig);
+esm_signal_t *esm_send_signal(esm_signal_t * const sig);
+void esm_cancel_signal(esm_signal_t * const sig);
 
 #endif /* INCLUDE_ESM_ESM_H_ */

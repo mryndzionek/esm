@@ -256,6 +256,7 @@ void esm_process(void)
 
 			esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 					esm_signal_t, item);
+			ESM_ASSERT(sig->receiver->cfg->prio == prio);
 #ifdef ESM_HSM
 			if(sig->receiver->cfg->is_cplx)
 			{
@@ -293,38 +294,46 @@ void esm_process(void)
 	}
 }
 
-bool esm_send_signal(esm_signal_t *sig)
+esm_signal_t *esm_send_signal(esm_signal_t * const sig)
 {
-	bool ret = false;
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
 	ESM_ASSERT(sig->receiver->cfg->prio < _ESM_MAX_PRIO);
 
-	esm_list_insert(&esm_signals[sig->receiver->cfg->prio],
-			&(esm_queue_head(&sig->receiver->queue))->item, NULL);
+	esm_signal_t *s = esm_queue_head(&sig->receiver->queue);
 	esm_queue_push(&sig->receiver->queue, sig);
-	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
 
-	ret = true;
+	esm_list_insert(&esm_signals[sig->receiver->cfg->prio],
+			&s->item, NULL);
+
+	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
 	ESM_CRITICAL_EXIT();
 
-	return ret;
+	return s;
+}
+
+void esm_cancel_signal(esm_signal_t * const sig)
+{
+	ESM_CRITICAL_ENTER();
+	esm_queue_pop(&sig->receiver->queue);
+
+	esm_list_erase(&esm_signals[sig->receiver->cfg->prio], &sig->item);
+	if(esm_list_empty(&esm_signals[sig->receiver->cfg->prio]))
+	{
+		prio_mask &= (uint8_t)(~(1UL << sig->receiver->cfg->prio));
+	}
+	ESM_CRITICAL_EXIT();
 }
 
 void esm_broadcast_signal(esm_signal_t *sig, esm_group_e group)
 {
 	esm_t * const * sec;
-	bool ret = false;
 	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {
 		if((*sec)->cfg->group & group)
 		{
 			sig->receiver = *sec;
-			ret |= esm_send_signal(sig);
+			esm_send_signal(sig);
 		}
 	}
 	sig->receiver = (void *)0;
-
-	ESM_ASSERT_MSG(ret,
-			"[%010u] Signal '%s' is lost\r\n",
-			esm_global_time, esm_sig_name[sig->type]);
 }
