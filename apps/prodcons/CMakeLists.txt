@@ -4,7 +4,7 @@ include("${CMAKE_SOURCE_DIR}/modules/bus.cmake")
 
 target_compile_definitions(${APP_NAME}
     PUBLIC
-        -DESM_MAX_PRIO=1
+        -DESM_MAX_PRIO=2
 )
 
 target_include_directories(${APP_NAME}
