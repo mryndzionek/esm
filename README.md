@@ -168,6 +168,14 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Debug ..
 ```
 
+Project setup for test mode on Linux:
+
+```sh
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Debug -DESM_PLATFORM=test -DESM_BOARD=native ..
+```
+
 For STM32 target ([bluepill board](http://wiki.stm32duino.com/index.php?title=Blue_Pill)):
 
 ```sh
