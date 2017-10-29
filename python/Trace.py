@@ -37,7 +37,7 @@ try:
         idre = re.compile('ESM_ID\((\w+)\)')
 
         sigs = ['alarm']
-        idxs = ['tick', 'trace']
+        idxs = ['trace']
 
         for l in lines:
             sig = sigre.search(l)
@@ -62,7 +62,7 @@ try:
     else:
         logging.info('Trying to open file: ' + args.path)
         breader = open(args.path, 'rb')
-        reader = TraceDecoder.FileTraceReader(breader, 10000)
+        reader = TraceDecoder.FileTraceReader(breader, 1000000)
 
     try:
         ts_str = datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S")
