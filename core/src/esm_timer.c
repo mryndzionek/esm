@@ -10,7 +10,6 @@ static esm_list_t esm_timers = {0};
 void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig) {
 	timer->expiry = esm_global_time+delay;
 	timer->sig = *sig;
-	timer->mem = NULL;
 	/* Move the timer into the right place in the ordered list
        of existing timers. TODO: This is an O(n) operation! */
 	esm_list_item_t *it = esm_list_begin(&esm_timers);
@@ -32,9 +31,7 @@ void esm_timer_rm(esm_timer_t *timer) {
 	if(UNLIKELY(!(timer->item.next || timer->item.prev) &&
 			(&timer->item != esm_timers.first)))
 	{
-		ESM_ASSERT(timer->mem);
-		esm_cancel_signal(timer->mem);
-		timer->mem = NULL;
+		return;
 	}
 	else
 	{
@@ -63,6 +60,6 @@ void esm_timer_fire(void) {
 			break;
 		ESM_CRITICAL_ENTER();
 		esm_list_erase(&esm_timers, esm_list_begin(&esm_timers));
-		tm->mem = esm_send_signal(&tm->sig);
+		esm_send_signal(&tm->sig);
 	}
 }

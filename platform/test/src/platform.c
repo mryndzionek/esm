@@ -40,28 +40,45 @@ void platform_wait(void)
 	if(p == 0)
 	{
 		app_process(' ');
+		p = ESM_RANDOM(2);
+		if(p == 0)
+		{
+			esm_global_time++;
+			if(esm_global_time == SIMULATION_TIME_MS)
+			{
+				close(tracefd);
+				exit(0);
+			}
+			if(esm_timer_next() == 0)
+			{
+				esm_timer_fire();
+			}
+		}
+	}
+	else
+	{
+		p = ESM_RANDOM(2);
+		if(p == 0)
+		{
+			esm_global_time++;
+			if(esm_global_time == SIMULATION_TIME_MS)
+			{
+				close(tracefd);
+				exit(0);
+			}
+			if(esm_timer_next() == 0)
+			{
+				esm_timer_fire();
+			}
+		}
+
+		p = ESM_RANDOM(1000);
+		if(p == 0)
+		{
+			app_process(' ');
+		}
 	}
 
-	p = ESM_RANDOM(2);
-	if(p == 0)
-	{
-		esm_global_time++;
-		if(esm_global_time == SIMULATION_TIME_MS)
-		{
-			close(tracefd);
-			exit(0);
-		}
-		if(esm_timer_next() == 0)
-		{
-			esm_timer_fire();
-		}
-	}
-
-	p = ESM_RANDOM(1000);
-	if(p == 0)
-	{
-		app_process(' ');
-	}
 }
 
 void platform_trace_write(uint8_t const *data, size_t size)

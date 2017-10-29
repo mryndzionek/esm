@@ -269,7 +269,15 @@ void esm_process(void)
 #ifdef ESM_HSM
 			}
 #endif
-			esm_cancel_signal(sig);
+			ESM_CRITICAL_ENTER();
+			esm_queue_pop(&sig->receiver->queue);
+
+			esm_list_erase(&esm_signals[sig->receiver->cfg->prio], &sig->item);
+			if(esm_list_empty(&esm_signals[sig->receiver->cfg->prio]))
+			{
+				prio_mask &= (uint8_t)(~(1UL << sig->receiver->cfg->prio));
+			}
+			ESM_CRITICAL_EXIT();
 		}
 		while(prio_mask);
 
@@ -287,7 +295,7 @@ void esm_process(void)
 	}
 }
 
-esm_signal_t *esm_send_signal(esm_signal_t * const sig)
+void esm_send_signal(esm_signal_t * const sig)
 {
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
@@ -300,21 +308,6 @@ esm_signal_t *esm_send_signal(esm_signal_t * const sig)
 			&s->item, NULL);
 
 	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
-	ESM_CRITICAL_EXIT();
-
-	return s;
-}
-
-void esm_cancel_signal(esm_signal_t * const sig)
-{
-	ESM_CRITICAL_ENTER();
-	esm_queue_pop(&sig->receiver->queue);
-
-	esm_list_erase(&esm_signals[sig->receiver->cfg->prio], &sig->item);
-	if(esm_list_empty(&esm_signals[sig->receiver->cfg->prio]))
-	{
-		prio_mask &= (uint8_t)(~(1UL << sig->receiver->cfg->prio));
-	}
 	ESM_CRITICAL_EXIT();
 }
 
