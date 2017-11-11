@@ -37,7 +37,7 @@ try:
         idre = re.compile('ESM_ID\((\w+)\)')
 
         sigs = ['alarm']
-        idxs = ['trace']
+        idxs = ['tick', 'trace']
 
         for l in lines:
             sig = sigre.search(l)

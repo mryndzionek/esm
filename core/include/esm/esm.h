@@ -73,6 +73,7 @@ typedef enum
 
 #define ESM_ID(_name) esm_id_##_name,
 typedef enum {
+	esm_id_tick = 0,
 	esm_id_trace,
 	ESM_IDS
 } esm_id_e;
@@ -97,6 +98,7 @@ struct _bus_xfer {
 };
 
 #define ESM_ID(_name) extern esm_t * const _name##_esm;
+extern esm_t * const tick_esm;
 extern esm_t * const trace_esm;
 ESM_IDS
 #undef ESM_ID

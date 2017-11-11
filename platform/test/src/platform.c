@@ -51,7 +51,12 @@ void platform_wait(void)
 			}
 			if(esm_timer_next() == 0)
 			{
-				esm_timer_fire();
+				esm_signal_t sig = {
+						.type = esm_sig_alarm,
+						.sender = (void*)0,
+						.receiver = tick_esm,
+				};
+				esm_send_signal(&sig);
 			}
 		}
 	}
@@ -68,7 +73,12 @@ void platform_wait(void)
 			}
 			if(esm_timer_next() == 0)
 			{
-				esm_timer_fire();
+				esm_signal_t sig = {
+						.type = esm_sig_alarm,
+						.sender = (void*)0,
+						.receiver = tick_esm,
+				};
+				esm_send_signal(&sig);
 			}
 		}
 

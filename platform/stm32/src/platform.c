@@ -20,7 +20,12 @@ void HAL_SYSTICK_Callback(void)
 	esm_global_time++;
 	if(esm_timer_next() == 0)
 	{
-		esm_timer_fire();
+		esm_signal_t sig = {
+				.type = esm_sig_alarm,
+				.sender = (void*)0,
+				.receiver = tick_esm,
+		};
+		esm_send_signal(&sig);
 	}
 #ifdef BOARD_TICK
 	BOARD_TICK;
