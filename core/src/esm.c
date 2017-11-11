@@ -257,6 +257,7 @@ void esm_process(void)
 			esm_signal_t * const sig = ESM_CONTAINER_OF(esm_list_begin(&esm_signals[prio]),
 					esm_signal_t, item);
 			ESM_ASSERT(sig == esm_queue_tail(&sig->receiver->queue));
+			ESM_ASSERT(sig->receiver->cfg->prio == prio);
 #ifdef ESM_HSM
 			if(sig->receiver->cfg->is_cplx)
 			{
@@ -295,19 +296,19 @@ void esm_process(void)
 	}
 }
 
-void esm_send_signal_prio(esm_signal_t * const sig, uint8_t prio)
+void esm_send_signal(esm_signal_t * const sig)
 {
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
-	ESM_ASSERT(prio < _ESM_MAX_PRIO);
+	ESM_ASSERT(sig->receiver->cfg->prio < _ESM_MAX_PRIO);
 
 	esm_signal_t *s = esm_queue_head(&sig->receiver->queue);
 	esm_queue_push(&sig->receiver->queue, sig);
 
-	esm_list_insert(&esm_signals[prio],
+	esm_list_insert(&esm_signals[sig->receiver->cfg->prio],
 			&s->item, NULL);
 
-	prio_mask |= (uint8_t)(1UL << prio);
+	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
 	ESM_CRITICAL_EXIT();
 }
 

@@ -11,7 +11,7 @@
 #ifndef ESM_MAX_PRIO
 #error "ESM_MAX_PRIO undefined !!!"
 #else
-#define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 2)
+#define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 1)
 #endif
 
 // The priority mask is uint8_t, so priorities can be in range 0-7
@@ -156,7 +156,6 @@ extern const esm_state_t esm_self_state;
 
 void esm_process(void);
 void esm_broadcast_signal(esm_signal_t * const sig, esm_group_e group);
-void esm_send_signal_prio(esm_signal_t * const sig, uint8_t prio);
-#define esm_send_signal(_sig) esm_send_signal_prio((_sig), (_sig)->receiver->cfg->prio)
+void esm_send_signal(esm_signal_t * const sig);
 
 #endif /* INCLUDE_ESM_ESM_H_ */
