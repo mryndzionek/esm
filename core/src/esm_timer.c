@@ -31,7 +31,7 @@ void esm_timer_rm(esm_timer_t *timer) {
 	if(UNLIKELY(!(timer->item.next || timer->item.prev) &&
 			(&timer->item != esm_timers.first)))
 	{
-		return;
+		ESM_ASSERT(0);
 	}
 	else
 	{
