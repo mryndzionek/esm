@@ -21,23 +21,20 @@ void esm_timer_add(esm_timer_t *timer, uint32_t delay, esm_signal_t *sig) {
 			break;
 		it = esm_list_next(it);
 	}
-	ESM_CRITICAL_ENTER();
 	esm_list_insert(&esm_timers, &timer->item, it);
-	ESM_CRITICAL_EXIT();
 }
 
 void esm_timer_rm(esm_timer_t *timer) {
-	ESM_CRITICAL_ENTER();
 	if(UNLIKELY(!(timer->item.next || timer->item.prev) &&
 			(&timer->item != esm_timers.first)))
 	{
+		ESM_ASSERT_MSG(0, "Removing timer that already fired!");
 		return;
 	}
 	else
 	{
 		esm_list_erase(&esm_timers, &timer->item);
 	}
-	ESM_CRITICAL_EXIT();
 }
 
 int esm_timer_next(void) {
@@ -58,8 +55,7 @@ void esm_timer_fire(void) {
 				esm_list_begin(&esm_timers), esm_timer_t, item);
 		if(tm->expiry > esm_global_time)
 			break;
-		ESM_CRITICAL_ENTER();
 		esm_list_erase(&esm_timers, esm_list_begin(&esm_timers));
-		esm_send_signal(&tm->sig);
+		esm_send_signal_prio(&tm->sig, _ESM_MAX_PRIO - 1);
 	}
 }
