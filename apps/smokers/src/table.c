@@ -11,9 +11,6 @@ typedef struct {
 typedef struct {
 	esm_t esm;
 	esm_timer_t timer;
-    esm_t *philo[N_SMOKERS];
-    uint8_t fork[N_SMOKERS];
-    uint8_t is_hungry[N_SMOKERS];
 	table_cfg_t const *const cfg;
 } table_esm_t;
 
