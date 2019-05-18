@@ -1,11 +1,12 @@
-include(CMakeForceCompiler)
-
 set(CMAKE_SYSTEM_NAME Generic)
-set(CMAKE_SYSTEM_VERSION 1)
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 # specify the cross compiler
-CMAKE_FORCE_C_COMPILER(arm-none-eabi-gcc GNU)
-CMAKE_FORCE_CXX_COMPILER(arm-none-eabi-g++ GNU)
+set(CMAKE_C_COMPILER arm-none-eabi-gcc)
+set(CMAKE_ASM_COMPILER arm-none-eabi-gcc)
+set(CMAKE_CXX_COMPILER arm-none-eabi-g++)
+set(CMAKE_OBJCOPY arm-none-eabi-objcopy)
 
 set(LINKER_SCRIPT ${CMAKE_SOURCE_DIR}/platform/${ESM_PLATFORM}/stm32f103c8/STM32F103C8Tx_FLASH.ld)
 set(COMMON_FLAGS "-mcpu=cortex-m3 -mthumb -ffunction-sections -fdata-sections -g -fno-common -fmessage-length=0")
