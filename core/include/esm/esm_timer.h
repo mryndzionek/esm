@@ -12,6 +12,7 @@ struct esm_timer {
 	/* The deadline when the timer expires. -1 if the timer is not active. */
 	uint32_t expiry;
 	esm_signal_t sig;
+	esm_signal_t *psig;
 };
 
 extern uint32_t esm_global_time;

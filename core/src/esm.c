@@ -258,18 +258,21 @@ void esm_process(void)
 					esm_signal_t, item);
 			ESM_ASSERT(sig == esm_queue_tail(&sig->receiver->queue));
 			ESM_ASSERT(sig->receiver->cfg->prio == prio);
-#ifdef ESM_HSM
-			if(sig->receiver->cfg->is_cplx)
+			if(!sig->dismissed)
 			{
-				complex_process(sig->receiver, sig);
-			}
-			else
-			{
-#endif
-				simple_process(sig->receiver, sig);
 #ifdef ESM_HSM
-			}
+				if (sig->receiver->cfg->is_cplx)
+				{
+					complex_process(sig->receiver, sig);
+				}
+				else
+				{
 #endif
+					simple_process(sig->receiver, sig);
+#ifdef ESM_HSM
+				}
+#endif
+			}
 			ESM_CRITICAL_ENTER();
 			esm_queue_pop(&sig->receiver->queue);
 
@@ -296,7 +299,7 @@ void esm_process(void)
 	}
 }
 
-void esm_send_signal(esm_signal_t * const sig)
+esm_signal_t *esm_send_signal(esm_signal_t * const sig)
 {
 	ESM_CRITICAL_ENTER();
 	ESM_ASSERT(sig->receiver);
@@ -305,11 +308,13 @@ void esm_send_signal(esm_signal_t * const sig)
 	esm_signal_t *s = esm_queue_head(&sig->receiver->queue);
 	esm_queue_push(&sig->receiver->queue, sig);
 
+	s->dismissed = 0x00;
 	esm_list_insert(&esm_signals[sig->receiver->cfg->prio],
 			&s->item, NULL);
 
 	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
 	ESM_CRITICAL_EXIT();
+	return s;
 }
 
 void esm_broadcast_signal(esm_signal_t * const sig, esm_group_e group)

@@ -31,7 +31,7 @@ void esm_timer_rm(esm_timer_t *timer) {
 	if(UNLIKELY(!(timer->item.next || timer->item.prev) &&
 			(&timer->item != esm_timers.first)))
 	{
-		ESM_ASSERT(0);
+		timer->psig->dismissed = 0x01;
 	}
 	else
 	{
@@ -60,6 +60,6 @@ void esm_timer_fire(void) {
 			break;
 		ESM_CRITICAL_ENTER();
 		esm_list_erase(&esm_timers, esm_list_begin(&esm_timers));
-		esm_send_signal(&tm->sig);
+		tm->psig = esm_send_signal(&tm->sig);
 	}
 }
