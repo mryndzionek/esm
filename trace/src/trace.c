@@ -52,6 +52,20 @@ static uint8_t _crc(uint8_t *data, uint8_t len)
 	return crc_get();
 }
 
+static uint8_t _len(uint8_t const *beg, uint8_t const *end)
+{
+	uint8_t l = 0;
+	uint8_t const *loc;
+
+	for (loc = beg + 1; loc <= end; loc++)
+	{
+		if (*loc != ESCAPE_BYTE)
+			l++;
+	}
+
+	return l;
+}
+
 static uint8_t *_add_header(uint8_t *b, uint8_t uid)
 {
 	uint32_t ts = esm_global_time;
@@ -87,7 +101,7 @@ void trace_init(uint8_t esm)
 	b = _add_header(b, 0);
 	lb = b++;
 	ENCODE_NUM_1(b, esm);
-	*lb = b - lb;
+	*lb = _len(lb, b);
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
@@ -108,7 +122,7 @@ void trace_trans(uint8_t esm, uint8_t sig, char const * const cs, char const * c
 	ENCODE_NUM_1(b, sig);
 	b = _add_str(b, cs);
 	b = _add_str(b, ns);
-	*lb = b - lb;
+	*lb = _len(lb, b);
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
@@ -128,7 +142,7 @@ void trace_receive(uint8_t esm, uint8_t sig, char const * const cs)
 	ENCODE_NUM_1(b, esm);
 	ENCODE_NUM_1(b, sig);
 	b = _add_str(b, cs);
-	*lb = b - lb;
+	*lb = _len(lb, b);
 	crc_init();
 	crc = _crc(tmp, b-tmp);
 	crc_finish();
