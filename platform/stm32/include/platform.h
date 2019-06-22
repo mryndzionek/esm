@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <time.h>
 #include "stm32f1xx_hal.h"
+#include "main.h"
 
 extern UART_HandleTypeDef huart3;
 uint16_t platform_rnd(uint16_t range);
