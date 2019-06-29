@@ -60,6 +60,12 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define IDLE_LED_Pin GPIO_PIN_13
 #define IDLE_LED_GPIO_Port GPIOC
+#define PUSHBUTTON_Pin GPIO_PIN_8
+#define PUSHBUTTON_GPIO_Port GPIOA
+#define PUSHBUTTON_EXTI_IRQn EXTI9_5_IRQn
+#define RTC_IRQ_Pin GPIO_PIN_5
+#define RTC_IRQ_GPIO_Port GPIOB
+#define RTC_IRQ_EXTI_IRQn EXTI9_5_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
