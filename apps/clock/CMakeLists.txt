@@ -19,6 +19,7 @@ target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/clock.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/strip.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/player.c
         ${CMAKE_SOURCE_DIR}/lib/src/sk6812.c
 )
 

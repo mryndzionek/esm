@@ -5,6 +5,7 @@
 
 extern SPI_HandleTypeDef hspi1;
 extern I2C_HandleTypeDef hi2c1;
+extern TIM_HandleTypeDef htim3;
 
 #define BOARD_DMA_SPI_TX(_data, _size)                                    \
     do                                                                    \
