@@ -17,9 +17,17 @@ static const uint8_t encoderLookup[256 * 3] = {0x92, 0x49, 0x24, 0x92, 0x49, 0x2
 
 static uint8_t buffer[2 * SK6812_BYTES_NUM];
 static uint8_t *pixels = buffer;
+static uint8_t brightness;
 
 void sk6812_set_rgb(uint16_t n, uint8_t r, uint8_t g, uint8_t b)
 {
+    if (brightness)
+    {
+        r = ((int)r * (int)brightness) >> 8;
+        g = ((int)g * (int)brightness) >> 8;
+        b = ((int)b * (int)brightness) >> 8;
+    }
+
     uint8_t *bptr = pixels + (n << 3) + n + 1;
     uint8_t const *tPtr = (uint8_t const *)encoderLookup + g * 2 + g;
 
@@ -42,9 +50,18 @@ void sk6812_set_color(uint16_t n, uint32_t c)
 {
     uint8_t r, g, b;
 
-    r = (uint8_t)(c >> 16),
-    g = (uint8_t)(c >> 8),
-    b = (uint8_t)c;
+    if (brightness)
+    {
+        r = ((int)((uint8_t)(c >> 16)) * (int)brightness) >> 8;
+        g = ((int)((uint8_t)(c >> 8)) * (int)brightness) >> 8;
+        b = ((int)((uint8_t)c) * (int)brightness) >> 8;
+    }
+    else
+    {
+        r = (uint8_t)(c >> 16),
+        g = (uint8_t)(c >> 8),
+        b = (uint8_t)c;
+    }
 
     uint8_t *bptr = pixels + (n << 3) + n + 1;
     uint8_t const *tPtr = (uint8_t const *)encoderLookup + g * 2 + g; // need to index 3 x g into the lookup
@@ -91,5 +108,30 @@ void sk6812_clear(void)
         *bptr++ = *tPtr++;
         *bptr++ = *tPtr++;
         *bptr++ = *tPtr++;
+    }
+}
+
+void sk6812_set_brightness(uint8_t b)
+{
+    uint8_t newBrightness = b + 1;
+    if (newBrightness != brightness)
+    { // Compare against prior value
+        // Brightness has changed -- re-scale existing data in RAM
+        uint8_t c,
+            *ptr = pixels,
+            oldBrightness = brightness - 1; // De-wrap old brightness value
+        uint16_t scale;
+        if (oldBrightness == 0)
+            scale = 0; // Avoid /0
+        else if (b == 255)
+            scale = 65535 / oldBrightness;
+        else
+            scale = (((uint16_t)newBrightness << 8) - 1) / oldBrightness;
+        for (uint16_t i = 0; i < SK6812_BYTES_NUM; i++)
+        {
+            c = *ptr;
+            *ptr++ = (c * scale) >> 8;
+        }
+        brightness = newBrightness;
     }
 }

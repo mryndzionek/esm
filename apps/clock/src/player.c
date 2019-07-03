@@ -287,7 +287,6 @@ static void _play(esm_t *const esm, uint8_t octave_offset)
         uint16_t n = (notes[(scale - 4) * 12 + note]);
 
         htim3.Init.Prescaler = 24000000UL / (255 * n) - 1;
-        ;
         if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
         {
             Error_Handler();
@@ -329,6 +328,10 @@ static void esm_off_handle(esm_t *const esm, const esm_signal_t *const sig)
     case esm_sig_alarm:
         ESM_TRANSITION(playing);
         break;
+
+    case esm_sig_reset:
+        break;
+
     default:
         ESM_TRANSITION(unhandled);
         break;
@@ -346,7 +349,8 @@ static void esm_playing_entry(esm_t *const esm)
 static void esm_playing_exit(esm_t *const esm)
 {
     player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
-    (void)self;
+    esm_timer_rm(&self->timer);
+    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3);
 }
 
 static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -364,10 +368,14 @@ static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
         }
         else
         {
-            ESM_TRANSITION(off);
+            ESM_TRANSITION(self);
         }
     }
     break;
+
+    case esm_sig_reset:
+        ESM_TRANSITION(off);
+        break;
 
     default:
         ESM_TRANSITION(unhandled);
@@ -377,7 +385,7 @@ static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
 
 static void esm_player_init(esm_t *const esm)
 {
-    ESM_TRANSITION(playing);
+    ESM_TRANSITION(off);
 }
 
 static const player_cfg_t player1_cfg = {};

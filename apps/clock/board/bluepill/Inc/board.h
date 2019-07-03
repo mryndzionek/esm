@@ -5,6 +5,7 @@
 
 extern SPI_HandleTypeDef hspi1;
 extern I2C_HandleTypeDef hi2c1;
+extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 
 #define BOARD_DMA_SPI_TX(_data, _size)                                    \
@@ -27,5 +28,7 @@ extern TIM_HandleTypeDef htim3;
         HAL_StatusTypeDef s = HAL_I2C_Master_Receive(&hi2c1, _addr, _data, _size, 1); \
         ESM_ASSERT(s == HAL_OK);                                                      \
     } while (0)
+
+void board_init(void);
 
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */

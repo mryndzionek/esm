@@ -1,6 +1,9 @@
 #include "board.h"
 #include "esm/esm.h"
 #include "debouncer.h"
+#include "NEC_Decode.h"
+
+static NEC nec;
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
@@ -22,6 +25,14 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 			.receiver = debouncer_esm};
 		esm_send_signal(&sig);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
+	}
+}
+
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
+{
+	if (htim == &htim2)
+	{
+		NEC_TIM_IC_CaptureCallback(&nec);
 	}
 }
 
@@ -48,3 +59,17 @@ static const debouncer_cfg_t debouncer_cfg = {
 	.arm = debouncer_arm};
 
 ESM_REGISTER(debouncer, debouncer, esm_gr_none, 1, 1);
+
+void board_init(void)
+{
+	nec.timerHandle = &htim2;
+
+	nec.timerChannel = TIM_CHANNEL_1;
+	nec.timerChannelActive = HAL_TIM_ACTIVE_CHANNEL_1;
+
+	nec.timingBitBoundary = 1680;
+	nec.timingAgcBoundary = 12500;
+	nec.type = NEC_NOT_EXTENDED;
+
+	NEC_Read(&nec);
+}
