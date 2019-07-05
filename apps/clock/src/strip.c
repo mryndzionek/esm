@@ -100,4 +100,4 @@ static void esm_strip_init(esm_t *const esm)
 
 static const strip_cfg_t strip1_cfg = {};
 
-ESM_REGISTER(strip, strip1, esm_gr_none, 1, 0);
+ESM_REGISTER(strip, strip1, esm_gr_none, 2, 0);

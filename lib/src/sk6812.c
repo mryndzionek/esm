@@ -83,7 +83,7 @@ void sk6812_set_color(uint16_t n, uint32_t c)
 
 void sk6812_show(void)
 {
-    BOARD_DMA_SPI_TX(pixels, SK6812_BYTES_NUM);
+    uint8_t *p = pixels;
 
     if (pixels == buffer)
     {
@@ -95,6 +95,8 @@ void sk6812_show(void)
         pixels = buffer;
         memcpy(pixels, buffer + SK6812_BYTES_NUM, SK6812_BYTES_NUM);
     }
+
+    BOARD_DMA_SPI_TX(p, SK6812_BYTES_NUM);
 }
 
 void sk6812_clear(void)

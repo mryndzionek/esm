@@ -114,8 +114,6 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  board_init();
-
   /* USER CODE END 2 */
 
   /* Infinite loop */

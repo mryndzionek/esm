@@ -23,12 +23,14 @@ typedef struct
 {
     esm_t esm;
     track_t curr_track;
+    uint8_t i;
     esm_timer_t timer;
     player_cfg_t const *const cfg;
 } player_esm_t;
 
 ESM_DEFINE_STATE(off);
 ESM_DEFINE_STATE(playing);
+ESM_DEFINE_STATE(wait);
 
 static const char Tone1[] = "DrNo:d=4,o=5,b=112:2b4,2c,2c#,2c,2b4,2c,2c#,2c,2p,8e,16f#,16f#,8f#,f#,8e,8e,"
                             "8e,8e,16g,16g,8g,g,8f#,8f#,8e,8e,16f#,16f#,8f#,f#,8e,8e,8e,8e,16g,16g,8g,g,8"
@@ -61,7 +63,29 @@ static const char Tone7[] = "dx:d=4,o=5,b=90:16d#4,16d#4,16d#4,16c#,8p,16d#4,16p
 static const char Tone8[] = "SweetDreams:d=16,o=6,b=45:32p,c#,c#,g#,c#,a,c#,g#,c#,a5,a5,e,f#,g#5,g#5,d#,e,c#,c#,g#,c#,a,c#,g#,"
                             "c#,a5,a5,e,f#,g#5,g#5,d#,e";
 
-static char const *Tones[8] = {Tone1, Tone2, Tone3, Tone4, Tone5, Tone6, Tone7, Tone8};
+static const char Tone9[] = "NokiaTun:d=4,o=5,b=225:8e6,8d6,f#,g#,8c#6,8b,d,e,8b,8a,c#,e,2a";
+
+static const char Tone10[] = "Dizzie:d=4,o=6,b=225:32c5,32d5,32e5,32f5,32g5,32a5,32b5,32g5,32f5,32e5,32d5,32c5,32d5,32e5,32f5,"
+                             "32g5,32a5,32b5,32a5,32g5,32e5,32d5,32c5,32d5,32e5,32f5,32g5,32a5,32b5,32a5,32g5,32f5,32e5,32d5,"
+                             "32e5,32f5,32d5,32e5,32f5";
+
+static const char Tone11[] = "DieSonne:d=16,o=5,b=160:4d,8g#,8d,8g#,8g,8d,8p,4d,8g#,8d,8g#,4g.,8p,4d,8g#,8d,8g#,8g,8d,8p,4d,8g#,"
+                             "8d,8g#,4g.,8p,4d,8g#,8d,8g#,8g,8d,8p,4d,8g#,8d,8g#,4g.,8p";
+
+static const char Tone12[] = "Mutter:d=16,o=5,b=140:d#,2e.,8f#,8g,2b.,8b,8a,8b,8a,1f#,4f#,4g,8f#.,d#,2e.,8f#,8g,2b.,8b,8a,8b,8a,1f#,"
+                             "4f#,4g,4f#,2e,2p";
+
+static const char Tone13[] = "commando:d=4,o=5,b=125:8a.,16a,8a,8a,a,8a,8a,8a.,16e6,8e6,8e6,e6,p,f6,e6,f6,e6,8e6,16b,16b,8b,8b,b,p,8c.6,"
+                             "16c6,8c6,8c6,c6,8c6,8c6,8c.6,16g6,8g6,8g6,g6,p,g#6,g6,g#6,g6,8g6,16d6,16d6,8d6,8d6,d6";
+
+static const char Tone14[] = "mkombat:d=4,o=5,b=70:16a#,16a#,16c#6,16a#,16d#6,16a#,16f6,16d#6,16c#6,16c#6,16f6,16c#6,16g#6,16c#6,16f6,16c#6,"
+                             "16g#,16g#,16c6,16g#,16c#6,16g#,16d#6,16c#6,16f#,16f#,16a#,16f#,16c#6,16f#,16c#6,16c6";
+
+static const char Tone15[] = "Robocop:d=4,o=5,b=140:8f,8g#,8f,g,a#.,32p,8f,8g#,8f,2c#,8p,8f,8g#,8f,g,a#,2d#.,p,8f,8g#,8f,g,a#.,32p,8a#,8c#6,8a#,"
+                             "2f6,8p,8f6,8g#6,8f6,c7,g#6,2a#.6,8p,16a#6,16a#6,2c.7";
+
+static char const *Tones[15] = {Tone1, Tone2, Tone3, Tone4, Tone5, Tone6, Tone7, Tone8,
+                                Tone9, Tone10, Tone11, Tone12, Tone13, Tone14, Tone15};
 
 static const uint16_t notes[] =
     {0,        //
@@ -286,7 +310,7 @@ static void _play(esm_t *const esm, uint8_t octave_offset)
     {
         uint16_t n = (notes[(scale - 4) * 12 + note]);
 
-        htim3.Init.Prescaler = 24000000UL / (255 * n) - 1;
+        htim3.Init.Prescaler = SystemCoreClock / (255 * n) - 1;
         if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
         {
             Error_Handler();
@@ -318,7 +342,8 @@ static void esm_off_entry(esm_t *const esm)
 
 static void esm_off_exit(esm_t *const esm)
 {
-    (void)esm;
+    player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
+    self->i = platform_rnd(sizeof(Tones) / sizeof(Tones[0]));
 }
 
 static void esm_off_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -342,7 +367,7 @@ static void esm_playing_entry(esm_t *const esm)
 {
     player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
 
-    _init(Tones[platform_rnd(sizeof(Tones) / sizeof(Tones[0]))], &self->curr_track);
+    _init(Tones[self->i], &self->curr_track);
     _play(esm, 0);
 }
 
@@ -368,13 +393,59 @@ static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
         }
         else
         {
-            ESM_TRANSITION(self);
+            ESM_TRANSITION(wait);
         }
     }
     break;
 
     case esm_sig_reset:
         ESM_TRANSITION(off);
+        break;
+
+    case esm_sig_alarm:
+        break;
+
+    default:
+        ESM_TRANSITION(unhandled);
+        break;
+    }
+}
+
+static void esm_wait_entry(esm_t *const esm)
+{
+    player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
+
+    esm_signal_t sig = {
+        .type = esm_sig_tmout,
+        .sender = esm,
+        .receiver = esm};
+    esm_timer_add(&self->timer,
+                  1000UL, &sig);
+}
+
+static void esm_wait_exit(esm_t *const esm)
+{
+    player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
+    esm_timer_rm(&self->timer);
+}
+
+static void esm_wait_handle(esm_t *const esm, const esm_signal_t *const sig)
+{
+    (void)esm;
+
+    switch (sig->type)
+    {
+    case esm_sig_tmout:
+    {
+        ESM_TRANSITION(playing);
+    }
+    break;
+
+    case esm_sig_reset:
+        ESM_TRANSITION(off);
+        break;
+
+    case esm_sig_alarm:
         break;
 
     default:

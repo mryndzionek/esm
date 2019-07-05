@@ -7,12 +7,12 @@
 #include "sk6812.h"
 #include "board.h"
 
-#define NUM_MAJOR_STATES (4)
+#define NUM_MAJOR_STATES (5)
 
 #define OFF (0x00000000)
 #define RED (0x00AA0000)
 #define GREEN (0x00001000)
-#define ORANGE (0x00A05000)
+#define ORANGE (0x00B06000)
 #define LIGHT_BLUE (0x00000008)
 #define LIGHT_RED_1 (0x00010000)
 #define LIGHT_RED_2 (0x00080000)
@@ -22,6 +22,8 @@
 #define SECONDS_COLOR RED
 #define FIVE_TICK_COLOR LIGHT_RED_2
 #define FIFTEEN_TICK_COLOR LIGHT_BLUE
+
+#define INIT_LAMP_COLOR (0x00FFFF80)
 
 #define FIRE_COLOR (ORANGE | 0x15)
 
@@ -34,6 +36,10 @@
 
 #define KEYCODE_MINUS (248)
 #define KEYCODE_PLUS (234)
+#define KEYCODE_EQ (246)
+
+#define KEYCODE_0 (233)
+#define KEYCODE_1 (243)
 
 ESM_THIS_FILE;
 
@@ -50,6 +56,7 @@ typedef struct
 	uint8_t sn;
 	uint16_t freq_hz;
 	int brightness;
+	uint32_t lamp_color;
 	size_t i;
 	size_t j;
 	clock_cfg_t const *const cfg;
@@ -90,6 +97,7 @@ ESM_COMPLEX_STATE(active, top, 1);
 ESM_LEAF_STATE(time, active, 2);
 ESM_LEAF_STATE(fire, active, 2);
 ESM_LEAF_STATE(plasma, active, 2);
+ESM_LEAF_STATE(lamp, active, 2);
 
 ESM_COMPLEX_STATE(sunrise, active, 2);
 ESM_LEAF_STATE(rising, sunrise, 3);
@@ -399,12 +407,12 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 		switch(sig->params.keycode)
 		{
 			case KEYCODE_CH_PLUS:
-				self->sn = (self->sn + 1) > NUM_MAJOR_STATES - 1 ? 0 : (self->sn + 1);
+				self->sn = (self->sn + 1) >= NUM_MAJOR_STATES ? 0 : (self->sn + 1);
 				esm->next_state = self->cfg->states[self->sn];
 				break;
 
 			case KEYCODE_CH_MINUS:
-				self->sn = (self->sn - 1) > 0 ? (self->sn - 1) : NUM_MAJOR_STATES - 1;
+				self->sn = (self->sn - 1) >= 0 ? (self->sn - 1) : NUM_MAJOR_STATES - 1;
 				esm->next_state = self->cfg->states[self->sn];
 				break;
 
@@ -414,8 +422,8 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 				break;
 
 			case KEYCODE_PLUS: {
-				uint8_t incr = 15;
-				if (self->brightness < 30)
+				uint8_t incr = 10;
+				if (self->brightness < 12)
 				{
 					incr = 1;
 				}
@@ -426,14 +434,42 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
 			case KEYCODE_MINUS:
 			{
-				uint8_t incr = 15;
-				if (self->brightness < 30)
+				uint8_t incr = 10;
+				if (self->brightness < 12)
 				{
 					incr = 1;
 				}
 
 				self->brightness = (self->brightness - incr) <= 0 ? 0 : (self->brightness - incr);
 				sk6812_set_brightness(self->brightness);
+			}
+			break;
+
+			case KEYCODE_EQ:
+			{
+				self->brightness = 128;
+				sk6812_set_brightness(self->brightness);
+			}
+			break;
+
+			case KEYCODE_0:
+			{
+				esm_signal_t s = {
+					.type = esm_sig_reset,
+					.sender = NULL,
+					.receiver = player1_esm};
+				esm_send_signal(&s);
+			}
+			break;
+
+
+			case KEYCODE_1:
+			{
+				esm_signal_t s = {
+					.type = esm_sig_alarm,
+					.sender = NULL,
+					.receiver = player1_esm};
+				esm_send_signal(&s);
 			}
 			break;
 		}
@@ -453,6 +489,13 @@ static void esm_time_entry(esm_t *const esm)
 {
 	(void)esm;
 	ds3231_init();
+	{
+		esm_signal_t s = {
+			.type = esm_sig_alarm,
+			.sender = NULL,
+			.receiver = esm};
+		esm_send_signal(&s);
+	}
 }
 
 static void esm_time_exit(esm_t *const esm)
@@ -507,8 +550,7 @@ static void esm_sunrise_entry(esm_t *const esm)
 
 	ds3231_init();
 
-	self->brightness = 255;
-	sk6812_set_brightness(self->brightness);
+	sk6812_set_brightness(255);
 
 	self->i = 0;
 	self->j = 0;
@@ -522,8 +564,9 @@ static void esm_sunrise_entry(esm_t *const esm)
 
 static void esm_sunrise_exit(esm_t *const esm)
 {
-	(void)esm;
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
 	ds3231_deinit();
+	sk6812_set_brightness(self->brightness);
 }
 
 static void esm_sunrise_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -703,6 +746,52 @@ static void esm_plasma_handle(esm_t *const esm, const esm_signal_t *const sig)
 	}
 }
 
+static void esm_lamp_entry(esm_t *const esm)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	self->lamp_color = INIT_LAMP_COLOR;
+
+	self->freq_hz = 10UL;
+
+	esm_signal_t sig = {
+		.type = esm_sig_tmout,
+		.sender = esm,
+		.receiver = esm};
+	esm_timer_add(&self->timer,
+				  1000UL / self->freq_hz, &sig);
+}
+
+static void esm_lamp_exit(esm_t *const esm)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	esm_timer_rm(&self->timer);
+}
+
+static void esm_lamp_handle(esm_t *const esm, const esm_signal_t *const sig)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+
+	switch (sig->type)
+	{
+
+	case esm_sig_tmout:
+	{
+		leds_set_all(self->lamp_color);
+		esm_signal_t s = {
+			.type = esm_sig_alarm,
+			.sender = NULL,
+			.receiver = strip1_esm};
+		esm_send_signal(&s);
+		ESM_TRANSITION(self);
+	}
+	break;
+
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
+
 static void esm_clock_init(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
@@ -711,6 +800,7 @@ static void esm_clock_init(esm_t *const esm)
 	sk6812_set_brightness(self->brightness);
 	sk6812_clear();
 	ds3231_deinit();
+	board_nec_start(&nec1);
 
 	ESM_TRANSITION(active);
 }
@@ -721,6 +811,7 @@ static const clock_cfg_t clock1_cfg = {
 		(esm_state_t const *const) & esm_sunrise_state,
 		(esm_state_t const *const) & esm_fire_state,
 		(esm_state_t const *const) & esm_plasma_state,
+		(esm_state_t const *const) & esm_lamp_state,
 	}};
 
 ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_clocks, 3, 4, 0);

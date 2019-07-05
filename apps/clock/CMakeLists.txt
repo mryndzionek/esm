@@ -20,7 +20,7 @@ target_sources(${APP_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/clock.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/strip.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/player.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/NEC_Decode.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/nec.c
         ${CMAKE_SOURCE_DIR}/lib/src/sk6812.c
 )
 
