@@ -60,5 +60,6 @@ extern NEC_t nec1;
     } while (0)
 
 void board_nec_start(NEC_t *handle);
+void board_nec_stop(NEC_t *handle);
 
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */

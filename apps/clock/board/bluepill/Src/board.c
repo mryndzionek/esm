@@ -101,3 +101,8 @@ void board_nec_start(NEC_t *handle)
 	HAL_TIM_IC_Start_DMA(handle->timerHandle, handle->timerChannel,
 						 (uint32_t *)handle->rawTimerData, 2);
 }
+
+void board_nec_stop(NEC_t *handle)
+{
+	HAL_TIM_IC_Stop_DMA(handle->timerHandle, handle->timerChannel);
+}

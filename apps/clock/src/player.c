@@ -1,7 +1,8 @@
-#include "esm/esm.h"
+#include "esm/hesm.h"
 #include "esm/esm_timer.h"
 
 #include "pitches.h"
+#include "keycodes.h"
 #include "board.h"
 
 ESM_THIS_FILE;
@@ -21,16 +22,17 @@ typedef struct
 
 typedef struct
 {
-    esm_t esm;
+    hesm_t esm;
     track_t curr_track;
     uint8_t i;
     esm_timer_t timer;
     player_cfg_t const *const cfg;
 } player_esm_t;
 
-ESM_DEFINE_STATE(off);
-ESM_DEFINE_STATE(playing);
-ESM_DEFINE_STATE(wait);
+ESM_COMPLEX_STATE(base, top, 1);
+ESM_LEAF_STATE(off, base, 2);
+ESM_LEAF_STATE(playing, base, 2);
+ESM_LEAF_STATE(wait, base, 2);
 
 static const char Tone1[] = "DrNo:d=4,o=5,b=112:2b4,2c,2c#,2c,2b4,2c,2c#,2c,2p,8e,16f#,16f#,8f#,f#,8e,8e,"
                             "8e,8e,16g,16g,8g,g,8f#,8f#,8e,8e,16f#,16f#,8f#,f#,8e,8e,8e,8e,16g,16g,8g,g,8"
@@ -84,8 +86,10 @@ static const char Tone14[] = "mkombat:d=4,o=5,b=70:16a#,16a#,16c#6,16a#,16d#6,16
 static const char Tone15[] = "Robocop:d=4,o=5,b=140:8f,8g#,8f,g,a#.,32p,8f,8g#,8f,2c#,8p,8f,8g#,8f,g,a#,2d#.,p,8f,8g#,8f,g,a#.,32p,8a#,8c#6,8a#,"
                              "2f6,8p,8f6,8g#6,8f6,c7,g#6,2a#.6,8p,16a#6,16a#6,2c.7";
 
-static char const *Tones[15] = {Tone1, Tone2, Tone3, Tone4, Tone5, Tone6, Tone7, Tone8,
+static char const *Tones[] = {Tone1, Tone2, Tone3, Tone4, Tone5, Tone6, Tone7, Tone8,
                                 Tone9, Tone10, Tone11, Tone12, Tone13, Tone14, Tone15};
+
+#define NUM_TONES (sizeof(Tones) / sizeof(Tones[0]))
 
 static const uint16_t notes[] =
     {0,        //
@@ -335,6 +339,65 @@ static void _play(esm_t *const esm, uint8_t octave_offset)
     }
 }
 
+static void esm_base_init(esm_t *const esm)
+{
+    (void)esm;
+	ESM_TRANSITION(off);
+}
+
+static void esm_base_entry(esm_t *const esm)
+{
+    (void)esm;
+}
+
+static void esm_base_exit(esm_t *const esm)
+{
+    (void)esm;
+}
+
+static void esm_base_handle(esm_t *const esm, const esm_signal_t *const sig)
+{
+    player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
+    
+    switch (sig->type)
+    {
+    case esm_sig_remote:
+    {
+        switch (sig->params.keycode)
+        {
+        case KEYCODE_PLAY:
+        {
+            esm_signal_t s = {
+                .type = esm_sig_play,
+                .sender = NULL,
+                .receiver = esm};
+            esm_send_signal(&s);
+        }
+        break;
+
+        case KEYCODE_NEXT:
+        {
+            self->i = self->i == (int)(NUM_TONES - 1) ? 0 : self->i + 1; 
+            _init(Tones[self->i], &self->curr_track);
+        }
+        break;
+
+        case KEYCODE_PREV:
+        {
+            self->i = self->i == 0 ? (uint8_t)(NUM_TONES - 1) : self->i - 1;
+            _init(Tones[self->i], &self->curr_track);
+        }
+        break;
+        }
+    }
+    break;
+
+    default:
+        ESM_TRANSITION(unhandled);
+        break;
+    }
+}
+
 static void esm_off_entry(esm_t *const esm)
 {
     (void)esm;
@@ -343,18 +406,15 @@ static void esm_off_entry(esm_t *const esm)
 static void esm_off_exit(esm_t *const esm)
 {
     player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
-    self->i = platform_rnd(sizeof(Tones) / sizeof(Tones[0]));
+    self->i = platform_rnd(NUM_TONES);
 }
 
 static void esm_off_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
     switch (sig->type)
     {
-    case esm_sig_alarm:
+    case esm_sig_play:
         ESM_TRANSITION(playing);
-        break;
-
-    case esm_sig_reset:
         break;
 
     default:
@@ -398,11 +458,8 @@ static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
     }
     break;
 
-    case esm_sig_reset:
+    case esm_sig_play:
         ESM_TRANSITION(off);
-        break;
-
-    case esm_sig_alarm:
         break;
 
     default:
@@ -441,11 +498,8 @@ static void esm_wait_handle(esm_t *const esm, const esm_signal_t *const sig)
     }
     break;
 
-    case esm_sig_reset:
+    case esm_sig_play:
         ESM_TRANSITION(off);
-        break;
-
-    case esm_sig_alarm:
         break;
 
     default:
@@ -461,4 +515,4 @@ static void esm_player_init(esm_t *const esm)
 
 static const player_cfg_t player1_cfg = {};
 
-ESM_REGISTER(player, player1, esm_gr_none, 1, 0);
+ESM_COMPLEX_REGISTER(player, player1, esm_gr_remote, 2, 3, 0);

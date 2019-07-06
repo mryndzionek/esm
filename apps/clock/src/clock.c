@@ -5,6 +5,7 @@
 
 #include "ds3231.h"
 #include "sk6812.h"
+#include "keycodes.h"
 #include "board.h"
 
 #define NUM_MAJOR_STATES (5)
@@ -29,17 +30,6 @@
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
-
-#define KEYCODE_CH_MINUS (186)
-#define KEYCODE_CH (185)
-#define KEYCODE_CH_PLUS (184)
-
-#define KEYCODE_MINUS (248)
-#define KEYCODE_PLUS (234)
-#define KEYCODE_EQ (246)
-
-#define KEYCODE_0 (233)
-#define KEYCODE_1 (243)
 
 ESM_THIS_FILE;
 
@@ -422,54 +412,36 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 				break;
 
 			case KEYCODE_PLUS: {
-				uint8_t incr = 10;
-				if (self->brightness < 12)
-				{
-					incr = 1;
-				}
-				self->brightness = (self->brightness + incr) >= 255 ? 255 : (self->brightness + incr);
+				self->brightness = (self->brightness + 8) >= 255 ? 255 : (self->brightness + 8);
 				sk6812_set_brightness(self->brightness);
 			}
 			break;
 
 			case KEYCODE_MINUS:
 			{
-				uint8_t incr = 10;
-				if (self->brightness < 12)
-				{
-					incr = 1;
-				}
-
-				self->brightness = (self->brightness - incr) <= 0 ? 0 : (self->brightness - incr);
+				self->brightness = (self->brightness - 8) <= 0 ? 0 : (self->brightness - 8);
 				sk6812_set_brightness(self->brightness);
 			}
 			break;
 
 			case KEYCODE_EQ:
 			{
+				self->brightness = 0;
+				sk6812_set_brightness(self->brightness);
+			}
+			break;
+
+			case KEYCODE_100:
+			{
 				self->brightness = 128;
 				sk6812_set_brightness(self->brightness);
 			}
 			break;
 
-			case KEYCODE_0:
+			case KEYCODE_200:
 			{
-				esm_signal_t s = {
-					.type = esm_sig_reset,
-					.sender = NULL,
-					.receiver = player1_esm};
-				esm_send_signal(&s);
-			}
-			break;
-
-
-			case KEYCODE_1:
-			{
-				esm_signal_t s = {
-					.type = esm_sig_alarm,
-					.sender = NULL,
-					.receiver = player1_esm};
-				esm_send_signal(&s);
+				self->brightness = 255;
+				sk6812_set_brightness(self->brightness);
 			}
 			break;
 		}
@@ -514,7 +486,7 @@ static void esm_time_handle(esm_t *const esm, const esm_signal_t *const sig)
 	{
 		ds3231_get_time(&self->time);
 		// alarm - hardcoded for now to 04:00
-		if ((self->time.hour == 4) && (self->time.min == 0))
+		if ((self->time.hour == 4) && (self->time.min == 0) && (self->time.wday < 6))
 		{
 			ESM_TRANSITION(sunrise);
 		}
@@ -630,7 +602,7 @@ static void esm_finished_entry(esm_t *const esm)
 {
 	(void)esm;
 	esm_signal_t s = {
-		.type = esm_sig_alarm,
+		.type = esm_sig_play,
 		.sender = NULL,
 		.receiver = player1_esm};
 	esm_send_signal(&s);
@@ -640,7 +612,7 @@ static void esm_finished_exit(esm_t *const esm)
 {
 	(void)esm;
 	esm_signal_t s = {
-		.type = esm_sig_reset,
+		.type = esm_sig_play,
 		.sender = NULL,
 		.receiver = player1_esm};
 	esm_send_signal(&s);
@@ -814,4 +786,4 @@ static const clock_cfg_t clock1_cfg = {
 		(esm_state_t const *const) & esm_lamp_state,
 	}};
 
-ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_clocks, 3, 4, 0);
+ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_remote, 3, 4, 0);
