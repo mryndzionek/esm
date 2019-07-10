@@ -11,7 +11,7 @@
 #define SK6812_TO_BYTES(_numLeds) ((_numLeds << 3) + _numLeds + 2)
 #define SK6812_BYTES_NUM SK6812_TO_BYTES(SK6812_LEDS_NUM)
 
-static const uint8_t bmap[256] = {
+const uint8_t bmap[256] = {
 	0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 
 	1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 
 	2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 

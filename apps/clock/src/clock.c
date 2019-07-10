@@ -12,24 +12,28 @@
 
 #define OFF (0x00000000)
 #define RED (0x00AA0000)
-#define GREEN (0x00001000)
-#define ORANGE (0x00B06000)
+#define GREEN (0x0000AA00)
+#define ORANGE (0x00FFA000)
 #define LIGHT_BLUE (0x00000008)
 #define LIGHT_RED_1 (0x00010000)
 #define LIGHT_RED_2 (0x00080000)
 
-#define HOURS_COLOR LIGHT_RED_1
+#define HOURS_COLOR ORANGE
 #define MINUTES_COLOR GREEN
 #define SECONDS_COLOR RED
 #define FIVE_TICK_COLOR LIGHT_RED_2
 #define FIFTEEN_TICK_COLOR LIGHT_BLUE
 
-#define INIT_LAMP_COLOR (0x00FFFF80)
+#define INIT_LAMP_COLOR (0x00FFFFFF)
 
 #define FIRE_COLOR (ORANGE | 0x15)
 
 #define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
+
+#define SELF_TO_COLOR(_s) ((bmap[_s->rgb.r] << 16) | (bmap[_s->rgb.g] << 8) | (bmap[_s->rgb.b]))
+
+extern const uint8_t bmap[256];
 
 ESM_THIS_FILE;
 
@@ -46,9 +50,17 @@ typedef struct
 	uint8_t sn;
 	uint16_t freq_hz;
 	int brightness;
-	uint32_t lamp_color;
 	size_t i;
 	size_t j;
+	union {
+		struct
+		{
+			uint8_t b;
+			uint8_t g;
+			uint8_t r;
+		} rgb;
+		uint32_t c;
+	};
 	clock_cfg_t const *const cfg;
 } clock_esm_t;
 
@@ -156,16 +168,6 @@ static void render_time(ds3231_time_t const *time)
 {
 	sk6812_clear();
 
-	// draw hours
-	{
-		uint8_t h = time->hour % 12;
-		uint8_t hp = h == 0 ? 5 * 12 : 5 * h;
-		for (uint8_t i = 0; i < 2 * hp; i++)
-		{
-			sk6812_set_color(i, HOURS_COLOR);
-		}
-	}
-
 	// draw 5s ticks
 	for (uint8_t i = 8; i < 2 * 60 + 2; i += 10)
 	{
@@ -193,13 +195,21 @@ static void render_time(ds3231_time_t const *time)
 		sk6812_set_color(2 * mp, MINUTES_COLOR);
 		sk6812_set_color(2 * mp + 1, MINUTES_COLOR);
 	}
+
+	// draw hours
+	{
+		uint8_t h = time->hour % 12;
+		uint8_t hp = h == 0 ? 5 * 12 - 1 : 5 * h - 1;
+		sk6812_set_color(2 * hp, HOURS_COLOR);
+		sk6812_set_color(2 * hp + 1, HOURS_COLOR);
+	}
 }
 
-void fire_flicker(int rev_intensity)
+void fire_flicker(int rev_intensity, uint32_t c)
 {
-	uint8_t r = (FIRE_COLOR >> 16) & 0xFF;
-	uint8_t g = (FIRE_COLOR >> 8) & 0xFF;
-	uint8_t b = (FIRE_COLOR & 0xFF);
+	uint8_t r = (c >> 16) & 0xFF;
+	uint8_t g = (c >> 8) & 0xFF;
+	uint8_t b = (c & 0xFF);
 	uint8_t lum = MAX(r, MAX(g, b)) / rev_intensity;
 	for (uint16_t i = 0; i < SK6812_LEDS_NUM; i++)
 	{
@@ -444,6 +454,42 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 				sk6812_set_brightness(self->brightness);
 			}
 			break;
+
+			case KEYCODE_1:
+			{
+				self->rgb.r = self->rgb.r < (255 - 8) ? self->rgb.r + 8 : 255;
+			}
+			break;
+
+			case KEYCODE_4:
+			{
+				self->rgb.r = self->rgb.r > 8 ? self->rgb.r - 8 : 0;
+			}
+			break;
+
+			case KEYCODE_2:
+			{
+				self->rgb.g = self->rgb.g < (255 - 8) ? self->rgb.g + 8 : 255;
+			}
+			break;
+
+			case KEYCODE_5:
+			{
+				self->rgb.g = self->rgb.g > 8 ? self->rgb.g - 8 : 0;
+			}
+			break;
+
+			case KEYCODE_3:
+			{
+				self->rgb.b = self->rgb.b < (255 - 8) ? self->rgb.b + 8 : 255;
+			}
+			break;
+
+			case KEYCODE_6:
+			{
+				self->rgb.b = self->rgb.b > 8 ? self->rgb.b - 8 : 0;
+			}
+			break;
 		}
 	}
 	break;
@@ -611,11 +657,6 @@ static void esm_finished_entry(esm_t *const esm)
 static void esm_finished_exit(esm_t *const esm)
 {
 	(void)esm;
-	esm_signal_t s = {
-		.type = esm_sig_play,
-		.sender = NULL,
-		.receiver = player1_esm};
-	esm_send_signal(&s);
 }
 
 static void esm_finished_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -635,13 +676,13 @@ static void esm_fire_entry(esm_t *const esm)
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
 
 	self->freq_hz = 10UL + platform_rnd(25);
+	self->c = FIRE_COLOR;
 
 	esm_signal_t sig = {
 		.type = esm_sig_tmout,
 		.sender = esm,
 		.receiver = esm};
-	esm_timer_add(&self->timer,
-				  1000UL / self->freq_hz, &sig);
+	esm_send_signal(&sig);
 }
 
 static void esm_fire_exit(esm_t *const esm)
@@ -652,19 +693,56 @@ static void esm_fire_exit(esm_t *const esm)
 
 static void esm_fire_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
-	(void)esm;
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	static float intensity = 1.7;
 
 	switch (sig->type)
 	{
+
+	case esm_sig_remote:
+	{
+		switch (sig->params.keycode)
+		{
+		case KEYCODE_8:
+			if (intensity < 6)
+			{
+				intensity += 0.2;
+			}
+			break;
+
+		case KEYCODE_7:
+			if (intensity > 1.5)
+			{
+				intensity -= 0.2;
+			}
+			break;
+
+		default:
+			ESM_TRANSITION(unhandled);
+			break;
+		}
+		break;
+	}
+	break;
+
 	case esm_sig_tmout:
 	{
-		fire_flicker(1.7);
-		esm_signal_t s = {
-			.type = esm_sig_alarm,
-			.sender = NULL,
-			.receiver = strip1_esm};
-		esm_send_signal(&s);
-		ESM_TRANSITION(self);
+		fire_flicker(intensity, SELF_TO_COLOR(self));
+		{
+			esm_signal_t s = {
+				.type = esm_sig_alarm,
+				.sender = NULL,
+				.receiver = strip1_esm};
+			esm_send_signal(&s);
+		}
+		{
+			esm_signal_t s = {
+				.type = esm_sig_tmout,
+				.sender = esm,
+				.receiver = esm};
+			esm_timer_add(&self->timer,
+						  1000UL / self->freq_hz, &s);
+		}
 	}
 	break;
 
@@ -721,16 +799,14 @@ static void esm_plasma_handle(esm_t *const esm, const esm_signal_t *const sig)
 static void esm_lamp_entry(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
-	self->lamp_color = INIT_LAMP_COLOR;
-
 	self->freq_hz = 10UL;
+	self->c = INIT_LAMP_COLOR;
 
 	esm_signal_t sig = {
 		.type = esm_sig_tmout,
 		.sender = esm,
 		.receiver = esm};
-	esm_timer_add(&self->timer,
-				  1000UL / self->freq_hz, &sig);
+	esm_send_signal(&sig);
 }
 
 static void esm_lamp_exit(esm_t *const esm)
@@ -748,13 +824,22 @@ static void esm_lamp_handle(esm_t *const esm, const esm_signal_t *const sig)
 
 	case esm_sig_tmout:
 	{
-		leds_set_all(self->lamp_color);
-		esm_signal_t s = {
-			.type = esm_sig_alarm,
-			.sender = NULL,
-			.receiver = strip1_esm};
-		esm_send_signal(&s);
-		ESM_TRANSITION(self);
+		leds_set_all(SELF_TO_COLOR(self));
+		{
+			esm_signal_t s = {
+				.type = esm_sig_alarm,
+				.sender = NULL,
+				.receiver = strip1_esm};
+			esm_send_signal(&s);
+		}
+		{
+			esm_signal_t s = {
+				.type = esm_sig_tmout,
+				.sender = esm,
+				.receiver = esm};
+			esm_timer_add(&self->timer,
+						  1000UL / self->freq_hz, &s);
+		}
 	}
 	break;
 

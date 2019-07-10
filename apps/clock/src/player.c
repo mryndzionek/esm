@@ -161,7 +161,6 @@ static const uint16_t notes[] =
 
 #define isdigit(_c) ((_c >= '0') && (_c <= '9'))
 
-// code heavily borrowed from https://github.com/ponty/arduino-rtttl-player
 static void _init(const char *pp, track_t *t)
 {
     int num;
