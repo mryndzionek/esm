@@ -18,6 +18,7 @@ target_include_directories(${APP_NAME}
 target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/clock.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/rtc.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/strip.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/player.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/nec.c

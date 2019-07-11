@@ -55,7 +55,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 		esm_signal_t sig = {
 			.type = esm_sig_alarm,
 			.sender = NULL,
-			.receiver = clock1_esm};
+			.receiver = rtc1_esm};
 		esm_send_signal(&sig);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
 	}

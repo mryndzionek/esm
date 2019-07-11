@@ -18,9 +18,7 @@ typedef struct
     uint8_t mon;
     int16_t year;
     uint8_t wday;
-    uint8_t yday;
-    uint8_t year_s;
-    uint32_t unixtime;
+    bool alarm;
 } ds3231_time_t;
 
 inline uint8_t bcdtodec(const uint8_t val)

@@ -55,13 +55,6 @@ static const char Tone5[] = "Xfiles:d=4,o=5,b=125:e,b,a,b,d6,2b.,1p,e,b,a,b,e6,2
 static const char Tone6[] = "smackdown:d=8,o=5,b=200:d#,a#.,d#,a#.,d#,p,16p,d#,a#.,d#,a#.,d#,p,16p,d#,f#.,d#,p,16p,"
                             "d#,a#.,d#,a#.,d#,p,16p,d#,a#.,d#,a#.,d#,p,16p,d#,f#.,d#,p,16p";
 
-static const char Tone7[] = "dx:d=4,o=5,b=90:16d#4,16d#4,16d#4,16c#,8p,16d#4,16p,16d#4,16c#,16d#4,16d#,16d#,16d#,16d#,"
-                            "16d#4,16d#4,16d#4,16c#,8p,16d#4,16p,16d#4,16a#4,16a#4,16b4,16b4,16a#4,16a#4,16d#4,16d#4,"
-                            "16d#4,16c#,8p,16d#4,16p,16d#4,16c#,16d#4,16d#,16d#,16d#,16d#,16d#4,16d#4,16d#4,16c#,8p,16d#4,"
-                            "16p,16d#4,16a#4,16a#4,16b4,16b4,16a#4,16a#4,8d#4,16d#,16c#,8d#.,8a#.4,8b4,8f4,16f#4,16f4,8d#4,"
-                            "16d#,16c#,8d#.,8b.4,8a#4,8f4,16f#4,16f4,8d#4,16d#,16c#,8d#.,8a#.4,8b4,8f4,16f#4,16f4,8d#4,16d#,"
-                            "16c#,8d#.,8b.4,8a#4,8f4,16f#4,16f4,8d#4,16p,16d#4";
-
 static const char Tone8[] = "SweetDreams:d=16,o=6,b=45:32p,c#,c#,g#,c#,a,c#,g#,c#,a5,a5,e,f#,g#5,g#5,d#,e,c#,c#,g#,c#,a,c#,g#,"
                             "c#,a5,a5,e,f#,g#5,g#5,d#,e";
 
@@ -86,8 +79,11 @@ static const char Tone14[] = "mkombat:d=4,o=5,b=70:16a#,16a#,16c#6,16a#,16d#6,16
 static const char Tone15[] = "Robocop:d=4,o=5,b=140:8f,8g#,8f,g,a#.,32p,8f,8g#,8f,2c#,8p,8f,8g#,8f,g,a#,2d#.,p,8f,8g#,8f,g,a#.,32p,8a#,8c#6,8a#,"
                              "2f6,8p,8f6,8g#6,8f6,c7,g#6,2a#.6,8p,16a#6,16a#6,2c.7";
 
-static char const *Tones[] = {Tone1, Tone2, Tone3, Tone4, Tone5, Tone6, Tone7, Tone8,
-                                Tone9, Tone10, Tone11, Tone12, Tone13, Tone14, Tone15};
+static const char Tone16[] = "Halloween:d=4,o=5,b=180:32p,8d6,8g,8g,8d6,8g,8g,8d6,8g,8d#6,8g,8d6,8g,8g,8d6,8g,8g,8d6,8g,8d#6,"
+                             "8g,8c#6,8f#,8f#,8c#6,8f#,8f#,8c#6,8f#,8d6,8f#,8c#6,8f#,8f#,8c#6,8f#,8f#,8c#6,8f#,8d6,8f#";
+
+static char const *Tones[] = {Tone1, Tone2, Tone3, Tone4, Tone5, Tone6, Tone8,
+                                Tone9, Tone10, Tone11, Tone12, Tone13, Tone14, Tone15, Tone16};
 
 #define NUM_TONES (sizeof(Tones) / sizeof(Tones[0]))
 

@@ -3,7 +3,6 @@
 
 #include <math.h>
 
-#include "ds3231.h"
 #include "sk6812.h"
 #include "keycodes.h"
 #include "board.h"
@@ -46,7 +45,6 @@ typedef struct
 {
 	hesm_t esm;
 	esm_timer_t timer;
-	ds3231_time_t time;
 	uint8_t sn;
 	uint16_t freq_hz;
 	int brightness;
@@ -111,57 +109,6 @@ static void leds_set_all(uint32_t color)
 	{
 		sk6812_set_color(i, color);
 	}
-}
-
-static void ds3231_init(void)
-{
-	uint8_t xferbuf[8] = {DS3231_CONTROL_REG};
-
-	// // Turn on 1Hz RTC SQW output
-	BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 1);
-	BOARD_I2C_RX(DS3231_I2C_ADDRESS, &xferbuf[1], 1);
-
-	xferbuf[1] &= ~(DS3231_CTRL_INTCN | DS3231_CTRL_RS1 | DS3231_CTRL_RS2);
-	xferbuf[1] |= DS3231_CTRL_BBSQW;
-	BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 2);
-
-	// // set time - harcoded for now
-	// xferbuf[0] = DS3231_TIME_CAL_REG;
-	// xferbuf[1] = dectobcd(0);
-	// xferbuf[2] = dectobcd(25);
-	// xferbuf[3] = dectobcd(19);
-	// xferbuf[4] = dectobcd(1);
-	// xferbuf[5] = dectobcd(1);
-	// xferbuf[6] = dectobcd(7) + 0x80;
-	// xferbuf[7] = dectobcd(19);
-
-	// BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 8);
-}
-
-static void ds3231_deinit(void)
-{
-	uint8_t xferbuf[2] = {DS3231_CONTROL_REG};
-
-	// // Turn on 1Hz RTC SQW output
-	BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 1);
-	BOARD_I2C_RX(DS3231_I2C_ADDRESS, &xferbuf[1], 1);
-
-	xferbuf[1] |= (DS3231_CTRL_INTCN);
-	xferbuf[1] &= ~(DS3231_CTRL_BBSQW);
-	BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 2);
-}
-
-static void ds3231_get_time(ds3231_time_t *time)
-{
-	uint8_t xferbuf[8] = {DS3231_CONTROL_REG};
-	//read the time
-	xferbuf[0] = DS3231_TIME_CAL_REG;
-	BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 1);
-	BOARD_I2C_RX(DS3231_I2C_ADDRESS, &xferbuf[1], 7);
-
-	time->sec = bcdtodec(xferbuf[1]);
-	time->min = bcdtodec(xferbuf[2]);
-	time->hour = bcdtodec(xferbuf[3]);
 }
 
 static void render_time(ds3231_time_t const *time)
@@ -494,7 +441,11 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 	}
 	break;
 
-	case esm_sig_alarm:
+	case esm_sig_rtc:
+		if (sig->params.time->alarm)
+		{
+			ESM_TRANSITION(sunrise);
+		}
 		break;
 
 	default:
@@ -506,49 +457,30 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 static void esm_time_entry(esm_t *const esm)
 {
 	(void)esm;
-	ds3231_init();
-	{
-		esm_signal_t s = {
-			.type = esm_sig_alarm,
-			.sender = NULL,
-			.receiver = esm};
-		esm_send_signal(&s);
-	}
 }
 
 static void esm_time_exit(esm_t *const esm)
 {
 	(void)esm;
-	ds3231_deinit();
 }
 
 static void esm_time_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
-	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	(void)esm;
 
 	switch (sig->type)
 	{
-	case esm_sig_alarm:
+	case esm_sig_rtc:
 	{
-		ds3231_get_time(&self->time);
-		// alarm - hardcoded for now to 04:00
-		if ((self->time.hour == 4) && (self->time.min == 0) && (self->time.wday < 6))
+		render_time(sig->params.time);
 		{
-			ESM_TRANSITION(sunrise);
-		}
-		else
-		{
-			render_time(&self->time);
-			{
-				esm_signal_t s = {
-					.type = esm_sig_alarm,
-					.sender = NULL,
-					.receiver = strip1_esm};
-				esm_send_signal(&s);
-			}
+			esm_signal_t s = {
+				.type = esm_sig_alarm,
+				.sender = NULL,
+				.receiver = strip1_esm};
+			esm_send_signal(&s);
 		}
 	}
-	break;
 
 	default:
 		ESM_TRANSITION(unhandled);
@@ -566,8 +498,6 @@ static void esm_sunrise_entry(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
 
-	ds3231_init();
-
 	sk6812_set_brightness(255);
 
 	self->i = 0;
@@ -583,7 +513,6 @@ static void esm_sunrise_entry(esm_t *const esm)
 static void esm_sunrise_exit(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
-	ds3231_deinit();
 	sk6812_set_brightness(self->brightness);
 }
 
@@ -607,7 +536,6 @@ static void esm_rising_entry(esm_t *const esm)
 static void esm_rising_exit(esm_t *const esm)
 {
 	(void)esm;
-	ds3231_deinit();
 }
 
 static void esm_rising_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -616,7 +544,7 @@ static void esm_rising_handle(esm_t *const esm, const esm_signal_t *const sig)
 
 	switch (sig->type)
 	{
-	case esm_sig_alarm:
+	case esm_sig_rtc:
 	{
 		self->j = (self->j + 1) % 4;
 		if (self->j == 0)
@@ -706,14 +634,14 @@ static void esm_fire_handle(esm_t *const esm, const esm_signal_t *const sig)
 		case KEYCODE_8:
 			if (intensity < 6)
 			{
-				intensity += 0.2;
+				intensity++;
 			}
 			break;
 
 		case KEYCODE_7:
-			if (intensity > 1.5)
+			if (intensity > 2)
 			{
-				intensity -= 0.2;
+				intensity--;
 			}
 			break;
 
@@ -856,7 +784,6 @@ static void esm_clock_init(esm_t *const esm)
 	self->brightness = 255;
 	sk6812_set_brightness(self->brightness);
 	sk6812_clear();
-	ds3231_deinit();
 	board_nec_start(&nec1);
 
 	ESM_TRANSITION(active);
