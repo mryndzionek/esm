@@ -76,6 +76,7 @@ typedef enum {
 	esm_id_tick = 0,
 	esm_id_trace,
 	ESM_IDS
+	ESM_BOARD_IDS
 } esm_id_e;
 #undef ESM_ID
 
@@ -101,6 +102,7 @@ struct _bus_xfer {
 extern esm_t * const tick_esm;
 extern esm_t * const trace_esm;
 ESM_IDS
+ESM_BOARD_IDS
 #undef ESM_ID
 
 #define ESM_GROUP(_name) esm_gr_##_name = (1UL << __COUNTER__),

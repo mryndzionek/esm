@@ -53,6 +53,16 @@ macro(end_esm_app)
         PUBLIC
             -DESM_MODULE_SIGNALS=${mSigsStr}
     )
+
+    set(mIds "")
+    foreach(ms ${ESM_BOARD_IDS})
+        list(APPEND mIds "ESM_ID(${ms})")
+    endforeach(ms)
+    string(REPLACE ";" " " mIdsStr "${mIds}")
+    target_compile_definitions(${APP_NAME}
+        PUBLIC
+            -DESM_BOARD_IDS=${mIdsStr}
+    )
     end_esm_platform()
 
     unset(APP_NAME)

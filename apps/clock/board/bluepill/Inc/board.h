@@ -37,9 +37,10 @@ extern NEC_t nec1;
         ESM_ASSERT(s == HAL_OK);                                                      \
     } while (0)
 
-#define BOARD_START_SOUND(_freq)                                \
+#define BOARD_START_SOUND(_freq, _dur)                          \
     do                                                          \
     {                                                           \
+        (void)_dur;                                             \
         htim3.Init.Prescaler = SystemCoreClock / (255 * n) - 1; \
         if (HAL_TIM_Base_Init(&htim3) != HAL_OK)                \
         {                                                       \

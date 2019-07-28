@@ -3,6 +3,12 @@ def_esm_app(clock)
 set(ESM_HSM ON)
 include("${CMAKE_SOURCE_DIR}/modules/debouncer.cmake")
 
+if(${ESM_PLATFORM} STREQUAL "linux")
+	set(ESM_BOARD_IDS ${ESM_BOARD_IDS} ds3231_sm1)
+	target_link_libraries(${APP_NAME} "sox")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread")
+endif()
+
 target_compile_definitions(${APP_NAME}
     PUBLIC
         -DESM_MAX_PRIO=2

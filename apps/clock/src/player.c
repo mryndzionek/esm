@@ -309,7 +309,7 @@ static void _play(esm_t *const esm, uint8_t octave_offset)
     {
         uint16_t n = (notes[(scale - 4) * 12 + note]);
 
-        BOARD_START_SOUND(n);
+        BOARD_START_SOUND(n, duration);
 
         esm_signal_t sig = {
             .type = esm_sig_tmout,
