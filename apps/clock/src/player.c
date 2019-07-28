@@ -309,12 +309,7 @@ static void _play(esm_t *const esm, uint8_t octave_offset)
     {
         uint16_t n = (notes[(scale - 4) * 12 + note]);
 
-        htim3.Init.Prescaler = SystemCoreClock / (255 * n) - 1;
-        if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
-        {
-            Error_Handler();
-        }
-        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+        BOARD_START_SOUND(n);
 
         esm_signal_t sig = {
             .type = esm_sig_tmout,
@@ -401,7 +396,7 @@ static void esm_off_entry(esm_t *const esm)
 static void esm_off_exit(esm_t *const esm)
 {
     player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
-    self->i = platform_rnd(NUM_TONES);
+    self->i = ESM_RANDOM(NUM_TONES);
 }
 
 static void esm_off_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -430,7 +425,7 @@ static void esm_playing_exit(esm_t *const esm)
 {
     player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
     esm_timer_rm(&self->timer);
-    HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3);
+    BOARD_STOP_SOUND();
 }
 
 static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -441,7 +436,7 @@ static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
     {
     case esm_sig_tmout:
     {
-        HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3);
+        BOARD_STOP_SOUND();
         if (*self->curr_track.p)
         {
             _play(esm, 0);

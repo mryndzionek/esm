@@ -160,7 +160,7 @@ void fire_flicker(int rev_intensity, uint32_t c)
 	uint8_t lum = MAX(r, MAX(g, b)) / rev_intensity;
 	for (uint16_t i = 0; i < SK6812_LEDS_NUM; i++)
 	{
-		int flicker = platform_rnd(lum);
+		int flicker = ESM_RANDOM(lum);
 		sk6812_set_rgb(i, MAX(r - flicker, 0), MAX(g - flicker, 0), MAX(b - flicker, 0));
 	}
 }
@@ -603,7 +603,7 @@ static void esm_fire_entry(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
 
-	self->freq_hz = 10UL + platform_rnd(25);
+	self->freq_hz = 10UL + ESM_RANDOM(25);
 	self->c = FIRE_COLOR;
 
 	esm_signal_t sig = {

@@ -7,7 +7,7 @@ set(VERSION_PATCH 1)
 set(VERSION_STRING "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99 -Wall -Wextra \
- -Werror -Wno-variadic-macros -Wno-missing-braces -Wno-unused-const-variable")
+ -Werror -Wno-variadic-macros -Wno-missing-braces -Wno-unused-const-variable -Wno-implicit-fallthrough")
 
 configure_file (
     "core/include/config.h.in"

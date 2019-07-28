@@ -2,35 +2,13 @@
 #define APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_
 
 #include "stm32f1xx_hal.h"
+#include "nec.h"
 
-typedef enum
+struct _NEC_HW_CTX
 {
-    NEC_NOT_EXTENDED,
-    NEC_EXTENDED
-} NEC_TYPE;
-
-typedef enum
-{
-    NEC_INIT,
-    NEC_AGC_OK,
-    NEC_AGC_FAIL,
-} NEC_STATE;
-
-typedef struct
-{
-    int rawTimerData[32];
-    uint8_t decoded[4];
-
-    NEC_STATE state;
-
     TIM_HandleTypeDef *timerHandle;
-
     uint32_t timerChannel;
-
-    uint16_t timingBitBoundary;
-    uint16_t timingAgcBoundary;
-    NEC_TYPE type;
-} NEC_t;
+};
 
 extern SPI_HandleTypeDef hspi1;
 extern I2C_HandleTypeDef hi2c1;
@@ -57,6 +35,23 @@ extern NEC_t nec1;
     {                                                                                 \
         HAL_StatusTypeDef s = HAL_I2C_Master_Receive(&hi2c1, _addr, _data, _size, 1); \
         ESM_ASSERT(s == HAL_OK);                                                      \
+    } while (0)
+
+#define BOARD_START_SOUND(_freq)                                \
+    do                                                          \
+    {                                                           \
+        htim3.Init.Prescaler = SystemCoreClock / (255 * n) - 1; \
+        if (HAL_TIM_Base_Init(&htim3) != HAL_OK)                \
+        {                                                       \
+            Error_Handler();                                    \
+        }                                                       \
+        HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);               \
+    } while (0)
+
+#define BOARD_STOP_SOUND()                       \
+    do                                           \
+    {                                            \
+        HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); \
     } while (0)
 
 void board_nec_start(NEC_t *handle);

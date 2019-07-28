@@ -2,9 +2,13 @@
 #include "esm/esm.h"
 #include "debouncer.h"
 
-NEC_t nec1 = {
+static const NEC_HW_CTX_t nechwctx = {
 	.timerHandle = &htim2,
 	.timerChannel = TIM_CHANNEL_1,
+};
+
+NEC_t nec1 = {
+	.hwctx = &nechwctx,
 	.timingBitBoundary = 1680,
 	.timingAgcBoundary = 12500,
 	.type = NEC_NOT_EXTENDED,
@@ -12,7 +16,7 @@ NEC_t nec1 = {
 
 void NEC_TIM_IC_CaptureCallback(NEC_t *handle)
 {
-	HAL_TIM_IC_Stop_DMA(handle->timerHandle, handle->timerChannel);
+	HAL_TIM_IC_Stop_DMA(handle->hwctx->timerHandle, handle->hwctx->timerChannel);
 	if (handle->state == NEC_INIT)
 	{
 		if (handle->rawTimerData[1] < handle->timingAgcBoundary)
@@ -26,7 +30,7 @@ void NEC_TIM_IC_CaptureCallback(NEC_t *handle)
 		else
 		{
 			handle->state = NEC_AGC_OK;
-			HAL_TIM_IC_Start_DMA(handle->timerHandle, handle->timerChannel,
+			HAL_TIM_IC_Start_DMA(handle->hwctx->timerHandle, handle->hwctx->timerChannel,
 								 (uint32_t *)handle->rawTimerData, 32);
 		}
 	}
@@ -98,11 +102,11 @@ ESM_REGISTER(debouncer, debouncer, esm_gr_none, 1, 1);
 void board_nec_start(NEC_t *handle)
 {
 	handle->state = NEC_INIT;
-	HAL_TIM_IC_Start_DMA(handle->timerHandle, handle->timerChannel,
+	HAL_TIM_IC_Start_DMA(handle->hwctx->timerHandle, handle->hwctx->timerChannel,
 						 (uint32_t *)handle->rawTimerData, 2);
 }
 
 void board_nec_stop(NEC_t *handle)
 {
-	HAL_TIM_IC_Stop_DMA(handle->timerHandle, handle->timerChannel);
+	HAL_TIM_IC_Stop_DMA(handle->hwctx->timerHandle, handle->hwctx->timerChannel);
 }
