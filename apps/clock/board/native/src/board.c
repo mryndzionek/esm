@@ -46,7 +46,6 @@ void app_process(char key)
 
 	case 'p':
 	{
-		armed = false;
 		esm_signal_t s = {
 			.type = esm_sig_remote,
 			.params.keycode = KEYCODE_PLAY,
@@ -58,7 +57,6 @@ void app_process(char key)
 
 	case 'n':
 	{
-		armed = false;
 		esm_signal_t s = {
 			.type = esm_sig_remote,
 			.params.keycode = KEYCODE_NEXT,

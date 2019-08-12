@@ -2,6 +2,7 @@
 #include "esm/esm_timer.h"
 
 #include <math.h>
+#include <string.h>
 
 #include "sk6812.h"
 #include "keycodes.h"
@@ -45,6 +46,7 @@ typedef struct
 {
 	hesm_t esm;
 	esm_timer_t timer;
+	ds3231_time_t time;
 	uint8_t sn;
 	uint16_t freq_hz;
 	int brightness;
@@ -134,6 +136,14 @@ static void render_time(ds3231_time_t const *time)
 		uint8_t sp = time->sec == 0 ? 59 : time->sec - 1;
 		sk6812_set_color(2 * sp, SECONDS_COLOR);
 		sk6812_set_color(2 * sp + 1, SECONDS_COLOR);
+
+		for (uint8_t i = 0; i < 6; i++)
+		{
+			if (sp & (1UL << i))
+			{
+				sk6812_set_color(SK6812_LEDS_NUM - 1 - i, SECONDS_COLOR);
+			}
+		}
 	}
 
 	// draw minutes hand
@@ -442,6 +452,7 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 	break;
 
 	case esm_sig_rtc:
+		memcpy(&self->time, sig->params.time, sizeof(ds3231_time_t));
 		if (sig->params.time->alarm)
 		{
 			ESM_TRANSITION(sunrise);
@@ -456,7 +467,15 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
 static void esm_time_entry(esm_t *const esm)
 {
-	(void)esm;
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	{
+		esm_signal_t s = {
+			.type = esm_sig_rtc,
+			.params.time = &self->time,
+			.sender = NULL,
+			.receiver = esm};
+		esm_send_signal(&s);
+	}
 }
 
 static void esm_time_exit(esm_t *const esm)
