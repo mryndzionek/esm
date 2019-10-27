@@ -824,4 +824,4 @@ static const clock_cfg_t clock1_cfg = {
 		(esm_state_t const *const) & esm_lamp_state,
 	}};
 
-ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_remote, 3, 4, 0);
+ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_remote, 4, 4, 0);
