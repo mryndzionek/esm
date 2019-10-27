@@ -8,7 +8,7 @@
 #include "keycodes.h"
 #include "board.h"
 
-#define NUM_MAJOR_STATES (5)
+#define NUM_MAJOR_STATES (6)
 
 #define OFF (0x00000000)
 #define RED (0x00AA0000)
@@ -33,6 +33,8 @@
 #define MAX(a, b) (((a) > (b)) ? (a) : (b))
 
 #define SELF_TO_COLOR(_s) ((bmap[_s->rgb.r] << 16) | (bmap[_s->rgb.g] << 8) | (bmap[_s->rgb.b]))
+
+#define CH_LEN (20)
 
 extern const uint8_t bmap[256];
 
@@ -101,6 +103,7 @@ ESM_LEAF_STATE(time, active, 2);
 ESM_LEAF_STATE(fire, active, 2);
 ESM_LEAF_STATE(plasma, active, 2);
 ESM_LEAF_STATE(lamp, active, 2);
+ESM_LEAF_STATE(christmas, active, 2);
 
 ESM_COMPLEX_STATE(sunrise, active, 2);
 ESM_LEAF_STATE(rising, sunrise, 3);
@@ -629,7 +632,7 @@ static void esm_fire_entry(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
 
-	self->freq_hz = 10UL + ESM_RANDOM(25);
+	self->freq_hz = 10UL;
 	self->c = FIRE_COLOR;
 
 	esm_signal_t sig = {
@@ -803,6 +806,115 @@ static void esm_lamp_handle(esm_t *const esm, const esm_signal_t *const sig)
 	}
 }
 
+static void esm_christmas_entry(esm_t *const esm)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+
+	self->freq_hz = 1UL;
+
+	esm_signal_t sig = {
+		.type = esm_sig_tmout,
+		.sender = esm,
+		.receiver = esm};
+	esm_timer_add(&self->timer,
+				  0, &sig);
+}
+
+static void esm_christmas_exit(esm_t *const esm)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	esm_timer_rm(&self->timer);
+}
+
+static void esm_christmas_handle(esm_t *const esm, const esm_signal_t *const sig)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	static uint16_t pos = 0;
+
+	switch (sig->type)
+	{
+
+	case esm_sig_remote:
+	{
+		switch (sig->params.keycode)
+		{
+		case KEYCODE_8:
+			if (self->freq_hz < 400)
+			{
+				if (self->freq_hz < 50)
+				{
+					self->freq_hz++;
+				}
+				else
+				{
+					self->freq_hz += 5;
+				}
+			}
+			break;
+
+		case KEYCODE_7:
+			if (self->freq_hz > 1)
+			{
+				if (self->freq_hz < 50)
+				{
+					self->freq_hz--;
+				}
+				else
+				{
+					self->freq_hz -= 5;
+				}
+			}
+			break;
+
+		default:
+			ESM_TRANSITION(unhandled);
+			break;
+		}
+		break;
+	}
+	break;
+
+	case esm_sig_tmout:
+	{
+		pos--;
+
+		sk6812_clear();
+		for (uint8_t i = 0; i < SK6812_LEDS_NUM; i++)
+		{
+			uint8_t p = (pos + i) % (4 * CH_LEN);
+			if (p < CH_LEN)
+			{
+				sk6812_set_color(i, GREEN);
+			}
+			else if ((p < 3 * CH_LEN) && (p > 2 * CH_LEN))
+			{
+				sk6812_set_color(i, RED);
+			}
+		}
+		{
+			esm_signal_t s = {
+				.type = esm_sig_alarm,
+				.sender = NULL,
+				.receiver = strip1_esm};
+			esm_send_signal(&s);
+		}
+		{
+			esm_signal_t s = {
+				.type = esm_sig_tmout,
+				.sender = esm,
+				.receiver = esm};
+			esm_timer_add(&self->timer,
+						  1000UL / self->freq_hz, &s);
+		}
+	}
+	break;
+
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
+
 static void esm_clock_init(esm_t *const esm)
 {
 	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
@@ -822,6 +934,7 @@ static const clock_cfg_t clock1_cfg = {
 		(esm_state_t const *const) & esm_fire_state,
 		(esm_state_t const *const) & esm_plasma_state,
 		(esm_state_t const *const) & esm_lamp_state,
+		(esm_state_t const *const) & esm_christmas_state,
 	}};
 
 ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_remote, 4, 4, 0);
