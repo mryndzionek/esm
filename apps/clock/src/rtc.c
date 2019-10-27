@@ -37,14 +37,29 @@ static void ds3231_init(void)
     // // set time - harcoded for now
     // xferbuf[0] = DS3231_TIME_CAL_REG;
     // xferbuf[1] = dectobcd(0);
-    // xferbuf[2] = dectobcd(58);
-    // xferbuf[3] = dectobcd(17);
-    // xferbuf[4] = dectobcd(4);
-    // xferbuf[5] = dectobcd(11);
-    // xferbuf[6] = dectobcd(7) + 0x80;
+    // xferbuf[2] = dectobcd(8);
+    // xferbuf[3] = dectobcd(20);
+    // xferbuf[4] = dectobcd(7);
+    // xferbuf[5] = dectobcd(27);
+    // xferbuf[6] = dectobcd(10) + 0x80;
     // xferbuf[7] = dectobcd(19);
 
     // BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 8);
+}
+
+static void ds3231_set_time(ds3231_time_t *time)
+{
+    uint8_t xferbuf[8] = {DS3231_TIME_CAL_REG};
+
+    xferbuf[1] = dectobcd(time->sec);
+    xferbuf[2] = dectobcd(time->min);
+    xferbuf[3] = dectobcd(time->hour);
+    xferbuf[4] = dectobcd(time->wday);
+    xferbuf[5] = dectobcd(time->mday);
+    xferbuf[6] = dectobcd(time->mon) + 0x80;
+    xferbuf[7] = dectobcd(time->year);
+
+    BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 8);
 }
 
 static void ds3231_get_time(ds3231_time_t *time)
@@ -77,6 +92,25 @@ static void update_time(ds3231_time_t *time)
     }
 }
 
+static void dst_adjust(ds3231_time_t *time)
+{
+    // summer -> winter ?
+    if ((time->mon == 10) && (time->mday + 7 > 31) 
+    && (time->wday == 7) && (time->hour == 3)
+    && (time->min == 0) && (time->sec == 0))
+    {
+        time->hour--;
+        ds3231_set_time(time);
+    } else // winter -> summer?
+    if ((time->mon == 3) && (time->mday + 7 > 31) 
+    && (time->wday == 7) && (time->hour == 2)
+    && (time->min == 0) && (time->sec == 0))
+    {
+        time->hour++;
+        ds3231_set_time(time);
+    }
+}
+
 static void esm_sync_entry(esm_t *const esm)
 {
     (void)esm;
@@ -96,6 +130,7 @@ static void esm_sync_handle(esm_t *const esm, const esm_signal_t *const sig)
     {
     case esm_sig_alarm:
         ds3231_get_time(&self->time);
+        dst_adjust(&self->time);
         ESM_TRANSITION(running);
         break;
 
@@ -127,6 +162,7 @@ static void esm_running_handle(esm_t *const esm, const esm_signal_t *const sig)
         {
             ds3231_get_time(&self->time);
         }
+        dst_adjust(&self->time);
         // alarm - hardcoded for now to 04:00
         // Mon to Fri
         if ((self->time.wday < 6) &&
