@@ -22,6 +22,12 @@ statecharts and AOM implementation in C. Inspired by [QP framework](https://stat
 It's basically a simple cooperative priority-based scheduler and a (hierarchical) state machine framework.
 Some implementation techniques and design patterns (like 'Embedded Anchor' and linker-section-based 'plugin' system) are borrowed from Linux kernel.
 
+Another interesting feature is the possibility of running the system without delays, so as fast as possible.
+Having the inputs defined explicitly makes mocking them out easy and then linking with the `test` platform
+produces a binary that can generate an execution log of days worth of system operation in just seconds.
+Then it's easy to analyze the log (e.g. in an Excel spreadsheet) for safety/liveness properties.
+Sort of poor man's model checker :smiley:.
+
 Provided are four examples/demos:
  - simple blink hierarchical state machine transitioning between two states and reacting to a button press
  - Dining Philosophers Problem (DPP) - originally formulated in 1965 by Edsger Dijkstra
