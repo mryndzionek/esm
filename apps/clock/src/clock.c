@@ -20,8 +20,8 @@
 #define LIGHT_GREEN (0x00000200)
 
 #define HOURS_COLOR ORANGE
-#define MINUTES_COLOR GREEN
-#define SECONDS_COLOR RED
+#define MINUTES_COLOR RED
+#define SECONDS_COLOR GREEN
 #define FIVE_TICK_COLOR LIGHT_RED_2
 #define FIFTEEN_TICK_COLOR LIGHT_BLUE
 
@@ -119,11 +119,11 @@ static void leds_set_all(uint32_t color)
 
 static void render_time(ds3231_time_t const *time)
 {
-	uint8_t mp = time->min == 0 ? 59 : time->min - 1;
+	uint8_t sp = time->sec == 0 ? 59 : time->sec - 1;
 
 	sk6812_clear();
 
-	for (uint8_t i = 0; i < 2 * mp; i++)
+	for (uint8_t i = 0; i < 2 * sp; i++)
 	{
 		sk6812_set_color(i, LIGHT_GREEN);
 	}
@@ -144,7 +144,6 @@ static void render_time(ds3231_time_t const *time)
 
 	// draw seconds hand
 	{
-		uint8_t sp = time->sec == 0 ? 59 : time->sec - 1;
 		sk6812_set_color(2 * sp, SECONDS_COLOR);
 		sk6812_set_color(2 * sp + 1, SECONDS_COLOR);
 
@@ -159,6 +158,7 @@ static void render_time(ds3231_time_t const *time)
 
 	// draw minutes hand
 	{
+		uint8_t mp = time->min == 0 ? 59 : time->min - 1;
 		sk6812_set_color(2 * mp, MINUTES_COLOR);
 		sk6812_set_color(2 * mp + 1, MINUTES_COLOR);
 	}
