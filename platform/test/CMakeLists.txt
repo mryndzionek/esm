@@ -10,6 +10,8 @@ set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} \
 -fstack-protector"
 )
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-implicit-fallthrough")
+
 set(ESM_PLATFORM_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/src/main.c"
     "${CMAKE_CURRENT_LIST_DIR}/src/platform.c"

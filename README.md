@@ -1,6 +1,8 @@
 Efficient State Machine framework
 =================================
 
+![status](https://github.com/mryndzionek/esm/workflows/CI/badge.svg)
+
 Introduction
 ------------
 Good system design is often about knowing what to avoid.

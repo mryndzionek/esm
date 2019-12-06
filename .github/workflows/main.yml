@@ -1,0 +1,38 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Prepare
+      run: |
+        sudo apt-get update
+        sudo apt-get install libsox-dev
+
+    - name: Checkout
+      uses: actions/checkout@v2-beta
+
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug -DESM_PLATFORM=test -DESM_BOARD=native ..
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Run
+      run: |
+        cd build
+        touch /tmp/esm
+        timeout 15s apps/blink/blink &
+        cat /tmp/esm > blink.data
+        time timeout 10s apps/dpp/dpp &
+        cat /tmp/esm > dpp.data
+        time timeout 10s apps/smokers/smokers &
+        cat /tmp/esm > smokers.data
