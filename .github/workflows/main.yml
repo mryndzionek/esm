@@ -29,10 +29,19 @@ jobs:
     - name: Run
       run: |
         cd build
-        touch /tmp/esm
-        timeout 15s apps/blink/blink &
+        set -ex
+        wget https://github.com/mryndzionek/trace-decoder/releases/download/v1.0/trace-decoder
+        chmod +x trace-decoder
+        apps/blink/blink &
+        sleep 1
         cat /tmp/esm > blink.data
-        time timeout 10s apps/dpp/dpp &
+        ./trace-decoder -i file -m ../apps/blink/include/signals.h blink.data +RTS -N2 > blink.log
+        apps/dpp/dpp &
+        sleep 1
         cat /tmp/esm > dpp.data
-        time timeout 10s apps/smokers/smokers &
+        ./trace-decoder -i file -m ../apps/dpp/include/signals.h dpp.data +RTS -N2 > dpp.log
+        apps/smokers/smokers &
+        sleep 1
         cat /tmp/esm > smokers.data
+        ./trace-decoder -i file -m ../apps/smokers/include/signals.h smokers.data +RTS -N2 > smokers.log
+        ls -lh
