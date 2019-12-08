@@ -6,8 +6,8 @@
 
 typedef struct {
 	uint8_t period;
-	void (*handle)(void);
-	void (*arm)(void);
+	void (*handle)(esm_t *const esm, const esm_signal_t * const sig);
+	void (*arm)(esm_t *const esm);
 } debouncer_cfg_t;
 
 typedef struct {

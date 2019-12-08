@@ -24,20 +24,20 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
-static void debouncer_handle(void)
+static void debouncer_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
 	if(HAL_GPIO_ReadPin(BLINK_BUTTON_GPIO_Port, BLINK_BUTTON_Pin) == GPIO_PIN_RESET)
 	{
-		esm_signal_t sig = {
+		esm_signal_t s = {
 				.type = esm_sig_button,
 				.sender = NULL,
 				.receiver = blink1_esm
 		};
-		esm_broadcast_signal(&sig, esm_gr_blinkers);
+		esm_broadcast_signal(&s, esm_gr_blinkers);
 	}
 }
 
-static void debouncer_arm(void)
+static void debouncer_arm(esm_t *const esm)
 {
 	EXTI->IMR |= BLINK_BUTTON_Pin;
 }

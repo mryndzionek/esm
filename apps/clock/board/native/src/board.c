@@ -68,17 +68,22 @@ void app_process(char key)
 	}
 }
 
-static void debouncer_handle(void)
+static void debouncer_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
-	esm_signal_t sig = {
+	(void)esm;
+	(void)sig;
+
+	esm_signal_t s = {
 		.type = esm_sig_button,
 		.sender = NULL,
 		.receiver = clock1_esm};
-	esm_send_signal(&sig);
+	esm_send_signal(&s);
 }
 
-static void debouncer_arm(void)
+static void debouncer_arm(esm_t *const esm)
 {
+	(void)esm;
+
 	armed = true;
 }
 
