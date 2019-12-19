@@ -17,7 +17,7 @@ are designed as message pumps with **Run-to-completion** (RTC) semantics and exp
 
 Adapting **Active Object Model** allows for construction of comprehensible concurrent programs.
 Resulting conceptual integrity has also added benefit of making it possible to spend effort on design instead of implementation.
-Implementation step in such a setting is, for the most part, mechanical process and, as such, can be automated.
+Implementation step in this method is, for the most part, mechanical process and as such, can be automated.
 
 This repository gathers all the ideas and implementation tricks around lightweight, efficient
 statecharts and AOM implementation in C. Inspired by [QP framework](https://state-machine.com/doc/concepts).
@@ -26,15 +26,19 @@ Some implementation techniques and design patterns (like 'Embedded Anchor' and l
 
 Another interesting feature is the possibility of running the system without delays, so as fast as possible.
 Having the inputs defined explicitly makes mocking them out easy and then linking with the `test` platform
-produces a binary that can generate an execution log of days worth of system operation in just seconds.
+produces a binary that can generate an execution log containing days worth of system operation in seconds.
 Then it's easy to analyze the log (e.g. in an Excel spreadsheet) for safety/liveness properties.
 Sort of poor man's model checker :smiley:.
 
-Provided are four examples/demos:
- - simple blink hierarchical state machine transitioning between two states and reacting to a button press
- - Dining Philosophers Problem (DPP) - originally formulated in 1965 by Edsger Dijkstra
- - cigarette smokers problem - classical problem originally described in 1971 by Suhas Patil
- - pelican crossing simulation - simplest safety-critical system simulation
+Provided are following examples/demos:
+ - [simple blink](apps/blink) - hierarchical state machine transitioning between two states and reacting to a button press
+ - [Dining Philosophers Problem (DPP)](apps/dpp) - originally formulated in 1965 by Edsger Dijkstra
+ - [cigarette smokers problem](apps/smokers) - classical problem originally described in 1971 by Suhas Patil
+ - [pelican crossing simulation](apps/pelican) - simplest safety-critical system simulation
+ - [producer-consumer simulation](apps/prodcons) - two producers requesting actions on a single resource guarded by a 'bus' module
+
+There is also one more complex app:
+ - [sk6812 LED strip mood lamp and clock](apps/clock) with RTTTL alarms and sunrise simulator
 
 Simplest Example
 ----------------
