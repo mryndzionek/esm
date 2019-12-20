@@ -1,13 +1,18 @@
 USB HID keyboard firmware
 =========================
 
- - configurable similarly to QMK via keymap file
- - multi-layer support
+ - configurable similarly to QMK via [keymap](src/keymap.c) file
+ - timing options can be adjusted via [config.h](include/config.h)
+ - multi-layers support
  - tap detection
-
 
 Bootloader binary
 -----------------
+
+Bootloader mode switch is not yet integrated into the build system, but
+to compile a binary suitable for [STM32duino-bootloader](https://github.com/rogerclarkmelbourne/STM32duino-bootloader)
+just apply the below patch:
+
 
 ```diff
 diff --git a/apps/keyboard/board/bluepill/STM32F103C8Tx_FLASH.ld b/apps/keyboard/board/bluepill/STM32F103C8Tx_FLASH.ld
@@ -39,6 +44,6 @@ index 789b551..cf390ba 100644
 TODO
 ----
 
- - move different keyboard configurations to separate locations
+  - [ ] move different keyboard configurations to separate locations
 
 

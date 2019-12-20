@@ -37,8 +37,9 @@ Provided are following examples/demos:
  - [pelican crossing simulation](apps/pelican) - simplest safety-critical system simulation
  - [producer-consumer simulation](apps/prodcons) - two producers requesting actions on a single resource guarded by a 'bus' module
 
-There is also one more complex app:
+There are also two more complex apps:
  - [sk6812 LED strip mood lamp and clock](apps/clock) with RTTTL alarms and sunrise simulator
+ - [USB HID keyboard firmware](apps/keyboard) - more lightweight QMK alternative
 
 Simplest Example
 ----------------
@@ -163,7 +164,7 @@ Articles:
 
 - [STATECHARTS: A VISUAL FORMALISM FOR COMPLEX SYSTEMS](http://www.inf.ed.ac.uk/teaching/courses/seoc/2005_2006/resources/statecharts.pdf)
 
-- [Managing Concurrency in Complex Embedded Systems](http://www.kellytechnologygroup.com/main/concurrent-embedded-systems-website.pdf)
+- [Managing Concurrency in Complex Embedded Systems](https://www.state-machine.com/doc/Cummings2006.pdf) - also all the articles from [here](https://www.state-machine.com/doc/an#Active)
 
 - [Problem with threads](https://www2.eecs.berkeley.edu/Pubs/TechRpts/2006/EECS-2006-1.pdf)
 
