@@ -3,6 +3,7 @@ obj/
 .settings/
 .cproject
 .project
+.vscode/
 build/
 *.pyc
 *.csv

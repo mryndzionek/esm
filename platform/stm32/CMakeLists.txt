@@ -26,14 +26,15 @@ set(ESM_PLATFORM_HEADERS
 )
 
 set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra \
--O2 -Wshadow -Wformat=2 -Wfloat-equal \
+-O0 -Wshadow -Wformat=2 -Wfloat-equal \
 -Wlogical-op -Wcast-qual"
 )
 
-set(CMAKE_EXE_LINKER_FLAGS
-    "-specs=nano.specs ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${ESM_TARGET}.map,--cref -lc -lm -lnosys")
-
 macro(def_esm_platform)
+    set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/STM32F103C8Tx_FLASH.ld)
+    set(CMAKE_EXE_LINKER_FLAGS "-mcpu=cortex-m3 -mthumb -Wl,-gc-sections -T ${LINKER_SCRIPT}")
+    set(CMAKE_EXE_LINKER_FLAGS
+        "-specs=nano.specs ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.map,--cref -lc -lm -lnosys")
     file(GLOB_RECURSE BOARD_SOURCES
         "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/Src/*.c"
         "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/*.s"
@@ -52,5 +53,6 @@ macro(end_esm_platform)
     add_custom_command(TARGET ${APP_NAME} POST_BUILD
         COMMAND ${CMAKE_OBJCOPY} -Oihex $<TARGET_FILE:${APP_NAME}> ${APP_NAME}.hex
         COMMAND ${CMAKE_OBJCOPY} -Obinary $<TARGET_FILE:${APP_NAME}> ${APP_NAME}.bin
-        COMMENT "Building ${APP_NAME}.hex \nBuilding ${APP_NAME}.bin")
+        COMMENT "Building ${APP_NAME}.hex \nBuilding ${APP_NAME}.bin"
+        COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${APP_NAME}>)
 endmacro(end_esm_platform)

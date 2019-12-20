@@ -93,6 +93,26 @@ static uint8_t *_add_str(uint8_t *bb, char const * s)
 	return b;
 }
 
+static uint8_t *_add_data(uint8_t *bb, uint8_t const *d, uint8_t len)
+{
+	uint8_t *b = bb + 1;
+
+	if (len > 64)
+	{
+		len = 64;
+	}
+
+	*bb = len;
+
+	do
+	{
+		ENCODE_NUM_1(b, *d);
+		++d;
+	} while (--len);
+
+	return b;
+}
+
 void trace_init(uint8_t esm)
 {
 	uint8_t tmp[15+2], *b = tmp, *lb;
@@ -150,6 +170,24 @@ void trace_receive(uint8_t esm, uint8_t sig, char const * const cs)
 	ENCODE_NUM_1(b, crc);
 	*(b++) = END_FLAG;
 	(void)rb_write(&_rb, tmp, b-tmp);
+}
+
+void trace_data(uint8_t const *const cd, uint8_t len)
+{
+	uint8_t tmp[15 + 0 + 128], *b = tmp, *lb;
+	uint8_t crc = 0;
+
+	b = _add_header(b, 3);
+	lb = b++;
+	b = _add_data(b, cd, len);
+	*lb = b - lb;
+	crc_init();
+	crc = _crc(tmp, b - tmp);
+	crc_finish();
+	crc_deinit();
+	ENCODE_NUM_1(b, crc);
+	*(b++) = END_FLAG;
+	(void)rb_write(&_rb, tmp, b - tmp);
 }
 
 size_t trace_get(uint8_t *data, size_t bytes)

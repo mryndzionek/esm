@@ -21,12 +21,12 @@ typedef struct
     bool alarm;
 } ds3231_time_t;
 
-inline uint8_t bcdtodec(const uint8_t val)
+inline static uint8_t bcdtodec(const uint8_t val)
 {
 	return ((val / 16 * 10) + (val % 16));
 }
 
-inline uint8_t dectobcd(const uint8_t val)
+inline static uint8_t dectobcd(const uint8_t val)
 {
     return ((val / 10 * 16) + (val % 10));
 }

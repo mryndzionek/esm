@@ -188,6 +188,13 @@ void esm_process(void)
 {
 	esm_t * const * sec;
 
+// this is just a failsafe against the compiler
+// removing pointers marked as 'used'
+#define ESM_ID(_name) __asm__ ("" : : "" (_name##_esm));
+	ESM_IDS
+	ESM_BOARD_IDS
+#undef ESM_ID
+
 	ESM_INIT;
 
 	for (sec = &__start_esm_sec; sec < &__stop_esm_sec; ++sec) {

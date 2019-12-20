@@ -171,6 +171,13 @@ Build instructions
 ------------------
 
 Standard CMake routine with some configuration options.
+Currently most extensively tested with:
+
+```sh
+cmake version 3.10.2
+arm-none-eabi-gcc (15:6.3.1+svn253039-1build1) 6.3.1 20170620
+libnewlib-arm-none-eabi 2.4.0.20160527-3ubuntu0.1
+```
 
 Project setup for native Linux:
 

@@ -8,7 +8,11 @@
 #include "stm32f1xx_hal.h"
 #include "main.h"
 
-extern UART_HandleTypeDef huart3;
+#ifndef ESM_TRACE_UART
+#define ESM_TRACE_UART (huart3)
+#endif
+
+extern UART_HandleTypeDef ESM_TRACE_UART;
 uint16_t platform_rnd(uint16_t range);
 
 #define ESM_PRINTF(_format, _args ... )
@@ -57,15 +61,18 @@ uint16_t platform_rnd(uint16_t range);
 } while (0)
 
 #define ESM_TRACE(_p_esm, _action, ...) \
-		ESM_TRACE_##_action(_p_esm, __VA_ARGS__)
+   if (!_p_esm->trace_off) \
+   { \
+      ESM_TRACE_##_action(_p_esm, __VA_ARGS__); \
+   }
 
 #define ESM_IDLE() do { \
 		} while(0)
 
 #define ESM_TRACE_BUF_SIZE		(256)
-#define ESM_TRACE_CHUNK_SIZE	(16)
+#define ESM_TRACE_CHUNK_SIZE	(32)
 #define ESM_TRACE_OUT(_data, _size) do { \
-		HAL_StatusTypeDef r = HAL_UART_Transmit_IT(&huart3, _data, _size); \
+		HAL_StatusTypeDef r = HAL_UART_Transmit_IT(&ESM_TRACE_UART, _data, _size); \
 		ESM_ASSERT(r == HAL_OK); \
 } while(0)
 

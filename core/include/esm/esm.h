@@ -148,6 +148,7 @@ typedef struct {
 
 struct _esm {
 	const esm_cfg_t *const cfg;
+	bool trace_off;
 	void (*init)(esm_t *const esm);
 	esm_state_t const *curr_state;
 	esm_state_t const *next_state;
