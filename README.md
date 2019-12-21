@@ -44,6 +44,7 @@ There are also two more complex apps:
 Simplest Example
 ----------------
 
+![blink](apps/blink/umlet/blink.png)
 
 ```c
 // Blink state machine configuration structure
