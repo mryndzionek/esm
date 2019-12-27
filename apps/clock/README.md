@@ -6,7 +6,7 @@ Features
 
  - display consisting of 1 meter SK6812 LED strip (control code based on [WS2812B_STM32_Libmaple](https://github.com/rogerclarkmelbourne/WS2812B_STM32_Libmaple))
  - linear clock
- - alarm with RTTTL Nokia ringtones (main 'play' function taken from [here](https://github.com/granadaxronos/120-SONG_NOKIA_RTTTL_RINGTONE_PLAYER_FOR_ARDUINO_UNO)
+ - alarm with RTTTL Nokia ringtones (main 'play' function taken from [here](https://github.com/granadaxronos/120-SONG_NOKIA_RTTTL_RINGTONE_PLAYER_FOR_ARDUINO_UNO))
  - IR remote control (NEC decoder inspired by [here](https://github.com/albertyeh/STM32_NEC_Decode))
  - sunrise simulator
  - white light lamp
