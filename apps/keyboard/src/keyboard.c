@@ -193,5 +193,5 @@ static const keyboard_cfg_t keyboard_cfg = {
 
 };
 
-ESM_REGISTER(keyboard, keyboard, esm_gr_none, 4, 2);
+ESM_REGISTER(keyboard, keyboard, esm_gr_none, 4, 1);
 const keyboard_state_t *const keyboard_state = &keyboard_ctx.state;

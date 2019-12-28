@@ -33,6 +33,10 @@ static void esm_idle_handle(esm_t *const esm, const esm_signal_t *const sig)
 			esm_send_signal(&s);
 		}
 		break;
+
+	case esm_sig_tap:
+	break;
+
 	default:
 		ESM_TRANSITION(unhandled);
 		break;
@@ -52,7 +56,8 @@ static void esm_active_entry(esm_t *const esm)
 
 static void esm_active_exit(esm_t *const esm)
 {
-	(void)esm;
+	tap_detector_esm_t *self = ESM_CONTAINER_OF(esm, tap_detector_esm_t, esm);
+	esm_timer_rm(&self->timer);
 }
 
 static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -62,20 +67,21 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 	switch (sig->type)
 	{
 	case esm_sig_tmout:
+	case esm_sig_tap:
 	{
 		esm_signal_t s = {
 			.type = esm_sig_keypress,
 			.params = self->params,
 			.sender = NULL,
 			.receiver = keyboard_esm};
-		esm_send_signal(&s);
+		esm_send_to_front(&s);
 		ESM_TRANSITION(idle);
 	}
 	break;
+
 	case esm_sig_keypress:
 		if (sig->params.key.kev == key_ev_up)
 		{
-			esm_timer_rm(&self->timer);
 			{
 				self->params.key.kev = key_ev_tap;
 				esm_signal_t s = {

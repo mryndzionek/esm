@@ -142,6 +142,15 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
   {
     e = tap_detector2_esm;
   }
+  else
+  {
+    esm_signal_t s = {
+        .type = esm_sig_tap,
+        .sender = NULL,
+        .receiver = NULL};
+
+    esm_broadcast_signal(&s, esm_gr_taps);
+  }
 
   return e;
 }
@@ -149,9 +158,9 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
 static const tap_detector_cfg_t tap_detector1_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
-ESM_REGISTER(tap_detector, tap_detector1, esm_gr_none, 2, 1);
+ESM_REGISTER(tap_detector, tap_detector1, esm_gr_taps, 2, 2);
 
 static const tap_detector_cfg_t tap_detector2_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
-ESM_REGISTER(tap_detector, tap_detector2, esm_gr_none, 2, 1);
+ESM_REGISTER(tap_detector, tap_detector2, esm_gr_taps, 2, 2);
