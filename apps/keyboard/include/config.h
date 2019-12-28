@@ -9,9 +9,9 @@
 
 #define BASE_LAYER (0)
 
-#define SCAN_FREQ_HZ (250UL)
+#define SCAN_FREQ_HZ (500UL)
 #define DEBOUNCE_MS (5UL)
 
-#define TAP_TRES_MS (150UL)
+#define TAP_TRES_MS (200UL)
 
 #endif /* INCLUDE_CONFIG_H_ */
