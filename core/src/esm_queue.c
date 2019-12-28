@@ -18,6 +18,22 @@ void esm_queue_push(esm_queue_t *self, esm_signal_t *sig)
 	++self->len;
 }
 
+void esm_queue_push_back(esm_queue_t *self, esm_signal_t *sig)
+{
+	if (self->len)
+	{
+		ESM_ASSERT_MSG(self->head != self->tail,
+					   "Event queue for %s overrun\r\n", sig->receiver->cfg->name);
+	}
+
+	if (self->tail == 0)
+	{
+		self->tail = self->size;
+	}
+	self->data[--self->tail] = *sig;
+	++self->len;
+}
+
 void esm_queue_pop(esm_queue_t *self)
 {
 	if(++self->tail == self->size)

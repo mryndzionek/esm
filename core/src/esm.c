@@ -324,6 +324,30 @@ esm_signal_t *esm_send_signal(esm_signal_t * const sig)
 	return s;
 }
 
+esm_signal_t *esm_send_to_front(esm_signal_t *const sig)
+{
+	ESM_CRITICAL_ENTER();
+	ESM_ASSERT(sig->receiver);
+	ESM_ASSERT(sig->receiver->cfg->prio < _ESM_MAX_PRIO);
+
+	esm_queue_push_back(&sig->receiver->queue, sig);
+	esm_signal_t *s = esm_queue_tail(&sig->receiver->queue);
+
+	s->dismissed = 0x00;
+	esm_list_t *l = &esm_signals[sig->receiver->cfg->prio];
+
+	if (l->first)
+	{
+		l->first->prev = &s->item;
+		s->item.next = l->first;
+	}
+	l->first = &s->item;
+
+	prio_mask |= (uint8_t)(1UL << sig->receiver->cfg->prio);
+	ESM_CRITICAL_EXIT();
+	return s;
+}
+
 void esm_broadcast_signal(esm_signal_t * const sig, esm_group_e group)
 {
 	esm_t * const * sec;
