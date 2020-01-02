@@ -37,7 +37,7 @@ const esm_state_t esm_unhandled_state = {
 #define ESM_SIGNAL(_name) #_name,
 static char const * const esm_sig_name[] = {
 		"alarm",
-		ESM_MODULE_SIGNALS
+		ESM_APP_SIGNALS
 		ESM_SIGNALS
 };
 #undef ESM_SIGNAL
@@ -192,7 +192,7 @@ void esm_process(void)
 // removing pointers marked as 'used'
 #define ESM_ID(_name) __asm__ ("" : : "" (_name##_esm));
 	ESM_IDS
-	ESM_BOARD_IDS
+	ESM_APP_IDS
 #undef ESM_ID
 
 	ESM_INIT;

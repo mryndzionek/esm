@@ -45,23 +45,33 @@ macro(end_esm_app)
     endif()
 
     set(mSigs "")
-    foreach(ms ${ESM_MODULE_SIGNALS})
+    foreach(ms ${ESM_APP_SIGNALS})
         list(APPEND mSigs "ESM_SIGNAL(${ms})")
     endforeach(ms)
     string(REPLACE ";" " " mSigsStr "${mSigs}")
     target_compile_definitions(${APP_NAME}
         PUBLIC
-            -DESM_MODULE_SIGNALS=${mSigsStr}
+            -DESM_APP_SIGNALS=${mSigsStr}
     )
 
     set(mIds "")
-    foreach(ms ${ESM_BOARD_IDS})
+    foreach(ms ${ESM_APP_IDS})
         list(APPEND mIds "ESM_ID(${ms})")
     endforeach(ms)
     string(REPLACE ";" " " mIdsStr "${mIds}")
     target_compile_definitions(${APP_NAME}
         PUBLIC
-            -DESM_BOARD_IDS=${mIdsStr}
+            -DESM_APP_IDS=${mIdsStr}
+    )
+
+    set(mGrs "")
+    foreach(ms ${ESM_APP_GROUPS})
+        list(APPEND mGrs "ESM_GROUP(${ms})")
+    endforeach(ms)
+    string(REPLACE ";" " " mGrsStr "${mGrs}")
+    target_compile_definitions(${APP_NAME}
+        PUBLIC
+            -DESM_APP_GROUPS=${mGrsStr}
     )
     end_esm_platform()
 

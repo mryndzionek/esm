@@ -14,6 +14,10 @@
 #define _ESM_MAX_PRIO	(ESM_MAX_PRIO + 1)
 #endif
 
+#ifndef ESM_GROUPS
+#define ESM_GROUPS
+#endif
+
 // The priority mask is uint8_t, so priorities can be in range 0-7
 ESM_ASSERT_COMPILE(_ESM_MAX_PRIO < 9);
 
@@ -66,7 +70,7 @@ ESM_ASSERT_COMPILE(_ESM_MAX_PRIO < 9);
 typedef enum
 {
 	esm_sig_alarm = 0,
-	ESM_MODULE_SIGNALS
+	ESM_APP_SIGNALS
 	ESM_SIGNALS
 } esm_signal_e;
 #undef ESM_SIGNAL
@@ -76,7 +80,7 @@ typedef enum {
 	esm_id_tick = 0,
 	esm_id_trace,
 	ESM_IDS
-	ESM_BOARD_IDS
+	ESM_APP_IDS
 } esm_id_e;
 #undef ESM_ID
 
@@ -102,13 +106,14 @@ struct _bus_xfer {
 extern esm_t * const tick_esm;
 extern esm_t * const trace_esm;
 ESM_IDS
-ESM_BOARD_IDS
+ESM_APP_IDS
 #undef ESM_ID
 
 #define ESM_GROUP(_name) esm_gr_##_name = (1UL << __COUNTER__),
 typedef enum {
 	esm_gr_none = 0,
 	ESM_GROUPS
+	ESM_APP_GROUPS
 } esm_group_e;
 #undef ESM_GROUP
 

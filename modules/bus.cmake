@@ -1,4 +1,4 @@
-SET(ESM_MODULE_SIGNALS ${ESM_MODULE_SIGNALS} bus_req bus_rsp bus_ack)
+SET(ESM_APP_SIGNALS ${ESM_APP_SIGNALS} bus_req bus_rsp bus_ack)
 
 target_sources(${APP_NAME}
     PUBLIC

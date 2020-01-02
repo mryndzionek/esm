@@ -7,17 +7,11 @@
 #define ESM_SIGNALS        \
       ESM_SIGNAL(tmout)    \
       ESM_SIGNAL(keypress) \
-      ESM_SIGNAL(tap)      \
       ESM_SIGNAL(usb_tx_end)
 
 #define ESM_IDS             \
       ESM_ID(matrix)        \
-      ESM_ID(keyboard)      \
-      ESM_ID(tap_detector1) \
-      ESM_ID(tap_detector2)
-
-#define ESM_GROUPS \
-      ESM_GROUP(taps)
+      ESM_ID(keyboard)
 
 #define ESM_SIG_PARAMS               \
       union {                        \

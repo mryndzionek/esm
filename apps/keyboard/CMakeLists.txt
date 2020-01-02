@@ -1,5 +1,11 @@
 def_esm_app(keyboard)
 
+if(NOT KEYBOARD_NAME)
+	set(KEYBOARD_NAME "atreus50")
+endif()
+
+include("${CMAKE_CURRENT_SOURCE_DIR}/configs/${KEYBOARD_NAME}/keyboard.cmake")
+
 target_compile_definitions(${APP_NAME}
     PUBLIC
         -DESM_MAX_PRIO=3
@@ -8,14 +14,14 @@ target_compile_definitions(${APP_NAME}
 target_include_directories(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/configs/${KEYBOARD_NAME}/include
 )
 
 target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/keyboard.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/matrix.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/keymap.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/tap_detector.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/configs/${KEYBOARD_NAME}/src/keymap.c
 )
 
 # ugly, but does the job for now

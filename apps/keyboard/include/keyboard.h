@@ -16,7 +16,7 @@ typedef struct
 } keyboard_state_t;
 
 // this state is shared to enable keycode lookup (via below function)
-// so that some actions can be determined according keycode
+// so that some actions can be determined according to keycode
 // instead of coordinates in matrix
 extern const keyboard_state_t *const keyboard_state;
 
