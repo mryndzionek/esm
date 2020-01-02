@@ -1,7 +1,7 @@
 Efficient State Machine framework
 =================================
 
-![status](https://github.com/mryndzionek/esm/workflows/CI/badge.svg)
+![status](https://github.com/mryndzionek/esm/workflows/build/badge.svg)
 
 Introduction
 ------------

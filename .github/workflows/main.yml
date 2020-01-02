@@ -1,4 +1,4 @@
-name: CI
+name: build
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build:
+  build_test:
 
     runs-on: ubuntu-latest
     
@@ -54,3 +54,58 @@ jobs:
       with:
         name: esm-test-logs
         path: build/logs
+
+  build_linux:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Prepare
+      run: |
+        sudo apt-get update
+        sudo apt-get install libsox-dev
+
+    - name: Checkout
+      uses: actions/checkout@v2-beta
+
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Debug ..
+
+    - name: Build
+      run: cmake --build build
+
+  build_arm:
+
+    runs-on: ubuntu-latest
+    
+    steps:
+
+    - name: Prepare
+      run: |
+        sudo apt-get update
+        sudo apt-get install gcc-arm-none-eabi libnewlib-arm-none-eabi
+
+    - name: Checkout
+      uses: actions/checkout@v2-beta
+
+    - name: Configure
+      run: |
+        mkdir build
+        cd build
+        cmake -DCMAKE_BUILD_TYPE=Release -DESM_PLATFORM=stm32 -DESM_BOARD=bluepill -DCMAKE_TOOLCHAIN_FILE=../platform/stm32/Toolchain.cmake -DKEYBOARD_NAME=atreus50 ..
+        cmake -DCMAKE_BUILD_TYPE=Release -DESM_PLATFORM=stm32 -DESM_BOARD=bluepill -DCMAKE_TOOLCHAIN_FILE=../platform/stm32/Toolchain.cmake -DKEYBOARD_NAME=atreus50 ..
+
+    - name: Build
+      run: cmake --build build
+
+    - name: Archive
+      run: find build/apps -type f \( -iname \*.elf -o -iname \*.bin -o -iname \*.map \) -print | tar -czf binaries.tar.gz --files-from -
+
+    - uses: actions/upload-artifact@v1.0.0
+      with:
+        name: arm_binaries
+        path: binaries.tar.gz
