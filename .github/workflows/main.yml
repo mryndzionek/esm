@@ -103,9 +103,11 @@ jobs:
       run: cmake --build build
 
     - name: Archive
-      run: find build/apps -type f \( -iname \*.elf -o -iname \*.bin -o -iname \*.map \) -print | tar -czf binaries.tar.gz --files-from -
+      run:  |
+        mkdir binaries
+        find build/apps -type f \( -iname \*.elf -o -iname \*.bin -o -iname \*.map \) -exec cp {} binaries \;
 
     - uses: actions/upload-artifact@v1.0.0
       with:
         name: arm_binaries
-        path: binaries.tar.gz
+        path: binaries
