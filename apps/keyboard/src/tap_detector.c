@@ -51,7 +51,7 @@ static void esm_active_entry(esm_t *const esm)
 		.type = esm_sig_tmout,
 		.sender = esm,
 		.receiver = esm};
-	esm_timer_add(&self->timer, TAP_TRES_MS, &s);
+	esm_timer_add(&self->timer, self->cfg->tap_tres, &s);
 }
 
 static void esm_active_exit(esm_t *const esm)
