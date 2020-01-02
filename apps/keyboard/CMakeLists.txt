@@ -1,8 +1,10 @@
-def_esm_app(keyboard)
-
 if(NOT KEYBOARD_NAME)
-	set(KEYBOARD_NAME "atreus50")
+	set(KEYBOARD_NAME "test")
 endif()
+
+set(ESM_APP_BOARD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/configs/${KEYBOARD_NAME}/board)
+
+def_esm_app(keyboard)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/configs/${KEYBOARD_NAME}/keyboard.cmake")
 
@@ -26,6 +28,7 @@ target_sources(${APP_NAME}
 
 # ugly, but does the job for now
 if(${ESM_PLATFORM} STREQUAL "stm32")
+
 	target_compile_definitions(${APP_NAME}
 		PUBLIC
 		    -DESM_TRACE_UART=\(huart1\)

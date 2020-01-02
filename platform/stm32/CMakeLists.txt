@@ -31,13 +31,16 @@ set(CMAKE_C_FLAGS_DEBUG "-Wall -Wextra \
 )
 
 macro(def_esm_platform)
-    set(LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/STM32F103C8Tx_FLASH.ld)
+    if(NOT ESM_APP_BOARD_DIR)
+        set(ESM_APP_BOARD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/board)
+    endif()
+    set(LINKER_SCRIPT ${ESM_APP_BOARD_DIR}/${ESM_BOARD}/STM32F103C8Tx_FLASH.ld)
     set(CMAKE_EXE_LINKER_FLAGS "-mcpu=cortex-m3 -mthumb -Wl,-gc-sections -T ${LINKER_SCRIPT}")
     set(CMAKE_EXE_LINKER_FLAGS
         "-specs=nano.specs ${CMAKE_EXE_LINKER_FLAGS} -Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/${APP_NAME}.map,--cref -lc -lm -lnosys")
     file(GLOB_RECURSE BOARD_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/Src/*.c"
-        "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/*.s"
+        "${ESM_APP_BOARD_DIR}/${ESM_BOARD}/Src/*.c"
+        "${ESM_APP_BOARD_DIR}/${ESM_BOARD}/*.s"
     )
     target_sources(${APP_NAME}
         PUBLIC
@@ -45,7 +48,7 @@ macro(def_esm_platform)
     )
     target_include_directories(${APP_NAME}
         PUBLIC
-            ${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/Inc
+            ${ESM_APP_BOARD_DIR}/${ESM_BOARD}/Inc
     )
 endmacro(def_esm_platform)
 

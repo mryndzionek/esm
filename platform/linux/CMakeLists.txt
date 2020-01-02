@@ -23,8 +23,11 @@ set(ESM_PLATFORM_HEADERS
 )
 
 macro(def_esm_platform)
+    if(NOT ESM_APP_BOARD_DIR)
+        set(ESM_APP_BOARD_DIR ${CMAKE_CURRENT_SOURCE_DIR}/board)
+    endif()
     file(GLOB_RECURSE BOARD_SOURCES
-        "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/src/*.c"
+        "${ESM_APP_BOARD_DIR}/${ESM_BOARD}/src/*.c"
     )
     target_sources(${APP_NAME}
         PUBLIC
@@ -32,7 +35,7 @@ macro(def_esm_platform)
     )
     target_include_directories(${APP_NAME}
         PUBLIC
-            "${CMAKE_CURRENT_SOURCE_DIR}/board/${ESM_BOARD}/include"
+            "${ESM_APP_BOARD_DIR}/${ESM_BOARD}/include"
     )
 endmacro(def_esm_platform)
 
