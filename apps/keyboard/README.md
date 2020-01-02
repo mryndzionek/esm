@@ -44,6 +44,6 @@ index 789b551..cf390ba 100644
 TODO
 ----
 
-  - [ ] move different keyboard configurations to separate locations
+  - [x] move different keyboard configurations to separate locations
 
 
