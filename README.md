@@ -44,7 +44,14 @@ There are also two more complex apps:
 Simplest Example
 ----------------
 
+In the form of hierarchical state machine (statechart) the logic of a single 'blinker' is:
+
 ![blink](apps/blink/umlet/blink.png)
+
+The code implementing this is a set of pointers to structures (black arrows) encoding
+the hierarchy and pointer assignments in switch/case handlers (transitions - red arrows):
+
+![blink_dot](apps/blink/umlet/blink_dot.png)
 
 ```c
 // Blink state machine configuration structure

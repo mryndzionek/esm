@@ -1,0 +1,27 @@
+digraph blink {
+	node [fontname = "monospace"]
+	rankdir="BT"
+
+	off_ee7d3d2e [shape=egg  label="off, depth = 2"]
+	type_initial_280a1e7b [style=filled fillcolor=black shape=circle label="" width=0.25]
+	type_initial_00ba40ba [style=filled fillcolor=black shape=circle label="" width=0.25]
+	active_bd546daf [shape=egg  label="active, depth = 1" style=filled fillcolor=gray71]
+	on_736511cf [shape=egg  label="on, depth = 2"]
+	top_437673ed [shape=egg  label="top, depth = 0" style=filled fillcolor=gray71]
+	paused_5b6b26cd [shape=egg  label="paused, depth = 1"]
+
+	paused_5b6b26cd -> top_437673ed
+	on_736511cf -> active_bd546daf
+	active_bd546daf -> top_437673ed
+	type_initial_00ba40ba -> active_bd546daf
+	type_initial_280a1e7b -> top_437673ed
+	off_ee7d3d2e -> active_bd546daf
+
+	type_initial_00ba40ba -> on_736511cf [color=red style=dashed label=""]
+	type_initial_280a1e7b -> active_bd546daf [color=red style=dashed label=""]
+	paused_5b6b26cd -> active_bd546daf [color=red style=dashed label="esm_sig_button"]
+	on_736511cf -> off_ee7d3d2e [color=red style=dashed label="esm_sig_tmout"]
+	active_bd546daf -> paused_5b6b26cd [color=red style=dashed label="esm_sig_button"]
+	off_ee7d3d2e -> on_736511cf [color=red style=dashed label="esm_sig_tmout"]
+
+}
