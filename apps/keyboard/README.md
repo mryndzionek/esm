@@ -45,5 +45,6 @@ TODO
 ----
 
   - [x] move different keyboard configurations to separate locations
+  - [ ] investigate if it's possible to report multiple HID devices
 
 
