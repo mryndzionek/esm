@@ -67,7 +67,7 @@
 #define USBD_LANGID_STRING     1033
 #define USBD_MANUFACTURER_STRING     "Disciplined Design"
 #define USBD_PID_FS     0x0666
-#define USBD_PRODUCT_STRING_FS     "DD Keyboard"
+#define USBD_PRODUCT_STRING_FS     "Test Keyboard"
 #define USBD_CONFIGURATION_STRING_FS     "HID Config"
 #define USBD_INTERFACE_STRING_FS     "HID Interface"
 

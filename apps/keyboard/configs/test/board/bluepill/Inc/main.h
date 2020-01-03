@@ -60,18 +60,18 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define IDLE_LED_Pin GPIO_PIN_13
 #define IDLE_LED_GPIO_Port GPIOC
-#define COL1_OUT_Pin GPIO_PIN_0
-#define COL1_OUT_GPIO_Port GPIOA
-#define COL2_OUT_Pin GPIO_PIN_1
-#define COL2_OUT_GPIO_Port GPIOA
-#define COL3_OUT_Pin GPIO_PIN_2
-#define COL3_OUT_GPIO_Port GPIOA
-#define ROW2_IN_Pin GPIO_PIN_0
-#define ROW2_IN_GPIO_Port GPIOB
-#define ROW1_IN_Pin GPIO_PIN_10
-#define ROW1_IN_GPIO_Port GPIOB
-#define ROW3_IN_Pin GPIO_PIN_5
+#define ROW1_IN_Pin GPIO_PIN_6
+#define ROW1_IN_GPIO_Port GPIOA
+#define ROW2_IN_Pin GPIO_PIN_7
+#define ROW2_IN_GPIO_Port GPIOA
+#define ROW3_IN_Pin GPIO_PIN_0
 #define ROW3_IN_GPIO_Port GPIOB
+#define COL3_OUT_Pin GPIO_PIN_1
+#define COL3_OUT_GPIO_Port GPIOB
+#define COL2_OUT_Pin GPIO_PIN_10
+#define COL2_OUT_GPIO_Port GPIOB
+#define COL1_OUT_Pin GPIO_PIN_11
+#define COL1_OUT_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
