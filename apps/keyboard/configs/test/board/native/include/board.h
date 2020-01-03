@@ -3,6 +3,12 @@
 
 #include "config.h"
 
+#define BOARD_DMA_SPI_TX(_data, _size) \
+    (void)_data;                       \
+    do                                 \
+    {                                  \
+    } while (0)
+
 #define board_usb_send(_data, _len)
 #define board_read_matrix(_mat)
 
