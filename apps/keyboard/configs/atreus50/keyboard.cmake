@@ -1,6 +1,6 @@
-SET(ESM_APP_IDS ${ESM_APP_IDS} tap_detector1 tap_detector2)
-SET(ESM_APP_SIGNALS ${ESM_APP_SIGNALS} tap)
-SET(ESM_APP_GROUPS ${ESM_APP_GROUPS} taps)
+set(ESM_APP_IDS ${ESM_APP_IDS} tap_detector1 tap_detector2)
+set(ESM_APP_SIGNALS ${ESM_APP_SIGNALS} tap)
+set(ESM_APP_GROUPS ${ESM_APP_GROUPS} taps)
 
 target_sources(${APP_NAME}
     PUBLIC
