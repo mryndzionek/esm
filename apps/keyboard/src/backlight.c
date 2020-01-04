@@ -3,11 +3,13 @@
 
 #include "sk6812.h"
 
+#define BLUE (0x000000FF)
 #define GREEN (0x0000BB00)
-#define LIGHT_RED (0x00080000)
+#define LIGHT_RED (0x00050000)
+#define RED (0x00BB0000)
 
 #define COLOR_BG LIGHT_RED
-#define COLOR_FG GREEN
+#define COLOR_FG BLUE
 
 ESM_THIS_FILE;
 
