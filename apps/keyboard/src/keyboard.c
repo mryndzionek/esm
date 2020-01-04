@@ -12,6 +12,7 @@
 #include "keycode_extra.h"
 
 #define KEYBOARD_REPORT_SIZE (8)
+#define CONSUMER_REPORT_SIZE (1)
 
 ESM_THIS_FILE;
 
@@ -39,7 +40,7 @@ typedef struct
     keyboard_cfg_t const *const cfg;
 } keyboard_esm_t;
 
-static rb_t report_rb = { .data_ = (uint8_t[32]){0}, .capacity_ = 32};
+static rb_t report_rb = {.data_ = (uint8_t[32]){0}, .capacity_ = 32};
 
 extern const uint16_t keymaps[][N_ROWS][N_COLS];
 __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t *const kbd)
@@ -51,6 +52,31 @@ __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, key_ev_type_e 
 }
 
 ESM_DEFINE_STATE(active);
+
+static void send_report(keyboard_esm_t *const self)
+{
+    static uint8_t report_buf[KEYBOARD_REPORT_SIZE + 1] = {0};
+
+    if (rb_size(&report_rb))
+    {
+        uint8_t l;
+        size_t s;
+
+        s = rb_read(&report_rb, &l, 1);
+        ESM_ASSERT(s == 1);
+        ESM_ASSERT(l <= sizeof(report_buf));
+
+        s = rb_read(&report_rb, report_buf, l);
+        ESM_ASSERT(s == l);
+
+        board_usb_send(report_buf, l);
+        self->busy = true;
+    }
+    else
+    {
+        self->busy = false;
+    }
+}
 
 uint16_t keyboard_get_kc(uint8_t col, uint8_t row, const keyboard_state_t *const kbd)
 {
@@ -85,7 +111,6 @@ static void esm_active_exit(esm_t *const esm)
 static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
     keyboard_esm_t *self = ESM_CONTAINER_OF(esm, keyboard_esm_t, esm);
-    static uint8_t report_buf[KEYBOARD_REPORT_SIZE + 2] = {0};
 
     switch (sig->type)
     {
@@ -94,6 +119,9 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
         uint8_t r = sig->params.key.row;
         uint8_t c = sig->params.key.col;
         uint16_t kc = keyboard_get_kc(c, r, &self->state);
+
+        uint8_t kbd_report[KEYBOARD_REPORT_SIZE + 2] = {KEYBOARD_REPORT_SIZE + 1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+        uint8_t consumer_report[CONSUMER_REPORT_SIZE + 2] = {CONSUMER_REPORT_SIZE + 1, 2, 0};
 
         esm_list_item_t *itm = &self->keys[c][r].item;
         kc = process_key_user(kc, sig->params.key.kev, &self->state);
@@ -120,11 +148,9 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
         // construct HID report
         esm_list_item_t *it = (&self->pressed_keys)->last;
-        memset(report_buf, 0x00, sizeof(report_buf));
-        report_buf[0] = KEYBOARD_REPORT_SIZE + 1;
-        report_buf[1] = 1; // report id
 
         uint8_t i = 4;
+
         while (it)
         {
             hidkey_t *key = ESM_CONTAINER_OF(it, hidkey_t, item);
@@ -132,50 +158,60 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
             if (IS_MOD(kc))
             {
-                report_buf[2] |= MOD_BIT(kc);
+                kbd_report[2] |= MOD_BIT(kc);
             }
-            else if (IS_KEY(kc) && (i < sizeof(report_buf)))
+            else if (IS_KEY(kc) && (i < sizeof(kbd_report)))
             {
-                report_buf[i++] = kc;
+                kbd_report[i++] = kc;
             }
-            else if (IS_LSFT(kc) && (i < sizeof(report_buf)))
+            else if (IS_LSFT(kc) && (i < sizeof(kbd_report)))
             {
-                report_buf[2] |= MOD_BIT(KC_LSFT);
-                report_buf[i++] = kc & 0xFF;
+                kbd_report[2] |= MOD_BIT(KC_LSFT);
+                kbd_report[i++] = kc & 0xFF;
+            }
+            else
+            {
+                switch (kc)
+                {
+                case KC_VOLU:
+                    consumer_report[2] |= (1UL << 6);
+                    break;
+
+                case KC_VOLD:
+                    consumer_report[2] |= (1UL << 7);
+                    break;
+
+                case KC_MPLY:
+                    consumer_report[2] |= (1UL << 4);
+                    break;
+
+                case KC_MNXT:
+                    consumer_report[2] |= (1UL << 0);
+                    break;
+
+                case KC_MPRV:
+                    consumer_report[2] |= (1UL << 1);
+                    break;
+
+                default:
+                    break;
+                }
             }
             it = it->prev;
         }
 
-        if (self->busy)
+        (void)rb_write(&report_rb, kbd_report, sizeof(kbd_report));
+        (void)rb_write(&report_rb, consumer_report, sizeof(consumer_report));
+
+        if (!self->busy)
         {
-            (void)rb_write(&report_rb, report_buf, sizeof(report_buf));
-        }
-        else
-        {
-            board_usb_send(&report_buf[1], sizeof(report_buf) - 1);
-            self->busy = true;
+            send_report(self);
         }
     }
     break;
 
     case esm_sig_usb_tx_end:
-        if (rb_size(&report_rb))
-        {
-            uint8_t l;
-            size_t s;
-
-            s = rb_read(&report_rb, &l, 1);
-            ESM_ASSERT(s == 1);
-
-            s = rb_read(&report_rb, &report_buf[1], l);
-            ESM_ASSERT(s == l);
-
-            board_usb_send(&report_buf[1], l);
-        }
-        else
-        {
-            self->busy = false;
-        }
+        send_report(self);
         break;
 
     default:
@@ -189,7 +225,7 @@ static void esm_keyboard_init(esm_t *const esm)
     keyboard_esm_t *self = ESM_CONTAINER_OF(esm, keyboard_esm_t, esm);
 
     self->state.layer = BASE_LAYER;
-    
+
     for (uint8_t j = 0; j < N_COLS; j++)
     {
         for (uint8_t i = 0; i < N_ROWS; i++)
