@@ -2,6 +2,8 @@
 
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
+#include "rb.h"
+
 #include "board.h"
 #include "trace.h"
 
@@ -9,7 +11,7 @@
 #include "keycode.h"
 #include "keycode_extra.h"
 
-#define PRESS_REPORT_SIZE (8)
+#define KEYBOARD_REPORT_SIZE (8)
 
 ESM_THIS_FILE;
 
@@ -34,9 +36,10 @@ typedef struct
     esm_list_t pressed_keys;
     keyboard_state_t state;
     bool busy;
-    bool retry;
     keyboard_cfg_t const *const cfg;
 } keyboard_esm_t;
+
+static rb_t report_rb = { .data_ = (uint8_t[32]){0}, .capacity_ = 32};
 
 extern const uint16_t keymaps[][N_ROWS][N_COLS];
 __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t *const kbd)
@@ -82,7 +85,7 @@ static void esm_active_exit(esm_t *const esm)
 static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
     keyboard_esm_t *self = ESM_CONTAINER_OF(esm, keyboard_esm_t, esm);
-    static uint8_t press_report[PRESS_REPORT_SIZE] = {0};
+    static uint8_t report_buf[KEYBOARD_REPORT_SIZE + 2] = {0};
 
     switch (sig->type)
     {
@@ -117,9 +120,11 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
         // construct HID report
         esm_list_item_t *it = (&self->pressed_keys)->last;
-        memset(press_report, 0x00, PRESS_REPORT_SIZE);
+        memset(report_buf, 0x00, sizeof(report_buf));
+        report_buf[0] = KEYBOARD_REPORT_SIZE + 1;
+        report_buf[1] = 1; // report id
 
-        uint8_t i = 2;
+        uint8_t i = 4;
         while (it)
         {
             hidkey_t *key = ESM_CONTAINER_OF(it, hidkey_t, item);
@@ -127,37 +132,45 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
             if (IS_MOD(kc))
             {
-                press_report[0] |= MOD_BIT(kc);
+                report_buf[2] |= MOD_BIT(kc);
             }
-            else if (IS_ANY(kc) && (i < PRESS_REPORT_SIZE))
+            else if (IS_KEY(kc) && (i < sizeof(report_buf)))
             {
-                press_report[i++] = kc;
+                report_buf[i++] = kc;
             }
-            else if (IS_LSFT(kc) && (i < PRESS_REPORT_SIZE))
+            else if (IS_LSFT(kc) && (i < sizeof(report_buf)))
             {
-                press_report[0] |= MOD_BIT(KC_LSFT);
-                press_report[i++] = kc & 0xFF;
+                report_buf[2] |= MOD_BIT(KC_LSFT);
+                report_buf[i++] = kc & 0xFF;
             }
             it = it->prev;
         }
 
-        if (!self->busy)
+        if (self->busy)
         {
-            trace_data((uint8_t const *)press_report, PRESS_REPORT_SIZE);
-            board_usb_send(press_report, PRESS_REPORT_SIZE);
+            (void)rb_write(&report_rb, report_buf, sizeof(report_buf));
+        }
+        else
+        {
+            board_usb_send(&report_buf[1], sizeof(report_buf) - 1);
             self->busy = true;
-        } else {
-            self->retry = true;
         }
     }
     break;
 
     case esm_sig_usb_tx_end:
-        if (self->retry)
+        if (rb_size(&report_rb))
         {
-            trace_data((uint8_t const *)press_report, PRESS_REPORT_SIZE);
-            board_usb_send(press_report, PRESS_REPORT_SIZE);
-            self->retry = false;
+            uint8_t l;
+            size_t s;
+
+            s = rb_read(&report_rb, &l, 1);
+            ESM_ASSERT(s == 1);
+
+            s = rb_read(&report_rb, &report_buf[1], l);
+            ESM_ASSERT(s == l);
+
+            board_usb_send(&report_buf[1], l);
         }
         else
         {
