@@ -123,4 +123,4 @@ static void esm_backlight_init(esm_t *const esm)
 static const backlight_cfg_t backlight_cfg = {
     .freq_hz = 200UL};
 
-ESM_REGISTER(backlight, backlight, esm_gr_none, 2, 0);
+ESM_REGISTER(backlight, backlight, esm_gr_none, 4, 0);
