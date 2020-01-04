@@ -152,6 +152,12 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
     esm_broadcast_signal(&s, esm_gr_taps);
   }
 
+  esm_signal_t s = {
+      .type = esm_sig_alarm,
+      .sender = NULL,
+      .receiver = backlight_esm};
+  esm_send_signal(&s);
+
   return e;
 }
 

@@ -3,8 +3,11 @@
 
 #include "sk6812.h"
 
-#define GREEN (0x0000AA00)
-#define LIGHT_RED (0x00010000)
+#define GREEN (0x0000BB00)
+#define LIGHT_RED (0x00080000)
+
+#define COLOR_BG LIGHT_RED
+#define COLOR_FG GREEN
 
 ESM_THIS_FILE;
 
@@ -64,11 +67,11 @@ static void esm_busy_entry(esm_t *const esm)
                   ESM_TICKS_PER_SEC / self->cfg->freq_hz, &sig);
     if (--self->pos)
     {
-        sk6812_set_color(self->pos, GREEN);
+        sk6812_set_color(self->pos, COLOR_FG);
     }
     else
     {
-        sk6812_set_color(self->pos, LIGHT_RED);
+        sk6812_set_color(self->pos, COLOR_BG);
     }
 
     sk6812_show();
@@ -88,7 +91,7 @@ static void esm_busy_handle(esm_t *const esm, const esm_signal_t *const sig)
     {
     case esm_sig_tmout:
     {
-        sk6812_set_color(self->pos, LIGHT_RED);
+        sk6812_set_color(self->pos, COLOR_BG);
         if (self->pos > 0)
         {
             ESM_TRANSITION(self);
@@ -101,7 +104,7 @@ static void esm_busy_handle(esm_t *const esm, const esm_signal_t *const sig)
     break;
 
     case esm_sig_alarm:
-        sk6812_set_color(self->pos, LIGHT_RED);
+        sk6812_set_color(self->pos, COLOR_BG);
         self->pos = SK6812_LEDS_NUM - 1;
         break;
 
@@ -114,11 +117,6 @@ static void esm_busy_handle(esm_t *const esm, const esm_signal_t *const sig)
 static void esm_backlight_init(esm_t *const esm)
 {
     sk6812_clear();
-    for (uint8_t i = 0; i < SK6812_LEDS_NUM; i++)
-    {
-        sk6812_set_color(i, LIGHT_RED);
-    }
-
     ESM_TRANSITION(busy);
 }
 
