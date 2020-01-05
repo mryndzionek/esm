@@ -1,8 +1,14 @@
-set(ESM_APP_IDS ${ESM_APP_IDS} backlight)
+set(ESM_APP_IDS ${ESM_APP_IDS} backlight
+                               deb_enc_chan_a
+                               deb_enc_chan_b
+                               encoder)
+
+include("${CMAKE_SOURCE_DIR}/modules/debouncer.cmake")
+include("${CMAKE_SOURCE_DIR}/modules/encoder.cmake")
 
 target_compile_definitions(${APP_NAME}
     PUBLIC
-        -DSK6812_LEDS_NUM=60
+        -DSK6812_LEDS_NUM=24
 )
 
 target_include_directories(${APP_NAME}

@@ -19,6 +19,8 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
         ESM_ASSERT(s == HAL_OK);                                          \
     } while (0)
 
+#define BOARD_DEBOUNCER_STATE int
+
 #define board_usb_send(_data, _len) USBD_HID_SendReport(&hUsbDeviceFS, _data, _len);
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS]);
 

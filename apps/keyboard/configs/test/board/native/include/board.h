@@ -9,6 +9,8 @@
     {                                  \
     } while (0)
 
+#define BOARD_DEBOUNCER_STATE uint8_t
+
 #define board_usb_send(_data, _len)
 #define board_read_matrix(_mat)
 
