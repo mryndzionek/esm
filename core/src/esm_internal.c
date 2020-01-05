@@ -1,6 +1,9 @@
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
+
+#ifndef ESM_TRACE_DISABLE
 #include "trace.h"
+#endif
 
 ESM_THIS_FILE;
 
@@ -49,6 +52,7 @@ esm_t * const tick_esm
 __attribute((__section__("esm_simple")))
 __attribute((__used__)) = &esm_tick;
 
+#ifndef ESM_TRACE_DISABLE
 static uint8_t data[ESM_TRACE_CHUNK_SIZE];
 static void trace_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
@@ -96,3 +100,4 @@ static esm_t esm_trace = {
 esm_t * const trace_esm
 __attribute((__section__("esm_simple")))
 __attribute((__used__)) = &esm_trace;
+#endif

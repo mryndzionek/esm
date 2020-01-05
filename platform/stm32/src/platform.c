@@ -5,6 +5,7 @@
 
 #include "board.h"
 
+#ifndef ESM_TRACE_DISABLE
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	esm_signal_t sig = {
@@ -14,6 +15,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 	};
 	esm_send_signal(&sig);
 }
+#endif
 
 void HAL_SYSTICK_Callback(void)
 {
