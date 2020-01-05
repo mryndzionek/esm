@@ -120,7 +120,9 @@ typedef enum {
 #ifdef ESM_SIG_PARAMS
 typedef struct
 {
-	ESM_SIG_PARAMS
+	union {
+		ESM_SIG_PARAMS
+	};
 } esm_sig_params_t;
 #endif
 

@@ -23,14 +23,12 @@
 #define ESM_GROUPS \
       ESM_GROUP(remote)
 
-#define ESM_SIG_PARAMS                         \
-      union {                                  \
-            uint8_t keycode;                   \
-            ds3231_time_t const *time;         \
-            struct                             \
-            {                                  \
-                  BOARD_DEBOUNCER_STATE state; \
-            } debouncer;                       \
-      };
+#define ESM_SIG_PARAMS                   \
+      uint8_t keycode;                   \
+      ds3231_time_t const *time;         \
+      struct                             \
+      {                                  \
+            BOARD_DEBOUNCER_STATE state; \
+      } debouncer;
 
 #endif /* INCLUDE_SIGNALS_H_ */

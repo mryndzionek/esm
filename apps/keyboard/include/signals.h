@@ -13,14 +13,12 @@
       ESM_ID(matrix)        \
       ESM_ID(keyboard)
 
-#define ESM_SIG_PARAMS               \
-      union {                        \
-            struct                   \
-            {                        \
-                  uint8_t row;       \
-                  uint8_t col;       \
-                  key_ev_type_e kev; \
-            } key;                   \
-      };
+#define ESM_SIG_PARAMS         \
+      struct                   \
+      {                        \
+            uint8_t row;       \
+            uint8_t col;       \
+            key_ev_type_e kev; \
+      } key;
 
 #endif /* INCLUDE_SIGNALS_H_ */
