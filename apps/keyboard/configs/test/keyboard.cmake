@@ -16,3 +16,10 @@ target_sources(${APP_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/backlight.c
 )
 
+if(${ESM_PLATFORM} STREQUAL "stm32")
+
+	target_compile_definitions(${APP_NAME}
+		PUBLIC
+		    -DESM_TRACE_UART=\(huart1\)
+	)
+endif()

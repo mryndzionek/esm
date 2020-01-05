@@ -29,11 +29,6 @@ target_sources(${APP_NAME}
 # ugly, but does the job for now
 if(${ESM_PLATFORM} STREQUAL "stm32")
 
-	target_compile_definitions(${APP_NAME}
-		PUBLIC
-		    -DESM_TRACE_UART=\(huart1\)
-	)
-
 	target_sources(${APP_NAME}
 		PUBLIC
 		    ${CMAKE_SOURCE_DIR}/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c
