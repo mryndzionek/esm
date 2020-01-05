@@ -68,10 +68,10 @@ void app_process(char key)
 	}
 }
 
-static void debouncer_handle(esm_t *const esm, const esm_signal_t *const sig)
+static void debouncer_handle(esm_t *const esm, BOARD_DEBOUNCER_STATE state)
 {
 	(void)esm;
-	(void)sig;
+	(void)state;
 
 	esm_signal_t s = {
 		.type = esm_sig_button,

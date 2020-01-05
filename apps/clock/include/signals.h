@@ -1,6 +1,7 @@
 #ifndef INCLUDE_SIGNALS_H_
 #define INCLUDE_SIGNALS_H_
 
+#include "board.h"
 #include "ds3231.h"
 
 #define ESM_SIGNALS      \
@@ -22,10 +23,14 @@
 #define ESM_GROUPS \
       ESM_GROUP(remote)
 
-#define ESM_SIG_PARAMS                 \
-      union {                          \
-            uint8_t keycode;           \
-            ds3231_time_t const *time; \
+#define ESM_SIG_PARAMS                         \
+      union {                                  \
+            uint8_t keycode;                   \
+            ds3231_time_t const *time;         \
+            struct                             \
+            {                                  \
+                  BOARD_DEBOUNCER_STATE state; \
+            } debouncer;                       \
       };
 
 #endif /* INCLUDE_SIGNALS_H_ */

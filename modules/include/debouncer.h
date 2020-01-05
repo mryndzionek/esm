@@ -4,15 +4,18 @@
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
 
+#include "board.h"
+
 typedef struct {
 	uint8_t period;
-	void (*handle)(esm_t *const esm, const esm_signal_t * const sig);
+	void (*handle)(esm_t *const esm, BOARD_DEBOUNCER_STATE state);
 	void (*arm)(esm_t *const esm);
 } debouncer_cfg_t;
 
 typedef struct {
 	esm_t esm;
 	esm_timer_t timer;
+	BOARD_DEBOUNCER_STATE state;
 	debouncer_cfg_t const *const cfg;
 } debouncer_esm_t;
 

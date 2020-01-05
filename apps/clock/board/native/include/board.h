@@ -42,6 +42,8 @@ extern NEC_t nec1;
         board_stop_sound(); \
     } while (0)
 
+#define BOARD_DEBOUNCER_STATE uint8_t
+
 void board_nec_start(NEC_t *handle);
 void board_nec_stop(NEC_t *handle);
 void board_i2c_tx(uint8_t addr, uint8_t const *data, uint8_t size);

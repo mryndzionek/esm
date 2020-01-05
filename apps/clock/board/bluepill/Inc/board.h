@@ -55,6 +55,8 @@ extern NEC_t nec1;
         HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); \
     } while (0)
 
+#define BOARD_DEBOUNCER_STATE int
+
 void board_nec_start(NEC_t *handle);
 void board_nec_stop(NEC_t *handle);
 

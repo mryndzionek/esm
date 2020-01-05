@@ -17,11 +17,12 @@ static void esm_idle_exit(esm_t *const esm)
 
 static void esm_idle_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
-	(void)esm;
+	debouncer_esm_t *self = ESM_CONTAINER_OF(esm, debouncer_esm_t, esm);
 
 	switch(sig->type)
 	{
 	case esm_sig_alarm:
+	    self->state = sig->params.debouncer.state;
 		ESM_TRANSITION(active);
 		break;
 	default:
@@ -55,7 +56,7 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t * const sig)
 	switch(sig->type)
 	{
 	case esm_sig_tmout:
-		self->cfg->handle(esm, sig);
+		self->cfg->handle(esm, self->state);
 		ESM_TRANSITION(idle);
 		break;
 	default:

@@ -65,9 +65,11 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 	else if (GPIO_Pin == PUSHBUTTON_Pin)
 	{
+		int s = HAL_GPIO_ReadPin(PUSHBUTTON_GPIO_Port, PUSHBUTTON_Pin);
 		EXTI->IMR &= ~PUSHBUTTON_Pin;
 		esm_signal_t sig = {
 			.type = esm_sig_alarm,
+			.params.debouncer.state = s,
 			.sender = NULL,
 			.receiver = debouncer_esm};
 		esm_send_signal(&sig);
@@ -75,9 +77,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
-static void debouncer_handle(esm_t *const esm, const esm_signal_t * const sig)
+static void debouncer_handle(esm_t *const esm, BOARD_DEBOUNCER_STATE state)
 {
-	if (HAL_GPIO_ReadPin(PUSHBUTTON_GPIO_Port, PUSHBUTTON_Pin) == GPIO_PIN_RESET)
+	if (HAL_GPIO_ReadPin(PUSHBUTTON_GPIO_Port, PUSHBUTTON_Pin) == state)
 	{
 		esm_signal_t s = {
 			.type = esm_sig_button,

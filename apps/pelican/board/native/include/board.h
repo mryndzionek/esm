@@ -19,4 +19,6 @@
 #define BOARD_PEDS_WALK() \
       ESM_PRINTF("BOARD_PEDS_WALK\r\n");
 
+#define BOARD_DEBOUNCER_STATE uint8_t
+
 #endif /* APPS_PELICAN_BOARD_NATIVE_INC_BOARD_H_ */

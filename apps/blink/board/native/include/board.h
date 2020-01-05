@@ -11,4 +11,6 @@
 		ESM_PRINTF("BLINK_LED%d:OFF\r\n", _led_num); \
 } while(0)
 
+#define BOARD_DEBOUNCER_STATE uint8_t
+
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */
