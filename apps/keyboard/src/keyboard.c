@@ -19,8 +19,6 @@ ESM_THIS_FILE;
 typedef struct
 {
     esm_list_item_t item;
-    uint8_t row;
-    uint8_t col;
     uint16_t kc;
 } hidkey_t;
 
@@ -225,16 +223,6 @@ static void esm_keyboard_init(esm_t *const esm)
     keyboard_esm_t *self = ESM_CONTAINER_OF(esm, keyboard_esm_t, esm);
 
     self->state.layer = BASE_LAYER;
-
-    for (uint8_t j = 0; j < N_COLS; j++)
-    {
-        for (uint8_t i = 0; i < N_ROWS; i++)
-        {
-            self->keys[j][i].col = j;
-            self->keys[j][i].row = i;
-        }
-    }
-
     ESM_TRANSITION(active);
 }
 

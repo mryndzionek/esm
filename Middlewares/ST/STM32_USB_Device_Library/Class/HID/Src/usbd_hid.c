@@ -316,7 +316,7 @@ __ALIGN_BEGIN static uint8_t USBD_HID_DeviceQualifierDesc[USB_LEN_DEV_QUALIFIER_
   0x00,
 };
 
-__ALIGN_BEGIN static uint8_t HID_KEYBOARD_ReportDesc[HID_KEYBOARD_REPORT_DESC_SIZE] __ALIGN_END =
+__ALIGN_BEGIN static const uint8_t HID_KEYBOARD_ReportDesc[HID_KEYBOARD_REPORT_DESC_SIZE] __ALIGN_END =
     {
         0x05, 0x01, // USAGE_PAGE (Generic Desktop)
         0x09, 0x06, // USAGE (Keyboard)
@@ -485,7 +485,7 @@ static uint8_t  USBD_HID_Setup(USBD_HandleTypeDef *pdev,
           if (req->wValue >> 8 == HID_REPORT_DESC)
           {
             len = MIN(HID_KEYBOARD_REPORT_DESC_SIZE, req->wLength);
-            pbuf = HID_KEYBOARD_ReportDesc;
+            pbuf = (uint8_t *)(uintptr_t)HID_KEYBOARD_ReportDesc;
           }
           else if (req->wValue >> 8 == HID_DESCRIPTOR_TYPE)
           {
