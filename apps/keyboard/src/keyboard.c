@@ -5,7 +5,6 @@
 #include "rb.h"
 
 #include "board.h"
-#include "trace.h"
 
 #include "keyboard.h"
 #include "keycode.h"

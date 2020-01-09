@@ -23,6 +23,11 @@
       struct                             \
       {                                  \
             BOARD_DEBOUNCER_STATE state; \
-      } debouncer;
+      } debouncer;                       \
+      struct                             \
+      {                                  \
+            uint8_t chan;                \
+            uint8_t state;               \
+      } encoder;
 
 #endif /* INCLUDE_SIGNALS_H_ */

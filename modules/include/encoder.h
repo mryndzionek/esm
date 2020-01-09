@@ -4,13 +4,16 @@
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
 
-typedef struct {
-
+typedef struct
+{
+	void (*cw_action)(void);
+	void (*ccw_action)(void);
 } encoder_cfg_t;
 
 typedef struct {
 	esm_t esm;
-	esm_timer_t timer;
+	uint8_t state;
+	uint8_t chanls;
 	encoder_cfg_t const *const cfg;
 } encoder_esm_t;
 

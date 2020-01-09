@@ -278,17 +278,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(IDLE_LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : ENC1_CHAN_A_Pin */
-  GPIO_InitStruct.Pin = ENC1_CHAN_A_Pin;
+  /*Configure GPIO pins : ENC1_CHAN_A_Pin ENC1_CHAN_B_Pin */
+  GPIO_InitStruct.Pin = ENC1_CHAN_A_Pin|ENC1_CHAN_B_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING_FALLING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(ENC1_CHAN_A_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pin : ENC1_CHAN_B_Pin */
-  GPIO_InitStruct.Pin = ENC1_CHAN_B_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(ENC1_CHAN_B_GPIO_Port, &GPIO_InitStruct);
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pins : ROW1_IN_Pin ROW2_IN_Pin */
   GPIO_InitStruct.Pin = ROW1_IN_Pin|ROW2_IN_Pin;

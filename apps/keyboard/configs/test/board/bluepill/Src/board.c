@@ -26,27 +26,23 @@ static const pin_desc_t rows[N_ROWS] = {
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-    if (GPIO_Pin == ENC1_CHAN_A_Pin)
+	static esm_signal_t sig = {
+		.type = esm_sig_alarm,
+		.params.debouncer.state = 0,
+		.sender = NULL,
+		.receiver = NULL};
+
+	if (GPIO_Pin == ENC1_CHAN_A_Pin)
 	{
-		int s = HAL_GPIO_ReadPin(ENC1_CHAN_A_GPIO_Port, ENC1_CHAN_A_Pin);
-		EXTI->IMR &= ~ENC1_CHAN_A_Pin;
-		esm_signal_t sig = {
-			.type = esm_sig_alarm,
-			.params.debouncer.state = s,
-			.sender = NULL,
-			.receiver = deb_enc_chan_a_esm};
+		CLEAR_BIT(EXTI->IMR, ENC1_CHAN_A_Pin);
+		sig.receiver = deb_enc_chan_a_esm;
 		esm_send_signal(&sig);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
 	}
 	else if (GPIO_Pin == ENC1_CHAN_B_Pin)
 	{
-		int s = HAL_GPIO_ReadPin(ENC1_CHAN_B_GPIO_Port, ENC1_CHAN_B_Pin);
-		EXTI->IMR &= ~ENC1_CHAN_B_Pin;
-		esm_signal_t sig = {
-			.type = esm_sig_alarm,
-			.params.debouncer.state = s,
-			.sender = NULL,
-			.receiver = deb_enc_chan_b_esm};
+		CLEAR_BIT(EXTI->IMR, ENC1_CHAN_B_Pin);
+		sig.receiver = deb_enc_chan_b_esm;
 		esm_send_signal(&sig);
 		__HAL_GPIO_EXTI_CLEAR_IT(GPIO_Pin);
 	}
@@ -74,19 +70,21 @@ void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS])
 
 static void chan_a_handle(esm_t *const esm, BOARD_DEBOUNCER_STATE state)
 {
-	int s = HAL_GPIO_ReadPin(ENC1_CHAN_A_GPIO_Port, ENC1_CHAN_A_Pin);
-
-	uint8_t data[2] = {0, s};
-	trace_data(data, sizeof(data));
+	esm_signal_t sig = {
+		.type = esm_sig_alarm,
+		.params.encoder = {.chan = 0, .state = HAL_GPIO_ReadPin(GPIOA, ENC1_CHAN_A_Pin)},
+		.sender = NULL,
+		.receiver = encoder_esm};
+	esm_send_signal(&sig);
 }
 
 static void chan_a_arm(esm_t *const esm)
 {
-	EXTI->IMR |= ENC1_CHAN_A_Pin;
+	SET_BIT(EXTI->IMR, ENC1_CHAN_A_Pin);
 }
 
 static const debouncer_cfg_t deb_enc_chan_a_cfg = {
-	.period = 2UL,
+	.period = 1UL,
 	.handle = chan_a_handle,
 	.arm = chan_a_arm};
 
@@ -94,24 +92,59 @@ ESM_REGISTER(debouncer, deb_enc_chan_a, esm_gr_none, 2, 1);
 
 static void chan_b_handle(esm_t *const esm, BOARD_DEBOUNCER_STATE state)
 {
-	int s = HAL_GPIO_ReadPin(ENC1_CHAN_B_GPIO_Port, ENC1_CHAN_B_Pin);
-
-	uint8_t data[2] = {1, s};
-	trace_data(data, sizeof(data));
+	esm_signal_t sig = {
+		.type = esm_sig_alarm,
+		.params.encoder = {.chan = 1, .state = HAL_GPIO_ReadPin(GPIOA, ENC1_CHAN_B_Pin)},
+		.sender = NULL,
+		.receiver = encoder_esm};
+	esm_send_signal(&sig);
 }
 
 static void chan_b_arm(esm_t *const esm)
 {
-	EXTI->IMR |= ENC1_CHAN_B_Pin;
+	SET_BIT(EXTI->IMR, ENC1_CHAN_B_Pin);
 }
 
 static const debouncer_cfg_t deb_enc_chan_b_cfg = {
-	.period = 2UL,
+	.period = 1UL,
 	.handle = chan_b_handle,
 	.arm = chan_b_arm};
 
 ESM_REGISTER(debouncer, deb_enc_chan_b, esm_gr_none, 2, 1);
 
-static const encoder_cfg_t encoder_cfg = {};
+static void enc_cw_action(void)
+{
+	esm_signal_t s = {
+		.type = esm_sig_keypress,
+		.params.key = {
+			.row = 0,
+			.col = 0,
+			.kev = key_ev_down},
+		.sender = NULL,
+		.receiver = keyboard_esm};
+	esm_send_signal(&s);
+	s.params.key.kev = key_ev_up;
+	esm_send_signal(&s);
+}
 
-ESM_REGISTER(encoder, encoder, esm_gr_none, 1, 1);
+static void enc_ccw_action(void)
+{
+	esm_signal_t s = {
+		.type = esm_sig_keypress,
+		.params.key = {
+			.row = 1,
+			.col = 0,
+			.kev = key_ev_down},
+		.sender = NULL,
+		.receiver = keyboard_esm};
+	esm_send_signal(&s);
+	s.params.key.kev = key_ev_up;
+	esm_send_signal(&s);
+}
+
+static const encoder_cfg_t encoder_cfg = {
+	.cw_action = enc_cw_action,
+	.ccw_action = enc_ccw_action,
+};
+
+ESM_REGISTER(encoder, encoder, esm_gr_none, 4, 1);
