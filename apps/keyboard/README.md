@@ -11,7 +11,7 @@ Bootloader binary
 
 Bootloader mode switch is not yet integrated into the build system, but
 to compile a binary suitable for [STM32duino-bootloader](https://github.com/rogerclarkmelbourne/STM32duino-bootloader)
-just apply the below patch:
+just apply the below patch (the default 'atreus50' config has this enabled):
 
 
 ```diff
