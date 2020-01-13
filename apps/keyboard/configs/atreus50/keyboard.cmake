@@ -1,4 +1,7 @@
-set(ESM_APP_IDS ${ESM_APP_IDS} tap_detector1 tap_detector2 backlight)
+set(ESM_APP_IDS ${ESM_APP_IDS} tap_detector1
+                               tap_detector2
+                               tap_detector3
+                               backlight)
 set(ESM_APP_SIGNALS ${ESM_APP_SIGNALS} tap)
 set(ESM_APP_GROUPS ${ESM_APP_GROUPS} taps)
 
