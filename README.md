@@ -60,6 +60,7 @@ the hierarchy and pointer assignments in switch/case handlers (transitions - red
 
 typedef struct {
 	const uint32_t delay;
+	const uint8_t led_num;
 } blink_cfg_t;
 
 // Structure representing the machine object (active object)
@@ -71,32 +72,66 @@ typedef struct {
 	blink_cfg_t const *const cfg;
 } blink_esm_t;
 
-// Define two states (state structures) 'on' and 'off'
+// Define two top-level states (state structures) 'active' and 'paused'
 
-ESM_DEFINE_STATE(on);
-ESM_DEFINE_STATE(off);
+ESM_COMPLEX_STATE(active, top, 1);
+ESM_LEAF_STATE(paused, top, 1);
 
-// Entry action of 'on' state:
-// - run action corresponding to turning the LED on
-// - schedule a timer signal with configured delay
+// Define two nested states 'on' and 'off'
+
+ESM_LEAF_STATE(on, active, 2);
+ESM_LEAF_STATE(off, active, 2);
+
+static void esm_active_init(esm_t *const esm)
+{
+	(void)esm;
+	ESM_TRANSITION(on);
+}
+
+static void esm_active_entry(esm_t *const esm)
+{
+	(void)esm;
+}
+
+static void esm_active_exit(esm_t *const esm)
+{
+	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
+	esm_timer_rm(&self->timer);
+}
+
+static void esm_active_handle(esm_t *const esm, const esm_signal_t * const sig)
+{
+	(void)esm;
+
+	switch(sig->type)
+	{
+	case esm_sig_button:
+		ESM_TRANSITION(paused);
+		break;
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
 
 static void esm_on_entry(esm_t *const esm)
 {
 	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
-
-	BOARD_LED_ON();
-
 	esm_signal_t sig = {
 			.type = esm_sig_tmout,
 			.sender = esm,
 			.receiver = esm
 	};
 	esm_timer_add(&self->timer,
-			self->cfg->delay, &sig);
+			self->cfg->delay>>3, &sig);
+
+	BOARD_LED_ON(self->cfg->led_num);
 }
 
-// Signal handler of 'on' state
-// - on 'timeout' signal transition to 'off' state
+static void esm_on_exit(esm_t *const esm)
+{
+	(void)esm;
+}
 
 static void esm_on_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
@@ -111,16 +146,9 @@ static void esm_on_handle(esm_t *const esm, const esm_signal_t * const sig)
 	}
 }
 
-// Entry action of 'off' state:
-// - run action corresponding to turning the LED off
-// - schedule a timer signal with configured delay
-
 static void esm_off_entry(esm_t *const esm)
 {
 	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
-
-	BOARD_LED_OFF();
-
 	esm_signal_t sig = {
 			.type = esm_sig_tmout,
 			.sender = esm,
@@ -128,10 +156,13 @@ static void esm_off_entry(esm_t *const esm)
 	};
 	esm_timer_add(&self->timer,
 			self->cfg->delay, &sig);
+	BOARD_LED_OFF(self->cfg->led_num);
 }
 
-// Signal handler of 'off' state
-// - on 'timeout' signal transition to 'on' state
+static void esm_off_exit(esm_t *const esm)
+{
+	(void)esm;
+}
 
 static void esm_off_handle(esm_t *const esm, const esm_signal_t * const sig)
 {
@@ -146,16 +177,43 @@ static void esm_off_handle(esm_t *const esm, const esm_signal_t * const sig)
 	}
 }
 
-// Configuration structure of machine instance 'blink_1'
+static void esm_paused_entry(esm_t *const esm)
+{
+	blink_esm_t *self = ESM_CONTAINER_OF(esm, blink_esm_t, esm);
+	BOARD_LED_OFF(self->cfg->led_num);
+}
 
-static const blink_cfg_t blink_1_cfg = {
-		.delay = 300UL
+static void esm_paused_exit(esm_t *const esm)
+{
+	(void)esm;
+}
+
+static void esm_paused_handle(esm_t *const esm, const esm_signal_t * const sig)
+{
+	switch(sig->type)
+	{
+	case esm_sig_button:
+		ESM_TRANSITION(active);
+		break;
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
+
+static void esm_blink_init(esm_t *const esm)
+{
+	ESM_TRANSITION(active);
+}
+
+// Configuration structure of machine instance 'blink_1'
+static const blink_cfg_t blink1_cfg = {
+		.delay = 300UL,
+		.led_num = 0
 };
 
 // Register instance 'blink_1' of the blink machine with the framework
-// Last argument is the input signals queue length
-
-ESM_REGISTER(blink, blink_1, esm_gr_none, 1);
+ESM_COMPLEX_REGISTER(blink, blink1, esm_gr_blinkers, 2, 3, 0);
 ```
 
 Recommended reading
