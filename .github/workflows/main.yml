@@ -33,7 +33,7 @@ jobs:
       run: |
         cd build
         set -ex
-        wget https://github.com/mryndzionek/trace-decoder/releases/download/v1.0/trace-decoder
+        wget https://github.com/mryndzionek/trace-decoder/releases/download/v1.2/trace-decoder
         chmod +x trace-decoder
         mkdir logs
         apps/blink/blink &
