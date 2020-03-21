@@ -11,7 +11,7 @@
 
 #define BOARD_DEBOUNCER_STATE uint8_t
 
-#define board_usb_send(_data, _len)
+#define board_usb_send(_data, _len) (true)
 #define board_read_matrix(_mat)
 
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */

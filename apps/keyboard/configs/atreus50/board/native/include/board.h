@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-#define board_usb_send(_data, _len)
+#define board_usb_send(_data, _len) (true)
 #define board_read_matrix(_mat)
 
 #define BOARD_DEBOUNCER_STATE uint8_t
