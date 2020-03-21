@@ -170,6 +170,9 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
 
   esm_signal_t s = {
       .type = esm_sig_alarm,
+      .params.key = {
+          .row = row,
+          .col = col},
       .sender = NULL,
       .receiver = backlight_esm};
   esm_send_signal(&s);

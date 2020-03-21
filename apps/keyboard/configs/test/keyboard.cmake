@@ -19,7 +19,7 @@ target_include_directories(${APP_NAME}
 target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_SOURCE_DIR}/lib/src/sk6812.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/backlight.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/backlight_moving.c
 )
 
 if(${ESM_PLATFORM} STREQUAL "stm32")

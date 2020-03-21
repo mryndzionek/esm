@@ -8,7 +8,7 @@ set(ESM_APP_GROUPS ${ESM_APP_GROUPS} taps)
 target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/tap_detector.c
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/backlight.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/backlight_heatmap.c
         ${CMAKE_SOURCE_DIR}/lib/src/sk6812.c
 )
 
