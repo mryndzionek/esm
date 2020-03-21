@@ -3,7 +3,7 @@
 #include "board.h"
 
 #define SCAN_PERIOD_MS (ESM_TICKS_PER_SEC / SCAN_FREQ_HZ)
-#define DEBOUNCE_THREHOLD (DEBOUNCE_MS / SCAN_PERIOD_MS)
+#define DEBOUNCE_THRESHOLD (DEBOUNCE_MS / SCAN_PERIOD_MS)
 
 ESM_THIS_FILE;
 
@@ -71,10 +71,10 @@ static void esm_scanning_handle(esm_t *const esm, const esm_signal_t *const sig)
 				key_state_t *ks = &self->matrix[j][i];
 
 				if ((ks->pressed == false) &&
-					self->keys[j][i] && (ks->dc < DEBOUNCE_THREHOLD))
+					self->keys[j][i] && (ks->dc < DEBOUNCE_THRESHOLD))
 				{
 					ks->dc++;
-					if (ks->dc == DEBOUNCE_THREHOLD)
+					if (ks->dc == DEBOUNCE_THRESHOLD)
 					{
 						esm_t *dest = (esm_t *)keyboard_get_kev_dest(j, i);
 						ks->pressed = true;
