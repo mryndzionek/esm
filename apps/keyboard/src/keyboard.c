@@ -37,7 +37,7 @@ typedef struct
     keyboard_cfg_t const *const cfg;
 } keyboard_esm_t;
 
-static rb_t report_rb = {.data_ = (uint8_t[64]){0}, .capacity_ = 64};
+static rb_t report_rb = {.data_ = (uint8_t[128]){0}, .capacity_ = 128};
 
 extern const uint16_t keymaps[][N_ROWS][N_COLS];
 __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t *const kbd)
@@ -196,12 +196,15 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
             it = it->prev;
         }
 
-        (void)rb_write(&report_rb, kbd_report, sizeof(kbd_report));
-        (void)rb_write(&report_rb, consumer_report, sizeof(consumer_report));
-
-        if (!self->busy)
+        if ((sizeof(kbd_report) + sizeof(consumer_report)) <= (report_rb.capacity_ - report_rb.size_))
         {
-            send_report(self);
+            (void)rb_write(&report_rb, kbd_report, sizeof(kbd_report));
+            (void)rb_write(&report_rb, consumer_report, sizeof(consumer_report));
+
+            if (!self->busy)
+            {
+                send_report(self);
+            }
         }
     }
     break;
@@ -228,5 +231,5 @@ static const keyboard_cfg_t keyboard_cfg = {
 
 };
 
-ESM_REGISTER(keyboard, keyboard, esm_gr_none, 8, 1);
+ESM_REGISTER(keyboard, keyboard, esm_gr_none, 32, 1);
 const keyboard_state_t *const keyboard_state = &keyboard_ctx.state;
