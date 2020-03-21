@@ -48,6 +48,17 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
+bool board_usb_send(uint8_t const *data, uint16_t len)
+{
+	if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+	{
+		return false;
+	}
+	USBD_HID_SendReport(&hUsbDeviceFS, data, len);
+	
+	return true;
+}
+
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS])
 {
 	for (uint8_t j = 0; j < N_COLS; j++)

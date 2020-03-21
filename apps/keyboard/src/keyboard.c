@@ -37,7 +37,7 @@ typedef struct
     keyboard_cfg_t const *const cfg;
 } keyboard_esm_t;
 
-static rb_t report_rb = {.data_ = (uint8_t[32]){0}, .capacity_ = 32};
+static rb_t report_rb = {.data_ = (uint8_t[64]){0}, .capacity_ = 64};
 
 extern const uint16_t keymaps[][N_ROWS][N_COLS];
 __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t *const kbd)
@@ -66,8 +66,7 @@ static void send_report(keyboard_esm_t *const self)
         s = rb_read(&report_rb, report_buf, l);
         ESM_ASSERT(s == l);
 
-        board_usb_send(report_buf, l);
-        self->busy = true;
+        self->busy = board_usb_send(report_buf, l);
     }
     else
     {
@@ -229,5 +228,5 @@ static const keyboard_cfg_t keyboard_cfg = {
 
 };
 
-ESM_REGISTER(keyboard, keyboard, esm_gr_none, 4, 1);
+ESM_REGISTER(keyboard, keyboard, esm_gr_none, 8, 1);
 const keyboard_state_t *const keyboard_state = &keyboard_ctx.state;

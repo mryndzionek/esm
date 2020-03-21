@@ -30,6 +30,17 @@ static const pin_desc_t rows[N_ROWS] = {
 	{ROW4_IN_GPIO_Port, ROW4_IN_Pin},
 };
 
+bool board_usb_send(uint8_t *data, uint16_t len)
+{
+	if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
+	{
+		return false;
+	}
+	USBD_HID_SendReport(&hUsbDeviceFS, data, len);
+	
+	return true;
+}
+
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS])
 {
 	for (uint8_t j = 0; j < N_COLS; j++)

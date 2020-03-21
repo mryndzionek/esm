@@ -21,7 +21,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 #define BOARD_DEBOUNCER_STATE int
 
-#define board_usb_send(_data, _len) USBD_HID_SendReport(&hUsbDeviceFS, _data, _len);
+bool board_usb_send(uint8_t *data, uint16_t len);
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS]);
 
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */
