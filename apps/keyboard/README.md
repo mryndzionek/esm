@@ -41,6 +41,11 @@ index 789b551..cf390ba 100644
                                    This value must be a multiple of 0x200. */
 ```
 
+Flashing  firmware via `dfu-util`:
+```sh
+sleep 3; sudo dfu-util -d 1eaf:0003 -a 2 -D "apps/keyboard/keyboard.bin"
+```
+
 TODO
 ----
 
