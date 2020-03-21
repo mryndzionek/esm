@@ -22,7 +22,7 @@ typedef struct
     backlight_cfg_t const *const cfg;
 } backlight_esm_t;
 
-ESM_DEFINE_STATE(idle);
+ESM_DEFINE_STATE(main);
 
 static const uint32_t colormap[256] =
     {
@@ -329,7 +329,7 @@ static uint16_t neigh8(uint16_t g[N_COLS + 2][N_ROWS + 2], uint8_t x, uint8_t y)
     return v > 0xFFFF ? 0xFFFF : v;
 }
 
-static void esm_idle_entry(esm_t *const esm)
+static void esm_main_entry(esm_t *const esm)
 {
     backlight_esm_t *self = ESM_CONTAINER_OF(esm, backlight_esm_t, esm);
 
@@ -341,13 +341,13 @@ static void esm_idle_entry(esm_t *const esm)
                   ESM_TICKS_PER_SEC / self->cfg->freq_hz, &sig);
 }
 
-static void esm_idle_exit(esm_t *const esm)
+static void esm_main_exit(esm_t *const esm)
 {
     backlight_esm_t *self = ESM_CONTAINER_OF(esm, backlight_esm_t, esm);
     esm_timer_rm(&self->timer);
 }
 
-static void esm_idle_handle(esm_t *const esm, const esm_signal_t *const sig)
+static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
     backlight_esm_t *self = ESM_CONTAINER_OF(esm, backlight_esm_t, esm);
 
@@ -417,7 +417,7 @@ static void esm_backlight_init(esm_t *const esm)
     {
         for (uint8_t x = 1; x < N_COLS + 1; x++)
         {
-            grid[1][x][y] = POKE_VAL;
+            grid[self->i ^ 1][x][y] = POKE_VAL;
         }
     }
 
@@ -431,7 +431,7 @@ static void esm_backlight_init(esm_t *const esm)
     esm_timer_add(&self->ftimer,
                   1000UL + ESM_RANDOM(5000UL), &s);
 
-    ESM_TRANSITION(idle);
+    ESM_TRANSITION(main);
 }
 
 static const backlight_cfg_t backlight_cfg = {
