@@ -60,3 +60,36 @@ void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS])
 		HAL_GPIO_WritePin(cols[j].port, cols[j].pin, GPIO_PIN_RESET);
 	}
 }
+
+// this function is specific to the LED strip layout
+void board_ledpos_to_xy(uint8_t p, uint8_t *xp, uint8_t *yp)
+{
+#define DX (N_COLS / 2)
+#define DY (N_ROWS / 3)
+#define DL (SK6812_LEDS_NUM / 4)
+
+    switch (p)
+    {
+    case 0 ... DL - 1:
+        *xp = DX + (p * DX) / DL;
+        *yp = DY;
+        break;
+
+    case DL ...(3 * DL) - 1:
+        *xp = (2 * DX) - (((p - DL) * 2 * DX) / (2 * DL));
+        *yp = 2 * DY;
+        break;
+
+    case (3 * DL)...(4 * DL) - 1:
+        *xp = ((p - (3 * DL)) * DX) / DL;
+        *yp = DY;
+        break;
+
+    default:
+        ESM_ASSERT(0);
+    }
+
+#undef DL
+#undef DY
+#undef DX
+}

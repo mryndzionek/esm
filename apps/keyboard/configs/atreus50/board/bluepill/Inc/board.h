@@ -23,5 +23,6 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 bool board_usb_send(uint8_t *data, uint16_t len);
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS]);
+void board_ledpos_to_xy(uint8_t p, uint8_t *xp, uint8_t *yp);
 
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */

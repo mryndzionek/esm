@@ -286,39 +286,6 @@ static const uint32_t colormap[256] =
 
 static uint16_t grid[2][N_COLS + 2][N_ROWS + 2];
 
-// this function is specific to the LED strip layout
-static void led_pos_to_xy(uint8_t p, uint8_t *xp, uint8_t *yp)
-{
-#define DX (N_COLS / 2)
-#define DY (N_ROWS / 3)
-#define DL (SK6812_LEDS_NUM / 4)
-
-    switch (p)
-    {
-    case 0 ... DL - 1:
-        *xp = DX + (p * DX) / DL;
-        *yp = DY;
-        break;
-
-    case DL ...(3 * DL) - 1:
-        *xp = (2 * DX) - (((p - DL) * 2 * DX) / (2 * DL));
-        *yp = 2 * DY;
-        break;
-
-    case (3 * DL)...(4 * DL) - 1:
-        *xp = ((p - (3 * DL)) * DX) / DL;
-        *yp = DY;
-        break;
-
-    default:
-        ESM_ASSERT(0);
-    }
-
-#undef DL
-#undef DY
-#undef DX
-}
-
 static uint16_t neigh8(uint16_t g[N_COLS + 2][N_ROWS + 2], uint8_t x, uint8_t y)
 {
     uint32_t v = ((uint32_t)g[x - 1][y] + g[x + 1][y] +
@@ -368,7 +335,7 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
 
         for (uint8_t i = 0; i < SK6812_LEDS_NUM; i++)
         {
-            led_pos_to_xy(i, &x, &y);
+            board_ledpos_to_xy(i, &x, &y);
             v = neigh8(grid[self->i], x + 1, y + 1);
             sk6812_set_color(i, colormap[v > 0xFF ? 0xFF : v]);
         }
