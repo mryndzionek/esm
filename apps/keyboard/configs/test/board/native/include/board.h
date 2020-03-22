@@ -13,5 +13,6 @@
 
 #define board_usb_send(_data, _len) (true)
 #define board_read_matrix(_mat)
+#define board_backlight_show() sk6812_show()
 
 #endif /* APPS_BLINK_BOARD_BLUEPILL_INC_BOARD_H_ */

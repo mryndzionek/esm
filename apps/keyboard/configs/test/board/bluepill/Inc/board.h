@@ -21,6 +21,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 #define BOARD_DEBOUNCER_STATE int
 
+#define board_backlight_show() sk6812_show()
 bool board_usb_send(uint8_t *data, uint16_t len);
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS]);
 

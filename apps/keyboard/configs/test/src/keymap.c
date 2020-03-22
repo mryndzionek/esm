@@ -4,6 +4,7 @@
 #include "keycode_extra.h"
 #include "keyboard.h"
 #include "tap_detector.h"
+#include "backlight.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -48,3 +49,8 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
 
   return e;
 }
+
+static const backlight_cfg_t backlight_cfg = {
+    .freq_hz = 200UL};
+
+ESM_REGISTER(backlight, backlight, esm_gr_none, 4, 0);

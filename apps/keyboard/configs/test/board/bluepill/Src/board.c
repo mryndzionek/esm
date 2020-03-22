@@ -48,7 +48,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 	}
 }
 
-bool board_usb_send(uint8_t const *data, uint16_t len)
+bool board_usb_send(uint8_t *data, uint16_t len)
 {
 	if (hUsbDeviceFS.dev_state != USBD_STATE_CONFIGURED)
 	{

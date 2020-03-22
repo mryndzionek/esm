@@ -30,6 +30,7 @@ target_sources(${APP_NAME}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/strip.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/player.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/nec.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/../keyboard/src/backlight_heatmap.c
         ${CMAKE_SOURCE_DIR}/lib/src/sk6812.c
 )
 

@@ -4,6 +4,7 @@
 #include "keycode_extra.h"
 #include "keyboard.h"
 #include "tap_detector.h"
+#include "backlight.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -195,3 +196,8 @@ static const tap_detector_cfg_t tap_detector3_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
 ESM_REGISTER(tap_detector, tap_detector3, esm_gr_taps, 2, 2);
+
+static const backlight_cfg_t backlight_cfg = {
+    .freq_hz = 20UL};
+
+ESM_REGISTER(backlight, backlight, esm_gr_none, 8, 0);

@@ -22,6 +22,7 @@ extern const uint32_t board_heat_colormap[256];
 
 #define BOARD_DEBOUNCER_STATE int
 
+#define board_backlight_show() sk6812_show()
 bool board_usb_send(uint8_t *data, uint16_t len);
 void board_read_matrix(bool (*const matrix)[N_COLS][N_ROWS]);
 void board_ledpos_to_xy(uint8_t p, uint8_t *xp, uint8_t *yp);

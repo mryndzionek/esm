@@ -1,25 +1,14 @@
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
 
+#include "backlight.h"
 #include "sk6812.h"
 
 #define DIFF_SKEWED(_a, _b) (((_a) > (_b)) ? ((_a) - (_b)) : 0)
 
 ESM_THIS_FILE;
 
-typedef struct
-{
-    uint16_t freq_hz;
-} backlight_cfg_t;
-
-typedef struct
-{
-    esm_t esm;
-    esm_timer_t timer;
-    uint8_t i;
-    backlight_cfg_t const *const cfg;
-} backlight_esm_t;
-
+ESM_DEFINE_STATE(idle);
 ESM_DEFINE_STATE(main);
 
 static uint16_t grid[2][N_COLS + 2][N_ROWS + 2];
@@ -45,6 +34,36 @@ static uint16_t transfer(uint16_t g[N_COLS + 2][N_ROWS + 2], uint8_t x, uint8_t 
     DIFF_SKEWED(g[x - 1][y + 1], g[x][y]) +
     DIFF_SKEWED(g[x + 1][y + 1], g[x][y]);
     return v > 0xFFFF ? 0xFFFF : v;
+}
+
+static void esm_idle_entry(esm_t *const esm)
+{
+    (void)esm;
+}
+
+static void esm_idle_exit(esm_t *const esm)
+{
+    (void)esm;
+    board_backlight_show();
+}
+
+static void esm_idle_handle(esm_t *const esm, const esm_signal_t *const sig)
+{
+    backlight_esm_t *self = ESM_CONTAINER_OF(esm, backlight_esm_t, esm);
+    switch (sig->type)
+    {
+    case esm_sig_alarm:
+    {
+        grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] +=
+            grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] > 0x1FF ? 0 : sig->params.bcklight.val;
+        ESM_TRANSITION(main);
+    }
+    break;
+
+    default:
+        ESM_TRANSITION(unhandled);
+        break;
+    }
 }
 
 static void esm_main_entry(esm_t *const esm)
@@ -91,7 +110,7 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
             v = avg8(grid[self->i], x + 1, y + 1);
             sk6812_set_color(i, board_heat_colormap[v > 0xFF ? 0xFF : v]);
         }
-        sk6812_show();
+        board_backlight_show();
         self->i ^= 1;
         ESM_TRANSITION(self);
     }
@@ -99,8 +118,15 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
 
     case esm_sig_alarm:
     {
-        grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] +=
-            grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] > 0x1FF ? 0 : sig->params.bcklight.val;
+        if (sig->params.bcklight.val == 0)
+        {
+            ESM_TRANSITION(idle);
+        }
+        else
+        {
+            grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] +=
+                grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] > 0x1FF ? 0 : sig->params.bcklight.val;
+        }
     }
     break;
 
@@ -110,23 +136,8 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
     }
 }
 
-static void esm_backlight_init(esm_t *const esm)
+void esm_backlight_init(esm_t *const esm)
 {
-    backlight_esm_t *self = ESM_CONTAINER_OF(esm, backlight_esm_t, esm);
-
-    for (uint8_t y = 1; y < N_ROWS + 1; y++)
-    {
-        for (uint8_t x = 1; x < N_COLS + 1; x++)
-        {
-            grid[self->i ^ 1][x][y] = 0x3FF;
-        }
-    }
-
     sk6812_set_brightness(255);
-    ESM_TRANSITION(main);
+    ESM_TRANSITION(idle);
 }
-
-static const backlight_cfg_t backlight_cfg = {
-    .freq_hz = 40UL};
-
-ESM_REGISTER(backlight, backlight, esm_gr_none, 8, 0);

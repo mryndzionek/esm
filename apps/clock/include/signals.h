@@ -18,7 +18,8 @@
       ESM_ID(strip1)        \
       ESM_ID(player1)       \
       ESM_ID(nec1)          \
-      ESM_ID(rtc1)
+      ESM_ID(rtc1)          \
+      ESM_ID(backlight) 
 
 #define ESM_GROUPS \
       ESM_GROUP(remote)
@@ -29,6 +30,12 @@
       struct                             \
       {                                  \
             BOARD_DEBOUNCER_STATE state; \
-      } debouncer;
+      } debouncer;                       \
+      struct                             \
+      {                                  \
+            uint8_t row;                 \
+            uint8_t col;                 \
+            uint16_t val;                \
+      } bcklight;   
 
 #endif /* INCLUDE_SIGNALS_H_ */

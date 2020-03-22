@@ -8,7 +8,7 @@
 #include "keycodes.h"
 #include "board.h"
 
-#define NUM_MAJOR_STATES (6)
+#define NUM_MAJOR_STATES (7)
 
 #define OFF (0x00000000)
 #define RED (0x00AA0000)
@@ -104,6 +104,7 @@ ESM_LEAF_STATE(fire, active, 2);
 ESM_LEAF_STATE(plasma, active, 2);
 ESM_LEAF_STATE(lamp, active, 2);
 ESM_LEAF_STATE(christmas, active, 2);
+ESM_LEAF_STATE(heatmap, active, 2);
 
 ESM_COMPLEX_STATE(sunrise, active, 2);
 ESM_LEAF_STATE(rising, sunrise, 3);
@@ -502,13 +503,7 @@ static void esm_time_handle(esm_t *const esm, const esm_signal_t *const sig)
 	case esm_sig_rtc:
 	{
 		render_time(sig->params.time);
-		{
-			esm_signal_t s = {
-				.type = esm_sig_alarm,
-				.sender = NULL,
-				.receiver = strip1_esm};
-			esm_send_signal(&s);
-		}
+		board_backlight_show();
 	}
 
 	default:
@@ -532,11 +527,7 @@ static void esm_sunrise_entry(esm_t *const esm)
 	self->i = 0;
 	self->j = 0;
 	leds_set_all(sunrise_lut[self->i++]);
-	esm_signal_t s = {
-		.type = esm_sig_alarm,
-		.sender = NULL,
-		.receiver = strip1_esm};
-	esm_send_signal(&s);
+	board_backlight_show();
 }
 
 static void esm_sunrise_exit(esm_t *const esm)
@@ -585,11 +576,7 @@ static void esm_rising_handle(esm_t *const esm, const esm_signal_t *const sig)
 				else
 				{
 					leds_set_all(sunrise_lut[self->i++]);
-					esm_signal_t s = {
-						.type = esm_sig_alarm,
-						.sender = NULL,
-						.receiver = strip1_esm};
-					esm_send_signal(&s);
+					board_backlight_show();
 				}
 			}
 	}
@@ -685,13 +672,7 @@ static void esm_fire_handle(esm_t *const esm, const esm_signal_t *const sig)
 	case esm_sig_tmout:
 	{
 		fire_flicker(intensity, SELF_TO_COLOR(self));
-		{
-			esm_signal_t s = {
-				.type = esm_sig_alarm,
-				.sender = NULL,
-				.receiver = strip1_esm};
-			esm_send_signal(&s);
-		}
+		board_backlight_show();
 		{
 			esm_signal_t s = {
 				.type = esm_sig_tmout,
@@ -738,11 +719,7 @@ static void esm_plasma_handle(esm_t *const esm, const esm_signal_t *const sig)
 	case esm_sig_tmout:
 	{
 		plasma();
-		esm_signal_t s = {
-			.type = esm_sig_alarm,
-			.sender = NULL,
-			.receiver = strip1_esm};
-		esm_send_signal(&s);
+		board_backlight_show();
 		ESM_TRANSITION(self);
 	}
 	break;
@@ -782,13 +759,7 @@ static void esm_lamp_handle(esm_t *const esm, const esm_signal_t *const sig)
 	case esm_sig_tmout:
 	{
 		leds_set_all(SELF_TO_COLOR(self));
-		{
-			esm_signal_t s = {
-				.type = esm_sig_alarm,
-				.sender = NULL,
-				.receiver = strip1_esm};
-			esm_send_signal(&s);
-		}
+		board_backlight_show();
 		{
 			esm_signal_t s = {
 				.type = esm_sig_tmout,
@@ -891,13 +862,7 @@ static void esm_christmas_handle(esm_t *const esm, const esm_signal_t *const sig
 				sk6812_set_color(i, RED);
 			}
 		}
-		{
-			esm_signal_t s = {
-				.type = esm_sig_alarm,
-				.sender = NULL,
-				.receiver = strip1_esm};
-			esm_send_signal(&s);
-		}
+		board_backlight_show();
 		{
 			esm_signal_t s = {
 				.type = esm_sig_tmout,
@@ -905,6 +870,69 @@ static void esm_christmas_handle(esm_t *const esm, const esm_signal_t *const sig
 				.receiver = esm};
 			esm_timer_add(&self->timer,
 						  1000UL / self->freq_hz, &s);
+		}
+	}
+	break;
+
+	default:
+		ESM_TRANSITION(unhandled);
+		break;
+	}
+}
+
+static void esm_heatmap_entry(esm_t *const esm)
+{
+    esm_signal_t sig = {
+		.type = esm_sig_tmout,
+		.sender = esm,
+		.receiver = esm};
+    esm_send_signal(&sig);
+	sk6812_clear();
+}
+
+static void esm_heatmap_exit(esm_t *const esm)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+	esm_timer_rm(&self->timer);
+
+	esm_signal_t s = {
+		.type = esm_sig_alarm,
+		.params.bcklight = {
+			.val = 0},
+		.sender = NULL,
+		.receiver = backlight_esm};
+
+	esm_send_signal(&s);
+}
+
+static void esm_heatmap_handle(esm_t *const esm, const esm_signal_t *const sig)
+{
+	clock_esm_t *self = ESM_CONTAINER_OF(esm, clock_esm_t, esm);
+
+	switch (sig->type)
+	{
+
+	case esm_sig_tmout:
+	{
+		{
+			esm_signal_t s = {
+				.type = esm_sig_alarm,
+				.params.bcklight = {
+					.row = ESM_RANDOM(N_ROWS),
+					.col = ESM_RANDOM(N_COLS),
+					.val = 0x200 + ESM_RANDOM(0x3FF)},
+				.sender = NULL,
+				.receiver = backlight_esm};
+			esm_send_signal(&s);
+		}
+
+		{
+			esm_signal_t s = {
+				.type = esm_sig_tmout,
+				.sender = esm,
+				.receiver = esm};
+			esm_timer_add(&self->timer,
+						  500UL + ESM_RANDOM(3000UL), &s);
 		}
 	}
 	break;
@@ -935,6 +963,7 @@ static const clock_cfg_t clock1_cfg = {
 		(esm_state_t const *const) & esm_plasma_state,
 		(esm_state_t const *const) & esm_lamp_state,
 		(esm_state_t const *const) & esm_christmas_state,
+		(esm_state_t const *const) & esm_heatmap_state,
 	}};
 
 ESM_COMPLEX_REGISTER(clock, clock1, esm_gr_remote, 4, 4, 0);
