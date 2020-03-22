@@ -11,6 +11,7 @@
 
 extern SPI_HandleTypeDef hspi2;
 extern USBD_HandleTypeDef hUsbDeviceFS;
+extern const uint32_t board_heat_colormap[256];
 
 #define BOARD_DMA_SPI_TX(_data, _size)                                    \
     do                                                                    \
