@@ -2,6 +2,8 @@
 #include "esm/esm_timer.h"
 #include "board.h"
 
+#define FLCKR_VAL (0x1FF)
+
 ESM_THIS_FILE;
 
 typedef struct
@@ -44,10 +46,11 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
 	{
         esm_signal_t s = {
             .type = esm_sig_alarm,
-            .params.key = {
+            .params.bcklight = {
                 .row = ESM_RANDOM(N_ROWS),
-                .col = ESM_RANDOM(N_COLS)},
-            .sender = esm,
+                .col = ESM_RANDOM(N_COLS),
+                .val = FLCKR_VAL},
+            .sender = NULL,
             .receiver = backlight_esm};
 
         esm_send_signal(&s);

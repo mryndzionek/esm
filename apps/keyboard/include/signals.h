@@ -28,6 +28,12 @@
       {                                  \
             uint8_t chan;                \
             uint8_t state;               \
-      } encoder;
+      } encoder;                         \
+      struct                             \
+      {                                  \
+            uint8_t row;                 \
+            uint8_t col;                 \
+            uint16_t val;                \
+      } bcklight;                        \
 
 #endif /* INCLUDE_SIGNALS_H_ */

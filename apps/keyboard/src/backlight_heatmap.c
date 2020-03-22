@@ -3,9 +3,6 @@
 
 #include "sk6812.h"
 
-#define POKE_VAL (0xFF)
-#define FLCKR_VAL (0x1FF)
-
 #define DIFF_SKEWED(_a, _b) (((_a) > (_b)) ? ((_a) - (_b)) : 0)
 
 ESM_THIS_FILE;
@@ -102,17 +99,8 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
 
     case esm_sig_alarm:
     {
-        uint8_t x = sig->params.key.col;
-        uint8_t y = sig->params.key.row;
-
-        if (sig->sender)
-        {
-            grid[self->i ^ 1][x + 1][y + 1] = FLCKR_VAL;
-        }
-        else
-        {
-            grid[self->i ^ 1][x + 1][y + 1] += grid[self->i ^ 1][x + 1][y + 1] > 0x1FF ? 0 : POKE_VAL;
-        }
+        grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] +=
+            grid[self->i ^ 1][sig->params.bcklight.col + 1][sig->params.bcklight.row + 1] > 0x1FF ? 0 : sig->params.bcklight.val;
     }
     break;
 
