@@ -19,7 +19,6 @@ typedef struct
 {
     esm_t esm;
     esm_timer_t timer;
-    esm_timer_t ftimer;
     uint8_t i;
     backlight_cfg_t const *const cfg;
 } backlight_esm_t;
@@ -369,15 +368,6 @@ static void esm_main_handle(esm_t *const esm, const esm_signal_t *const sig)
         if (sig->sender)
         {
             grid[self->i ^ 1][x + 1][y + 1] = FLCKR_VAL;
-            esm_signal_t s = {
-                .type = esm_sig_alarm,
-                .params.key = {
-                    .row = ESM_RANDOM(N_ROWS),
-                    .col = ESM_RANDOM(N_COLS)},
-                .sender = esm,
-                .receiver = esm};
-            esm_timer_add(&self->ftimer,
-                          1000UL + ESM_RANDOM(5000UL), &s);
         }
         else
         {
@@ -403,16 +393,6 @@ static void esm_backlight_init(esm_t *const esm)
             grid[self->i ^ 1][x][y] = 0x3FF;
         }
     }
-
-    esm_signal_t s = {
-        .type = esm_sig_alarm,
-        .params.key = {
-            .row = ESM_RANDOM(N_ROWS),
-            .col = ESM_RANDOM(N_COLS)},
-        .sender = esm,
-        .receiver = esm};
-    esm_timer_add(&self->ftimer,
-                  1000UL + ESM_RANDOM(5000UL), &s);
 
     sk6812_set_brightness(255);
     ESM_TRANSITION(main);

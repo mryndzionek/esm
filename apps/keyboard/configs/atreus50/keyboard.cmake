@@ -1,7 +1,8 @@
 set(ESM_APP_IDS ${ESM_APP_IDS} tap_detector1
                                tap_detector2
                                tap_detector3
-                               backlight)
+                               backlight
+                               random_exciter)
 set(ESM_APP_SIGNALS ${ESM_APP_SIGNALS} tap)
 set(ESM_APP_GROUPS ${ESM_APP_GROUPS} taps)
 
@@ -9,6 +10,7 @@ target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/tap_detector.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/backlight_heatmap.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/random_exciter.c
         ${CMAKE_SOURCE_DIR}/lib/src/sk6812.c
 )
 
