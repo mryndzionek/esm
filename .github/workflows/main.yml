@@ -18,7 +18,7 @@ jobs:
         sudo apt-get install libsox-dev
 
     - name: Checkout
-      uses: actions/checkout@v2-beta
+      uses: actions/checkout@01aecccf739ca6ff86c0539fbc67a7a5007bbc81
 
     - name: Configure
       run: |
@@ -50,7 +50,7 @@ jobs:
         ./trace-decoder -i file -m ../apps/smokers/include/signals.h logs/smokers.data +RTS -N2 > logs/smokers.log
         ls -lh logs
 
-    - uses: actions/upload-artifact@v1.0.0
+    - uses: actions/upload-artifact@e7eefc491732c06d0ebbf4d4f49dcc25b4d2f3a8
       with:
         name: esm-test-logs
         path: build/logs
@@ -67,7 +67,7 @@ jobs:
         sudo apt-get install libsox-dev
 
     - name: Checkout
-      uses: actions/checkout@v2-beta
+      uses: actions/checkout@01aecccf739ca6ff86c0539fbc67a7a5007bbc81
 
     - name: Configure
       run: |
@@ -90,7 +90,7 @@ jobs:
         sudo apt-get install gcc-arm-none-eabi libnewlib-arm-none-eabi
 
     - name: Checkout
-      uses: actions/checkout@v2-beta
+      uses: actions/checkout@01aecccf739ca6ff86c0539fbc67a7a5007bbc81
 
     - name: Configure
       run: |
@@ -107,7 +107,7 @@ jobs:
         mkdir binaries
         find build/apps -type f \( -iname \*.elf -o -iname \*.bin -o -iname \*.map \) -exec cp {} binaries \;
 
-    - uses: actions/upload-artifact@v1.0.0
+    - uses: actions/upload-artifact@e7eefc491732c06d0ebbf4d4f49dcc25b4d2f3a8
       with:
         name: arm_binaries
         path: binaries
