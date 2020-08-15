@@ -30,10 +30,11 @@ const uint16_t keymaps[N_LAYERS][N_ROWS][N_COLS] = {
   ),
 };
 
-esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
+esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
 {
   (void)col;
   (void)row;
+  (void)kev;
   
   esm_t *e = keyboard_esm;
 

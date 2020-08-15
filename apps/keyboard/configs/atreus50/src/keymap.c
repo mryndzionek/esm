@@ -141,7 +141,7 @@ uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t 
   return keycode;
 }
 
-esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
+esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
 {
   uint16_t kc = keyboard_get_kc(col, row, keyboard_state);
   esm_t *e = keyboard_esm;
@@ -158,7 +158,7 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
   {
     e = tap_detector3_esm;
   }
-  else
+  else if(kev == key_ev_down)
   {
     esm_signal_t s = {
         .type = esm_sig_tap,

@@ -27,10 +27,11 @@ typedef struct
 	matrix_cfg_t const *const cfg;
 } matrix_esm_t;
 
-__attribute__((weak)) esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
+__attribute__((weak)) esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
 {
 	(void)col;
 	(void)row;
+	(void)kev;
 	return keyboard_esm;
 }
 
@@ -76,7 +77,7 @@ static void esm_scanning_handle(esm_t *const esm, const esm_signal_t *const sig)
 					ks->dc++;
 					if (ks->dc == DEBOUNCE_THRESHOLD)
 					{
-						esm_t *dest = (esm_t *)keyboard_get_kev_dest(j, i);
+						esm_t *dest = (esm_t *)keyboard_get_kev_dest(j, i, key_ev_down);
 						ks->pressed = true;
 						esm_signal_t s = {
 							.type = esm_sig_keypress,
@@ -97,7 +98,7 @@ static void esm_scanning_handle(esm_t *const esm, const esm_signal_t *const sig)
 					{
 						ks->pressed = false;
 
-						esm_t *dest = (esm_t *)keyboard_get_kev_dest(j, i);
+						esm_t *dest = (esm_t *)keyboard_get_kev_dest(j, i, key_ev_up);
 						esm_signal_t s = {
 							.type = esm_sig_keypress,
 							.params.key = {
