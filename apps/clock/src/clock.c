@@ -920,7 +920,7 @@ static void esm_heatmap_handle(esm_t *const esm, const esm_signal_t *const sig)
 				.params.bcklight = {
 					.row = ESM_RANDOM(N_ROWS),
 					.col = ESM_RANDOM(N_COLS),
-					.val = 0x200 + ESM_RANDOM(0x3FF)},
+					.val = 0x300 + ESM_RANDOM(0x3FF)},
 				.sender = NULL,
 				.receiver = backlight_esm};
 			esm_send_signal(&s);
@@ -932,7 +932,7 @@ static void esm_heatmap_handle(esm_t *const esm, const esm_signal_t *const sig)
 				.sender = esm,
 				.receiver = esm};
 			esm_timer_add(&self->timer,
-						  500UL + ESM_RANDOM(3000UL), &s);
+						  200UL + ESM_RANDOM(100UL), &s);
 		}
 	}
 	break;

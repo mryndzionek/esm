@@ -244,6 +244,9 @@ void esm_process(void)
 	{
 		uint8_t prio;
 
+#ifdef BOARD_WDG_FEED
+		BOARD_WDG_FEED();
+#endif
 		ESM_WAIT();
 
 		do

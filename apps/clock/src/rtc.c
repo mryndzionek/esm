@@ -163,10 +163,10 @@ static void esm_running_handle(esm_t *const esm, const esm_signal_t *const sig)
             ds3231_get_time(&self->time);
         }
         dst_adjust(&self->time);
-        // alarm - hardcoded for now to 04:00
+        // alarm - hardcoded for now to 05:00
         // Mon to Fri
         if ((self->time.wday < 6) &&
-            (self->time.hour == 4) &&
+            (self->time.hour == 5) &&
             (self->time.min == 0) &&
             (self->time.sec == 0))
         {

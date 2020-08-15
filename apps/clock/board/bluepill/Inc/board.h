@@ -18,6 +18,7 @@ extern I2C_HandleTypeDef hi2c1;
 extern TIM_HandleTypeDef htim2;
 extern TIM_HandleTypeDef htim3;
 extern NEC_t nec1;
+extern IWDG_HandleTypeDef hiwdg;
 extern const uint32_t board_heat_colormap[256];
 
 #define BOARD_DMA_SPI_TX(_data, _size)                                    \
@@ -69,6 +70,8 @@ extern const uint32_t board_heat_colormap[256];
             .receiver = strip1_esm}; \
         esm_send_signal(&s);         \
     }
+
+#define BOARD_WDG_FEED() HAL_IWDG_Refresh(&hiwdg)
 
 void board_nec_start(NEC_t *handle);
 void board_nec_stop(NEC_t *handle);
