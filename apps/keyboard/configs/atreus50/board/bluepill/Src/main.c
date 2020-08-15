@@ -17,7 +17,6 @@
   ******************************************************************************
   */
 /* USER CODE END Header */
-
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "usb_device.h"
@@ -75,7 +74,6 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
-  
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -95,8 +93,8 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USB_DEVICE_Init();
   MX_DMA_Init();
+  MX_USB_DEVICE_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
 
@@ -125,7 +123,8 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the RCC Oscillators according to the specified parameters
+  * in the RCC_OscInitTypeDef structure.
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -138,12 +137,12 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
@@ -197,10 +196,10 @@ static void MX_SPI2_Init(void)
 
 }
 
-/** 
+/**
   * Enable DMA controller clock
   */
-static void MX_DMA_Init(void) 
+static void MX_DMA_Init(void)
 {
 
   /* DMA controller clock enable */
@@ -232,8 +231,8 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, IDLE_LED_Pin|COL7_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, COL1_OUT_Pin|COL2_OUT_Pin|COL3_OUT_Pin|COL4_OUT_Pin 
-                          |COL5_OUT_Pin|COL6_OUT_Pin|COL8_OUT_Pin|COL10_OUT_Pin 
+  HAL_GPIO_WritePin(GPIOA, COL1_OUT_Pin|COL2_OUT_Pin|COL3_OUT_Pin|COL4_OUT_Pin
+                          |COL5_OUT_Pin|COL6_OUT_Pin|COL8_OUT_Pin|COL10_OUT_Pin
                           |COL9_OUT_Pin|COL11_OUT_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
@@ -246,11 +245,11 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : COL1_OUT_Pin COL2_OUT_Pin COL3_OUT_Pin COL4_OUT_Pin 
-                           COL5_OUT_Pin COL6_OUT_Pin COL8_OUT_Pin COL10_OUT_Pin 
+  /*Configure GPIO pins : COL1_OUT_Pin COL2_OUT_Pin COL3_OUT_Pin COL4_OUT_Pin
+                           COL5_OUT_Pin COL6_OUT_Pin COL8_OUT_Pin COL10_OUT_Pin
                            COL9_OUT_Pin COL11_OUT_Pin */
-  GPIO_InitStruct.Pin = COL1_OUT_Pin|COL2_OUT_Pin|COL3_OUT_Pin|COL4_OUT_Pin 
-                          |COL5_OUT_Pin|COL6_OUT_Pin|COL8_OUT_Pin|COL10_OUT_Pin 
+  GPIO_InitStruct.Pin = COL1_OUT_Pin|COL2_OUT_Pin|COL3_OUT_Pin|COL4_OUT_Pin
+                          |COL5_OUT_Pin|COL6_OUT_Pin|COL8_OUT_Pin|COL10_OUT_Pin
                           |COL9_OUT_Pin|COL11_OUT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -299,7 +298,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
