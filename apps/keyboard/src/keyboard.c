@@ -37,7 +37,7 @@ typedef struct
     keyboard_cfg_t const *const cfg;
 } keyboard_esm_t;
 
-static rb_t report_rb = {.data_ = (uint8_t[128]){0}, .capacity_ = 128};
+static rb_t report_rb = {.data_ = (uint8_t[32]){0}, .capacity_ = 32};
 
 extern const uint16_t keymaps[][N_ROWS][N_COLS];
 __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t *const kbd)
@@ -151,6 +151,8 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
         {
             hidkey_t *key = ESM_CONTAINER_OF(it, hidkey_t, item);
             kc = key->kc;
+
+            ESM_ASSERT(i < sizeof(kbd_report));
 
             if (IS_MOD(kc))
             {
