@@ -19,7 +19,7 @@ enum custom_keycodes
   RAISE,
   MOVEMENT,
   LCTL_ESC,
-  LSFT_ENTER,
+  RALT_ENTER,
   LGUI_RALT
 };
 
@@ -40,7 +40,7 @@ const uint16_t keymaps[N_LAYERS][N_ROWS][N_COLS] = {
   [_QWERTY] = LAYOUT(
     KC_TAB,   KC_Q,    KC_W,    KC_E,      KC_R,    KC_T,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS,
     LCTL_ESC, KC_A,    KC_S,    KC_D,      KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSFT,  KC_Z,    KC_X,    KC_C,      KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, LSFT_ENTER,
+    KC_LSFT,  KC_Z,    KC_X,    KC_C,      KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RALT_ENTER,
     KC_GRV,   KC_LCTL, KC_LALT, LGUI_RALT, LOWER,   KC_SPC, MOVEMENT, KC_RSFT, KC_BSPC, RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
   ),
 
@@ -115,14 +115,14 @@ uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t 
     }
     break;
 
-  case LSFT_ENTER:
+  case RALT_ENTER:
     if (kev == key_ev_tap)
     {
       keycode = KC_ENT;
     }
     else
     {
-      keycode = KC_LSFT;
+      keycode = KC_RALT;
     }
     break;
 
@@ -150,7 +150,7 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
   {
     e = tap_detector1_esm;
   }
-  else if (kc == LSFT_ENTER)
+  else if (kc == RALT_ENTER)
   {
     e = tap_detector2_esm;
   }

@@ -44,8 +44,8 @@ static esm_t esm_tick = {
 		.cfg = &tick_cfg,
 		.curr_state = &tick,
 		.queue = {
-				.size = 5,
-				.data = (esm_signal_t[5]){0}
+				.size = 2,
+				.data = (esm_signal_t[2]){0}
 		}
 };
 esm_t * const tick_esm
