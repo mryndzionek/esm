@@ -4,7 +4,6 @@
 #include "keycode_extra.h"
 #include "keyboard.h"
 #include "tap_detector.h"
-#include "backlight.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -169,16 +168,6 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row)
     esm_broadcast_signal(&s, esm_gr_taps);
   }
 
-  esm_signal_t s = {
-      .type = esm_sig_alarm,
-      .params.bcklight = {
-          .row = row,
-          .col = col,
-          .val = 0xFF},
-      .sender = NULL,
-      .receiver = backlight_esm};
-  esm_send_signal(&s);
-
   return e;
 }
 
@@ -196,8 +185,3 @@ static const tap_detector_cfg_t tap_detector3_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
 ESM_REGISTER(tap_detector, tap_detector3, esm_gr_taps, 2, 2);
-
-static const backlight_cfg_t backlight_cfg = {
-    .freq_hz = 20UL};
-
-ESM_REGISTER(backlight, backlight, esm_gr_none, 8, 0);
