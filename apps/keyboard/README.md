@@ -9,13 +9,12 @@ USB HID keyboard firmware
 Bootloader binary
 -----------------
 
-Bootloader mode switch is not yet integrated into the build system, but
-to compile a binary suitable for [STM32duino-bootloader](https://github.com/rogerclarkmelbourne/STM32duino-bootloader)
-just apply the below patch (the default 'atreus50' config has this enabled):
+The keyboard app binary is suitable for [STM32duino-bootloader](https://github.com/rogerclarkmelbourne/STM32duino-bootloader).
+Details of what needs to be done to a STM32CubeMX app in order to use it with the bootloader:
 
 
 ```diff
-diff --git a/apps/keyboard/board/bluepill/STM32F103C8Tx_FLASH.ld b/apps/keyboard/board/bluepill/STM32F103C8Tx_FLASH.ld
+diff --git a/STM32F103C8Tx_FLASH.ld b/STM32F103C8Tx_FLASH.ld
 index b00ae7c..3e964e8 100644
 --- a/apps/keyboard/board/bluepill/STM32F103C8Tx_FLASH.ld
 +++ b/apps/keyboard/board/bluepill/STM32F103C8Tx_FLASH.ld
@@ -28,7 +27,7 @@ index b00ae7c..3e964e8 100644
  }
  
  /* Define output sections */
-diff --git a/apps/keyboard/board/bluepill/Src/system_stm32f1xx.c b/apps/keyboard/board/bluepill/Src/system_stm32f1xx.c
+diff --git a/system_stm32f1xx.c b/system_stm32f1xx.c
 index 789b551..cf390ba 100644
 --- a/apps/keyboard/board/bluepill/Src/system_stm32f1xx.c
 +++ b/apps/keyboard/board/bluepill/Src/system_stm32f1xx.c
@@ -50,6 +49,6 @@ TODO
 ----
 
   - [x] move different keyboard configurations to separate locations
-  - [ ] investigate if it's possible to report multiple HID devices
+  - [x] investigate if it's possible to report multiple HID devices
 
 
