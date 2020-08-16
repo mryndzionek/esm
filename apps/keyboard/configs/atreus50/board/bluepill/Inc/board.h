@@ -9,7 +9,6 @@
 
 #include "config.h"
 
-extern SPI_HandleTypeDef hspi2;
 extern USBD_HandleTypeDef hUsbDeviceFS;
 extern const uint32_t board_heat_colormap[256];
 
