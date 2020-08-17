@@ -3,6 +3,7 @@
 #include "keycode.h"
 #include "keycode_extra.h"
 #include "state_handler.h"
+#include "backlight.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -113,3 +114,7 @@ const state_handler_cfg_t state_handler_cfg = {
         {.tap_tres = TAP_TRES_MS, .code = RALT_ENTER, .tap_code = KC_ENT, .press_code = KC_RALT},
         {.tap_tres = TAP_TRES_MS, .code = LGUI_RALT, .tap_code = KC_LGUI, .press_code = KC_RALT}}};
         
+static const backlight_cfg_t backlight_cfg = {
+    .freq_hz = 20UL};
+
+ESM_REGISTER(backlight, backlight, esm_gr_none, 8, 0);
