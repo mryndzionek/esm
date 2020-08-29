@@ -6,6 +6,13 @@ USB HID keyboard firmware
  - multi-layers support
  - tap detection
 
+To build this app with [real](configs/atreus50/src/keymap.c#L39) configuration run CMake with following arguments:
+
+```sh
+cmake -DCMAKE_BUILD_TYPE=Release -DESM_PLATFORM=stm32 -DESM_BOARD=bluepill \
+      -DCMAKE_TOOLCHAIN_FILE=../platform/stm32/Toolchain.cmake -DKEYBOARD_NAME=atreus50 ..
+```
+
 Bootloader binary
 -----------------
 
@@ -42,13 +49,6 @@ index 789b551..cf390ba 100644
 
 Flashing  firmware via `dfu-util`:
 ```sh
-sleep 3; sudo dfu-util -d 1eaf:0003 -a 2 -D "apps/keyboard/keyboard.bin"
+sleep 3; sudo dfu-util -d 1eaf:0003 -a 2 -R -D "apps/keyboard/keyboard.bin"
 ```
-
-TODO
-----
-
-  - [x] move different keyboard configurations to separate locations
-  - [x] investigate if it's possible to report multiple HID devices
-
 
