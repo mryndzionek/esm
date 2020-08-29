@@ -147,12 +147,10 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
         uint8_t i = 4;
 
-        while (it)
+        while (it && (i < sizeof(kbd_report)))
         {
             hidkey_t *key = ESM_CONTAINER_OF(it, hidkey_t, item);
             kc = key->kc;
-
-            ESM_ASSERT(i < sizeof(kbd_report));
 
             if (IS_MOD(kc))
             {

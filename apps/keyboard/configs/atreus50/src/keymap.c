@@ -174,14 +174,14 @@ esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
 static const tap_detector_cfg_t tap_detector1_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
-ESM_REGISTER(tap_detector, tap_detector1, esm_gr_taps, 2, 2);
+ESM_REGISTER(tap_detector, tap_detector1, esm_gr_taps, 4, 2);
 
 static const tap_detector_cfg_t tap_detector2_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
-ESM_REGISTER(tap_detector, tap_detector2, esm_gr_taps, 2, 2);
+ESM_REGISTER(tap_detector, tap_detector2, esm_gr_taps, 4, 2);
 
 static const tap_detector_cfg_t tap_detector3_cfg = {
     .tap_tres = TAP_TRES_MS,
 };
-ESM_REGISTER(tap_detector, tap_detector3, esm_gr_taps, 2, 2);
+ESM_REGISTER(tap_detector, tap_detector3, esm_gr_taps, 4, 2);
