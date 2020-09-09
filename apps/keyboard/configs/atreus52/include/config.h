@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define N_ROWS (4)
-#define N_COLS (13)
+#define N_COLS (14)
 #define N_LAYERS (4)
 
 #define BASE_LAYER (0)

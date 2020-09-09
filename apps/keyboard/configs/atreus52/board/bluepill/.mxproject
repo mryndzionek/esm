@@ -7,8 +7,8 @@ HeaderPath=/home/molcos/STM32Cube/Repository/STM32Cube_FW_F1_V1.8.0/Drivers/STM3
 CDefines=USE_HAL_DRIVER;STM32F103xB;USE_HAL_DRIVER;USE_HAL_DRIVER;
 
 [PreviousGenFiles]
-HeaderPath=/home/molcos/sources/esm/apps/keyboard/configs/atreus50/board/bluepill/Inc
+HeaderPath=/home/molcos/sources/esm/apps/keyboard/configs/atreus52/board/bluepill/Inc
 HeaderFiles=usb_device.h;usbd_conf.h;usbd_desc.h;stm32f1xx_it.h;stm32f1xx_hal_conf.h;main.h;
-SourcePath=/home/molcos/sources/esm/apps/keyboard/configs/atreus50/board/bluepill/Src
+SourcePath=/home/molcos/sources/esm/apps/keyboard/configs/atreus52/board/bluepill/Src
 SourceFiles=usb_device.c;usbd_conf.c;usbd_desc.c;stm32f1xx_it.c;stm32f1xx_hal_msp.c;main.c;
 
