@@ -19,7 +19,7 @@ enum custom_keycodes
   RAISE,
   MOVEMENT,
   LCTL_ESC,
-  RALT_ENTER,
+  RALT_LEFT,
   LGUI_RALT
 };
 
@@ -38,10 +38,10 @@ enum custom_keycodes
 
 const uint16_t keymaps[N_LAYERS][N_ROWS][N_COLS] = {
   [_QWERTY] = LAYOUT(
-    KC_TAB,   KC_Q,    KC_W,    KC_E,      KC_R,    KC_T,                      KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_MINS,
-    LCTL_ESC, KC_A,    KC_S,    KC_D,      KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-    KC_LSFT,  KC_Z,    KC_X,    KC_C,      KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, RALT_ENTER,
-    KC_GRV,   KC_LCTL, KC_LALT, LGUI_RALT, LOWER,   KC_SPC, MOVEMENT, KC_RSFT, KC_BSPC, RAISE,   KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+    KC_TAB,   KC_Q,    KC_W,    KC_E,      KC_R,    KC_T,                      KC_Y,    KC_U,    KC_I,      KC_O,    KC_P,    KC_MINS,
+    LCTL_ESC, KC_A,    KC_S,    KC_D,      KC_F,    KC_G,                      KC_H,    KC_J,    KC_K,      KC_L,    KC_SCLN, KC_QUOT,
+    KC_LSFT,  KC_Z,    KC_X,    KC_C,      KC_V,    KC_B,                      KC_N,    KC_M,    KC_COMM,   KC_DOT,  KC_SLSH, KC_ENTER,
+    KC_GRV,   KC_LCTL, KC_LALT, LGUI_RALT, LOWER,   KC_SPC, MOVEMENT, KC_RSFT, KC_BSPC, RAISE,   RALT_LEFT, KC_DOWN, KC_UP,   KC_RGHT
   ),
 
   [_LOWER] = LAYOUT(
@@ -111,7 +111,7 @@ uint16_t process_key_user(uint16_t keycode, mat_ev_type_e ev, keyboard_state_t *
 const state_handler_cfg_t state_handler_cfg = {
     .cfgs = {
         {.tap_tres = TAP_TRES_MS, .code = LCTL_ESC, .tap_code = KC_ESC, .press_code = KC_LCTL},
-        {.tap_tres = TAP_TRES_MS, .code = RALT_ENTER, .tap_code = KC_ENT, .press_code = KC_RALT},
+        {.tap_tres = TAP_TRES_MS, .code = RALT_LEFT, .tap_code = KC_LEFT, .press_code = KC_RALT},
         {.tap_tres = TAP_TRES_MS, .code = LGUI_RALT, .tap_code = KC_LGUI, .press_code = KC_RALT}}};
         
 static const backlight_cfg_t backlight_cfg = {
