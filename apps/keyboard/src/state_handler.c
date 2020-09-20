@@ -68,6 +68,7 @@ static int is_tap(const state_handler_cfg_t *cfg, uint16_t kc)
 {
 	int ret = -1;
 
+#if NUM_TAPS > 0
 	for (uint8_t i = 0; i < NUM_TAPS; i++)
 	{
 		if (cfg->cfgs[i].code == kc)
@@ -76,6 +77,7 @@ static int is_tap(const state_handler_cfg_t *cfg, uint16_t kc)
 			break;
 		}
 	}
+#endif
 	return ret;
 }
 
@@ -164,17 +166,19 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 		}
 		else
 		{
+#if NUM_TAPS > 0
 			for (uint8_t j = 0; j < NUM_TAPS; j++)
 			{
-				tap_state_t s = self->tap_s[j];
-				if (s.is_active)
+				tap_state_t *s = &self->tap_s[j];
+				if (s->is_active)
 				{
-					esm_timer_rm(&s.timer);
-					s.is_active = false;
+					esm_timer_rm(&s->timer);
+					s->is_active = false;
 					send_key(self->cfg->cfgs[j].press_code,
-							 &keyitems[s.col][s.row], mat_ev_down);
+							 &keyitems[s->col][s->row], mat_ev_down);
 				}
 			}
+#endif
 			keyitem_t *it = &keyitems[sig->params.mat.col][sig->params.mat.row];
 			send_key(kc, it, sig->params.mat.ev);
 		}

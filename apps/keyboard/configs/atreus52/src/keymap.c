@@ -2,8 +2,7 @@
 #include "config.h"
 #include "keycode.h"
 #include "keycode_extra.h"
-#include "keyboard.h"
-#include "tap_detector.h"
+#include "state_handler.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -66,12 +65,12 @@ const uint16_t keymaps[N_LAYERS][N_ROWS][N_COLS] = {
 
 };
 
-uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t *const kbd)
+uint16_t process_key_user(uint16_t keycode, mat_ev_type_e ev, keyboard_state_t *const kbd)
 {
   switch (keycode)
   {
   case LOWER:
-    if (kev != key_ev_up)
+    if (ev != mat_ev_up)
     {
       kbd->layer = _LOWER;
     }
@@ -82,7 +81,7 @@ uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t 
     break;
 
   case RAISE:
-    if (kev != key_ev_up)
+    if (ev != mat_ev_up)
     {
       kbd->layer = _RAISE;
     }
@@ -93,7 +92,7 @@ uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t 
     break;
 
   case MOVEMENT:
-    if (kev != key_ev_up)
+    if (ev != mat_ev_up)
     {
       kbd->layer = _MOVEMENT;
     }
@@ -102,70 +101,12 @@ uint16_t process_key_user(uint16_t keycode, key_ev_type_e kev, keyboard_state_t 
       kbd->layer = _QWERTY;
     }
     break;
-
-  case LCTL_ESC:
-    if (kev == key_ev_tap)
-    {
-      keycode = KC_ESC;
-    }
-    else
-    {
-      keycode = KC_LCTL;
-    }
-    break;
-
-  case LGUI_RALT:
-    if (kev == key_ev_tap)
-    {
-      keycode = KC_LGUI;
-    }
-    else
-    {
-      keycode = KC_RALT;
-    }
-    break;
   }
 
   return keycode;
 }
 
-esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
-{
-  uint16_t kc = keyboard_get_kc(col, row, keyboard_state);
-  esm_t *e = keyboard_esm;
-
-  if (kc == LCTL_ESC)
-  {
-    e = tap_detector1_esm;
-  }
-  else if (kc == LGUI_RALT)
-  {
-    e = tap_detector3_esm;
-  }
-  else if(kev == key_ev_down)
-  {
-    esm_signal_t s = {
-        .type = esm_sig_tap,
-        .sender = NULL,
-        .receiver = NULL};
-
-    esm_broadcast_signal(&s, esm_gr_taps);
-  }
-
-  return e;
-}
-
-static const tap_detector_cfg_t tap_detector1_cfg = {
-    .tap_tres = TAP_TRES_MS,
-};
-ESM_REGISTER(tap_detector, tap_detector1, esm_gr_taps, 4, 2);
-
-static const tap_detector_cfg_t tap_detector2_cfg = {
-    .tap_tres = TAP_TRES_MS,
-};
-ESM_REGISTER(tap_detector, tap_detector2, esm_gr_taps, 4, 2);
-
-static const tap_detector_cfg_t tap_detector3_cfg = {
-    .tap_tres = TAP_TRES_MS,
-};
-ESM_REGISTER(tap_detector, tap_detector3, esm_gr_taps, 4, 2);
+const state_handler_cfg_t state_handler_cfg = {
+    .cfgs = {
+        {.tap_tres = TAP_TRES_MS, .code = LCTL_ESC, .tap_code = KC_ESC, .press_code = KC_LCTL},
+        {.tap_tres = TAP_TRES_MS, .code = LGUI_RALT, .tap_code = KC_LGUI, .press_code = KC_RALT}}};

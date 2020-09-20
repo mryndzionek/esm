@@ -2,8 +2,7 @@
 #include "config.h"
 #include "keycode.h"
 #include "keycode_extra.h"
-#include "keyboard.h"
-#include "tap_detector.h"
+#include "state_handler.h"
 #include "backlight.h"
 
 #include <stdint.h>
@@ -30,28 +29,10 @@ const uint16_t keymaps[N_LAYERS][N_ROWS][N_COLS] = {
   ),
 };
 
-esm_t *keyboard_get_kev_dest(uint8_t col, uint8_t row, key_ev_type_e kev)
-{
-  (void)col;
-  (void)row;
-  (void)kev;
-  
-  esm_t *e = keyboard_esm;
-
-  esm_signal_t s = {
-      .type = esm_sig_alarm,
-      .params.bcklight = {
-          .row = row,
-          .col = col,
-          .val = 0xFF},
-      .sender = NULL,
-      .receiver = backlight_esm};
-  esm_send_signal(&s);
-
-  return e;
-}
-
 static const backlight_cfg_t backlight_cfg = {
     .freq_hz = 200UL};
 
 ESM_REGISTER(backlight, backlight, esm_gr_none, 4, 0);
+
+const state_handler_cfg_t state_handler_cfg = {
+    .cfgs = {}};

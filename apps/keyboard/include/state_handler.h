@@ -4,6 +4,10 @@
 #include "esm/esm.h"
 #include "esm/esm_timer.h"
 
+#ifndef NUM_TAPS
+#define NUM_TAPS (0)
+#endif
+
 typedef struct
 {
     int layer;
