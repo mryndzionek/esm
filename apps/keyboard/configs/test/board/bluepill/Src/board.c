@@ -126,30 +126,30 @@ ESM_REGISTER(debouncer, deb_enc_chan_b, esm_gr_none, 2, 1);
 static void enc_cw_action(void)
 {
 	esm_signal_t s = {
-		.type = esm_sig_keypress,
-		.params.key = {
+		.type = esm_sig_matrix,
+		.params.mat = {
 			.row = 0,
 			.col = 0,
-			.kev = key_ev_down},
+			.ev = mat_ev_down},
 		.sender = NULL,
 		.receiver = keyboard_esm};
 	esm_send_signal(&s);
-	s.params.key.kev = key_ev_up;
+	s.params.mat.ev = mat_ev_up;
 	esm_send_signal(&s);
 }
 
 static void enc_ccw_action(void)
 {
 	esm_signal_t s = {
-		.type = esm_sig_keypress,
-		.params.key = {
+		.type = esm_sig_matrix,
+		.params.mat = {
 			.row = 1,
 			.col = 0,
-			.kev = key_ev_down},
+			.ev = mat_ev_down},
 		.sender = NULL,
 		.receiver = keyboard_esm};
 	esm_send_signal(&s);
-	s.params.key.kev = key_ev_up;
+	s.params.mat.ev = mat_ev_up;
 	esm_send_signal(&s);
 }
 
