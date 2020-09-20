@@ -2,7 +2,7 @@
 #include "config.h"
 #include "keycode.h"
 #include "keycode_extra.h"
-#include "tap_detector.h"
+#include "state_handler.h"
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -107,9 +107,9 @@ uint16_t process_key_user(uint16_t keycode, mat_ev_type_e ev, keyboard_state_t *
   return keycode;
 }
 
-static const tap_detector_cfg_t tap_detector_cfg = {
+const state_handler_cfg_t state_handler_cfg = {
     .cfgs = {
         {.tap_tres = TAP_TRES_MS, .code = LCTL_ESC, .tap_code = KC_ESC, .press_code = KC_LCTL},
         {.tap_tres = TAP_TRES_MS, .code = RALT_ENTER, .tap_code = KC_ENT, .press_code = KC_RALT},
         {.tap_tres = TAP_TRES_MS, .code = LGUI_RALT, .tap_code = KC_LGUI, .press_code = KC_RALT}}};
-ESM_REGISTER(tap_detector, tap_detector, esm_gr_none, 4, 2);
+        

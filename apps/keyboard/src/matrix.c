@@ -77,7 +77,7 @@ static void esm_scanning_handle(esm_t *const esm, const esm_signal_t *const sig)
 								.col = j,
 								.ev = mat_ev_down},
 							.sender = NULL,
-							.receiver = tap_detector_esm};
+							.receiver = state_handler_esm};
 						esm_send_signal(&s);
 					}
 				}
@@ -95,7 +95,7 @@ static void esm_scanning_handle(esm_t *const esm, const esm_signal_t *const sig)
 								.col = j,
 								.ev = mat_ev_up},
 							.sender = NULL,
-							.receiver = tap_detector_esm};
+							.receiver = state_handler_esm};
 						esm_send_signal(&s);
 					}
 				}

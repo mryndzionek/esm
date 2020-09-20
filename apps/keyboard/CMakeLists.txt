@@ -23,6 +23,7 @@ target_sources(${APP_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/keyboard.c
         ${CMAKE_CURRENT_SOURCE_DIR}/src/matrix.c
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/state_handler.c
         ${CMAKE_CURRENT_SOURCE_DIR}/configs/${KEYBOARD_NAME}/src/keymap.c
 )
 

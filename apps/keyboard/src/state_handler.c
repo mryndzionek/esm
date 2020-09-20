@@ -1,8 +1,24 @@
-#include "tap_detector.h"
+#include "state_handler.h"
 #include "config.h"
 #include "keycode.h"
 
 ESM_THIS_FILE;
+
+typedef struct
+{
+    esm_timer_t timer;
+    uint8_t col;
+    uint8_t row;
+    bool is_active;
+} tap_state_t;
+
+typedef struct
+{
+    esm_t esm;
+    tap_state_t tap_s[NUM_TAPS];
+    keyboard_state_t kbd_s;
+    state_handler_cfg_t const *const cfg;
+} state_handler_esm_t;
 
 ESM_DEFINE_STATE(active);
 
@@ -18,7 +34,7 @@ __attribute__((weak)) uint16_t process_key_user(uint16_t keycode, mat_ev_type_e 
 	return keycode;
 }
 
-static uint16_t keyboard_get_kc(tap_detector_esm_t *self, uint8_t col, uint8_t row, mat_ev_type_e ev)
+static uint16_t keyboard_get_kc(state_handler_esm_t *self, uint8_t col, uint8_t row, mat_ev_type_e ev)
 {
 	int sl;
 	uint16_t kc;
@@ -48,7 +64,7 @@ static uint16_t keyboard_get_kc(tap_detector_esm_t *self, uint8_t col, uint8_t r
 	return kc;
 }
 
-static int is_tap(const tap_detector_cfg_t *cfg, uint16_t kc)
+static int is_tap(const state_handler_cfg_t *cfg, uint16_t kc)
 {
 	int ret = -1;
 
@@ -79,7 +95,7 @@ static void send_key(uint16_t kc, keyitem_t *it, mat_ev_type_e ev)
 
 static void schedule(esm_t *const esm, uint8_t i, uint16_t kc, uint8_t col, uint8_t row)
 {
-	tap_detector_esm_t *self = ESM_CONTAINER_OF(esm, tap_detector_esm_t, esm);
+	state_handler_esm_t *self = ESM_CONTAINER_OF(esm, state_handler_esm_t, esm);
 	keyitems[col][row].kc = kc;
 	self->tap_s[i].col = col;
 	self->tap_s[i].row = row;
@@ -107,7 +123,7 @@ static void esm_active_exit(esm_t *const esm)
 
 static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 {
-	tap_detector_esm_t *self = ESM_CONTAINER_OF(esm, tap_detector_esm_t, esm);
+	state_handler_esm_t *self = ESM_CONTAINER_OF(esm, state_handler_esm_t, esm);
 
 	switch (sig->type)
 	{
@@ -148,14 +164,15 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 		}
 		else
 		{
-			for (uint8_t i = 0; i < NUM_TAPS; i++)
+			for (uint8_t j = 0; j < NUM_TAPS; j++)
 			{
-				if (self->tap_s[i].is_active)
+				tap_state_t s = self->tap_s[j];
+				if (s.is_active)
 				{
-					esm_timer_rm(&self->tap_s[i].timer);
-					self->tap_s[i].is_active = false;
-					send_key(self->cfg->cfgs[i].press_code,
-							 &keyitems[self->tap_s[i].col][self->tap_s[i].row], mat_ev_down);
+					esm_timer_rm(&s.timer);
+					s.is_active = false;
+					send_key(self->cfg->cfgs[j].press_code,
+							 &keyitems[s.col][s.row], mat_ev_down);
 				}
 			}
 			keyitem_t *it = &keyitems[sig->params.mat.col][sig->params.mat.row];
@@ -170,10 +187,13 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 	}
 }
 
-void esm_tap_detector_init(esm_t *const esm)
+void esm_state_handler_init(esm_t *const esm)
 {
-	tap_detector_esm_t *self = ESM_CONTAINER_OF(esm, tap_detector_esm_t, esm);
+	state_handler_esm_t *self = ESM_CONTAINER_OF(esm, state_handler_esm_t, esm);
 
 	self->kbd_s.layer = BASE_LAYER;
 	ESM_TRANSITION(active);
 }
+
+extern const state_handler_cfg_t state_handler_cfg;
+ESM_REGISTER(state_handler, state_handler, esm_gr_none, 4, 2);
