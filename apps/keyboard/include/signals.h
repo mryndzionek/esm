@@ -2,11 +2,23 @@
 #define INCLUDE_SIGNALS_H_
 
 #include "board.h"
-#include "keyboard.h"
+
+typedef enum
+{
+    mat_ev_down = 0,
+    mat_ev_up
+} mat_ev_type_e;
+
+typedef struct
+{
+	esm_list_item_t item;
+	uint16_t kc;
+} keyitem_t;
 
 #define ESM_SIGNALS        \
       ESM_SIGNAL(tmout)    \
-      ESM_SIGNAL(keypress) \
+      ESM_SIGNAL(matrix)   \
+      ESM_SIGNAL(key)      \
       ESM_SIGNAL(usb_tx_end)
 
 #define ESM_IDS             \
@@ -18,8 +30,19 @@
       {                                  \
             uint8_t row;                 \
             uint8_t col;                 \
-            key_ev_type_e kev;           \
+            mat_ev_type_e ev;            \
+      } mat;                             \
+      struct                             \
+      {                                  \
+            keyitem_t *it;               \
+            mat_ev_type_e ev;            \
       } key;                             \
+      struct                             \
+      {                                  \
+            uint8_t i;                   \
+            keyitem_t *it;               \
+            mat_ev_type_e ev;            \
+      } tap;                             \
       struct                             \
       {                                  \
             BOARD_DEBOUNCER_STATE state; \
