@@ -108,7 +108,6 @@ static void schedule(esm_t *const esm, uint8_t i, uint16_t kc, uint8_t col, uint
 		.type = esm_sig_tmout,
 		.params.tap = {
 			.i = i,
-			.it = &keyitems[col][row],
 			.ev = mat_ev_down},
 		.sender = esm,
 		.receiver = esm};
@@ -134,7 +133,8 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 	case esm_sig_tmout:
 	{
 		self->tap_s[sig->params.tap.i].is_active = false;
-		send_key(sig->params.tap.it->kc, sig->params.tap.it, mat_ev_down);
+		keyitem_t *it = &keyitems[self->tap_s[sig->params.tap.i].col][self->tap_s[sig->params.tap.i].row];
+		send_key(it->kc, it, mat_ev_down);
 	}
 	break;
 

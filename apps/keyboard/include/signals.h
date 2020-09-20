@@ -41,7 +41,6 @@ typedef struct
       struct                             \
       {                                  \
             uint8_t i;                   \
-            keyitem_t *it;               \
             mat_ev_type_e ev;            \
       } tap;                             \
       struct                             \
