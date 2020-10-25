@@ -11,6 +11,7 @@
 
 #define KEYBOARD_REPORT_SIZE (8)
 #define CONSUMER_REPORT_SIZE (1)
+#define POINTER_REPORT_SIZE  (3)
 
 ESM_THIS_FILE;
 
@@ -77,6 +78,7 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
         uint8_t kbd_report[KEYBOARD_REPORT_SIZE + 2] = {KEYBOARD_REPORT_SIZE + 1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
         uint8_t consumer_report[CONSUMER_REPORT_SIZE + 2] = {CONSUMER_REPORT_SIZE + 1, 2, 0};
+        // uint8_t pointer_report[POINTER_REPORT_SIZE + 2] = {POINTER_REPORT_SIZE + 1, 3, 0, 0, 0};
 
         esm_list_item_t *itm = &sig->params.key.it->item;
 
