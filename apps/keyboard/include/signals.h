@@ -15,10 +15,11 @@ typedef struct
       uint16_t kc;
 } keyitem_t;
 
-#define ESM_SIGNALS      \
-      ESM_SIGNAL(tmout)  \
-      ESM_SIGNAL(matrix) \
-      ESM_SIGNAL(key)    \
+#define ESM_SIGNALS       \
+      ESM_SIGNAL(tmout)   \
+      ESM_SIGNAL(matrix)  \
+      ESM_SIGNAL(key)     \
+      ESM_SIGNAL(pointer) \
       ESM_SIGNAL(usb_tx_end)
 
 #define ESM_IDS             \
@@ -38,6 +39,12 @@ typedef struct
             keyitem_t *it;               \
             mat_ev_type_e ev;            \
       } key;                             \
+      struct                             \
+      {                                  \
+            uint8_t btns;                \
+            int8_t x;                   \
+            int8_t y;                   \
+      } pointer;                         \
       struct                             \
       {                                  \
             uint8_t i;                   \

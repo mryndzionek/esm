@@ -78,7 +78,6 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
 
         uint8_t kbd_report[KEYBOARD_REPORT_SIZE + 2] = {KEYBOARD_REPORT_SIZE + 1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
         uint8_t consumer_report[CONSUMER_REPORT_SIZE + 2] = {CONSUMER_REPORT_SIZE + 1, 2, 0};
-        // uint8_t pointer_report[POINTER_REPORT_SIZE + 2] = {POINTER_REPORT_SIZE + 1, 3, 0, 0, 0};
 
         esm_list_item_t *itm = &sig->params.key.it->item;
 
@@ -150,6 +149,27 @@ static void esm_active_handle(esm_t *const esm, const esm_signal_t *const sig)
         {
             (void)rb_write(&report_rb, kbd_report, sizeof(kbd_report));
             (void)rb_write(&report_rb, consumer_report, sizeof(consumer_report));
+
+            if (!self->busy)
+            {
+                send_report(self);
+            }
+        }
+    }
+    break;
+
+    case esm_sig_pointer:
+    {
+        uint8_t i = 2;
+        uint8_t pointer_report[POINTER_REPORT_SIZE + 2] = {POINTER_REPORT_SIZE + 1, 3, 0, 0, 0};
+
+        pointer_report[i++] = sig->params.pointer.btns;
+        pointer_report[i++] = sig->params.pointer.x;
+        pointer_report[i++] = sig->params.pointer.y;
+
+        if ((sizeof(pointer_report)) <= (report_rb.capacity_ - report_rb.size_))
+        {
+            (void)rb_write(&report_rb, pointer_report, sizeof(pointer_report));
 
             if (!self->busy)
             {
