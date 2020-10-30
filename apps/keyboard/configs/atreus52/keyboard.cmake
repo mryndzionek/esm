@@ -1,6 +1,5 @@
 target_compile_definitions(${APP_NAME}
     PUBLIC
-        -DSK6812_LEDS_NUM=24
         -DNUM_TAPS=2
 )
 
