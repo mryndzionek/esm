@@ -49,7 +49,7 @@ TIM_HandleTypeDef htim3;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
-
+uint16_t joystick_xy[2];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -101,7 +101,8 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-
+  HAL_TIM_Base_Start(&htim3);
+  HAL_ADC_Start_DMA(&hadc1, (uint32_t*)joystick_xy, 2);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -204,6 +205,7 @@ static void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
+  sConfig.Channel = ADC_CHANNEL_7;
   sConfig.Rank = ADC_REGULAR_RANK_2;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
@@ -336,7 +338,31 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
+{
+  if (hadc->Instance == hadc1.Instance)
+  {
+    int8_t x = (int16_t)(joystick_xy[0] >> 4) - 127;
+    int8_t y = (int16_t)(joystick_xy[1] >> 4) - 127;
 
+    x /= 10;
+    y /= 10;
+
+    if ((x != 0) || (y != 0))
+    {
+      esm_signal_t s = {
+          .type = esm_sig_pointer,
+          .params.pointer = {
+              .btns = 0,
+              .x = x,
+              .y = y},
+          .sender = NULL,
+          .receiver = keyboard_esm};
+
+      esm_send_signal(&s);
+    }
+  }
+}
 /* USER CODE END 4 */
 
 /**
