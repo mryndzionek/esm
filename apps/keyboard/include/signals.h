@@ -42,8 +42,8 @@ typedef struct
       struct                             \
       {                                  \
             uint8_t btns;                \
-            int8_t x;                   \
-            int8_t y;                   \
+            int8_t x;                    \
+            int8_t y;                    \
       } pointer;                         \
       struct                             \
       {                                  \
