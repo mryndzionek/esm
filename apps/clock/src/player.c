@@ -5,6 +5,8 @@
 #include "keycodes.h"
 #include "board.h"
 
+#define OFF_TIMEOUT_MS (60 * 1000UL)
+
 ESM_THIS_FILE;
 
 typedef struct
@@ -26,6 +28,7 @@ typedef struct
     track_t curr_track;
     uint8_t i;
     esm_timer_t timer;
+    esm_timer_t off_timer;
     player_cfg_t const *const cfg;
 } player_esm_t;
 
@@ -397,6 +400,12 @@ static void esm_off_exit(esm_t *const esm)
 {
     player_esm_t *self = ESM_CONTAINER_OF(esm, player_esm_t, esm);
     self->i = ESM_RANDOM(NUM_TONES);
+    esm_signal_t sig = {
+        .type = esm_sig_play,
+        .sender = esm,
+        .receiver = esm};
+    esm_timer_add(&self->off_timer,
+                  OFF_TIMEOUT_MS, &sig);
 }
 
 static void esm_off_handle(esm_t *const esm, const esm_signal_t *const sig)
@@ -449,6 +458,7 @@ static void esm_playing_handle(esm_t *const esm, const esm_signal_t *const sig)
     break;
 
     case esm_sig_play:
+        esm_timer_rm(&self->off_timer);
         ESM_TRANSITION(off);
         break;
 
