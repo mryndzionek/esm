@@ -37,12 +37,12 @@ static void ds3231_init(void)
     // // set time - harcoded for now
     // xferbuf[0] = DS3231_TIME_CAL_REG;
     // xferbuf[1] = dectobcd(0);
-    // xferbuf[2] = dectobcd(8);
-    // xferbuf[3] = dectobcd(20);
-    // xferbuf[4] = dectobcd(7);
-    // xferbuf[5] = dectobcd(27);
-    // xferbuf[6] = dectobcd(10) + 0x80;
-    // xferbuf[7] = dectobcd(19);
+    // xferbuf[2] = dectobcd(11);
+    // xferbuf[3] = dectobcd(22);
+    // xferbuf[4] = dectobcd(6);
+    // xferbuf[5] = dectobcd(14);
+    // xferbuf[6] = dectobcd(11) + 0x80;
+    // xferbuf[7] = dectobcd(20);
 
     // BOARD_I2C_TX(DS3231_I2C_ADDRESS, xferbuf, 8);
 }
@@ -94,14 +94,22 @@ static void update_time(ds3231_time_t *time)
 
 static void dst_adjust(ds3231_time_t *time)
 {
+    static bool sm = false;
+
     // summer -> winter ?
     if ((time->mon == 10) && (time->mday + 7 > 31) 
     && (time->wday == 7) && (time->hour == 3)
     && (time->min == 0) && (time->sec == 0))
     {
-        time->hour--;
-        ds3231_set_time(time);
-    } else // winter -> summer?
+        if(sm == false)
+        {
+            time->hour--;
+            ds3231_set_time(time);
+            sm = true;
+        } else {
+            sm = false;
+        }
+    } else // winter -> summer ?
     if ((time->mon == 3) && (time->mday + 7 > 31) 
     && (time->wday == 7) && (time->hour == 2)
     && (time->min == 0) && (time->sec == 0))
@@ -163,10 +171,10 @@ static void esm_running_handle(esm_t *const esm, const esm_signal_t *const sig)
             ds3231_get_time(&self->time);
         }
         dst_adjust(&self->time);
-        // alarm - hardcoded for now to 05:00
+        // alarm - hardcoded for now to 04:00 (04:30 to full power and sound)
         // Mon to Fri
         if ((self->time.wday < 6) &&
-            (self->time.hour == 5) &&
+            (self->time.hour == 4) &&
             (self->time.min == 0) &&
             (self->time.sec == 0))
         {
