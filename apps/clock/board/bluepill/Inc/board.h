@@ -60,6 +60,18 @@ extern const uint32_t board_heat_colormap[256];
         HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3); \
     } while (0)
 
+#define BOARD_PLAY(_buf, _len)                                                \
+    do                                                                        \
+    {                                                                         \
+        HAL_TIM_PWM_Start_DMA(&htim3, TIM_CHANNEL_3, (uint32_t *)_buf, _len); \
+    } while (0)
+
+#define BOARD_PAUSE()                                \
+    do                                               \
+    {                                                \
+        HAL_TIM_PWM_Stop_DMA(&htim3, TIM_CHANNEL_3); \
+    } while (0)
+
 #define BOARD_DEBOUNCER_STATE int
 
 #define board_backlight_show()       \

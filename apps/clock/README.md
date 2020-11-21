@@ -6,12 +6,13 @@ Features
 
  - display consisting of 1 meter SK6812 LED strip (control code based on [WS2812B_STM32_Libmaple](https://github.com/rogerclarkmelbourne/WS2812B_STM32_Libmaple))
  - linear clock
- - alarm with RTTTL Nokia ringtones (main 'play' function taken from [here](https://github.com/granadaxronos/120-SONG_NOKIA_RTTTL_RINGTONE_PLAYER_FOR_ARDUINO_UNO))
+ - alarm tunes and chimes based on [μMML](https://github.com/protodomemusic/mmml) 
  - IR remote control (NEC decoder inspired by [here](https://github.com/albertyeh/STM32_NEC_Decode))
  - sunrise simulator
  - white light lamp
  - fire effect (borrowed from [WS2812FX](https://github.com/kitesurfer1404/WS2812FX))
  - plasma effect (parts borrowed from [FastLED](https://github.com/FastLED/FastLED))
+ - there are also sources for alarm with RTTTL Nokia ringtones (main 'play' function taken from [here](https://github.com/granadaxronos/120-SONG_NOKIA_RTTTL_RINGTONE_PLAYER_FOR_ARDUINO_UNO))
 
 Real-world example demonstrating superiority of communicating state machine approach to embedded system design.
 Without an preemptive OS it's possible to achieve a high degree of concurrency while maintaining footprint only slightly

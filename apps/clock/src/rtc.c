@@ -22,7 +22,7 @@ typedef struct
 ESM_DEFINE_STATE(sync);
 ESM_DEFINE_STATE(running);
 
-static void ds3231_init(void)
+void ds3231_init(void)
 {
     uint8_t xferbuf[8] = {DS3231_CONTROL_REG};
 
@@ -166,9 +166,47 @@ static void esm_running_handle(esm_t *const esm, const esm_signal_t *const sig)
     {
     case esm_sig_alarm:
         update_time(&self->time);
-        if ((self->time.sec == 0) && (self->time.min == 0) && (self->time.hour == 0))
+        if ((self->time.sec == 0) && (self->time.min == 0) &&
+            (self->time.hour == 0))
         {
             ds3231_get_time(&self->time);
+        }
+        if ((self->time.hour >= 8) && (self->time.hour <= 20))
+        {
+            if ((self->time.min == 0) && (self->time.sec == 0))
+            {
+                esm_signal_t s = {
+                    .type = esm_sig_play,
+                    // play hour chime
+                    .params.play = {.track = HOUR_CHIME_NUM},
+                    .sender = NULL,
+                    .receiver = player1_esm};
+                esm_send_signal(&s);
+            }
+            else if ((self->time.min == 30) && (self->time.sec == 0))
+            {
+                esm_signal_t s = {
+                    .type = esm_sig_play,
+                    // play half hour chime
+                    .params.play = {.track = HALF_HOUR_CHIME_NUM},
+                    .sender = NULL,
+                    .receiver = player1_esm};
+                esm_send_signal(&s);
+            }
+            // do additional Pomodoro chimes to 5pm
+            if (self->time.hour <= 17)
+            {
+                if (((self->time.min == 55) || (self->time.min == 25)) && (self->time.sec == 0))
+                {
+                    esm_signal_t s = {
+                        .type = esm_sig_play,
+                        // play half hour chime
+                        .params.play = {.track = HALF_HOUR_CHIME_NUM},
+                        .sender = NULL,
+                        .receiver = player1_esm};
+                    esm_send_signal(&s);
+                }
+            }
         }
         dst_adjust(&self->time);
         // alarm - hardcoded for now to 04:00 (04:30 to full power and sound)

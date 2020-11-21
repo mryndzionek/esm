@@ -4,6 +4,11 @@
 #include "board.h"
 #include "ds3231.h"
 
+// keep those in sync with the `Tracks` array in `mmml-data.h`
+#define NUM_ALARMS (4)
+#define HOUR_CHIME_NUM (4)
+#define HALF_HOUR_CHIME_NUM (5)
+
 #define ESM_SIGNALS      \
       ESM_SIGNAL(tmout)  \
       ESM_SIGNAL(reset)  \
@@ -36,6 +41,10 @@
             uint8_t row;                 \
             uint8_t col;                 \
             uint16_t val;                \
-      } bcklight;   
+      } bcklight;                        \
+      struct                             \
+      {                                  \
+            uint8_t track;               \
+      } play;  
 
 #endif /* INCLUDE_SIGNALS_H_ */
