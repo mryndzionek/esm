@@ -505,6 +505,7 @@ static void esm_time_handle(esm_t *const esm, const esm_signal_t *const sig)
 		render_time(sig->params.time);
 		board_backlight_show();
 	}
+	/* falls through */
 
 	default:
 		ESM_TRANSITION(unhandled);

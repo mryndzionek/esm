@@ -241,9 +241,9 @@ Standard CMake routine with some configuration options.
 Currently most extensively tested with:
 
 ```sh
-cmake version 3.10.2
-arm-none-eabi-gcc (15:6.3.1+svn253039-1build1) 6.3.1 20170620
-libnewlib-arm-none-eabi 2.4.0.20160527-3ubuntu0.1
+cmake version 3.16.3
+arm-none-eabi-gcc (15:9-2019-q4-0ubuntu1) 9.2.1 20191025
+libnewlib-arm-none-eabi 3.3.0-0ubuntu1
 ```
 
 Project setup for native Linux:
