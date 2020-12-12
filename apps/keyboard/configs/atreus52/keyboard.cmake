@@ -1,7 +1,7 @@
 target_compile_definitions(${APP_NAME}
     PUBLIC
         -DSK6812_LEDS_NUM=24
-        -DNUM_TAPS=2
+        -DNUM_TAPS=1
 )
 
 target_include_directories(${APP_NAME}
