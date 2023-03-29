@@ -3,6 +3,9 @@ Efficient State Machine framework
 
 ![status](https://github.com/mryndzionek/esm/workflows/build/badge.svg)
 
+:warning: This is not a production ready project. The 'Error Kernel' in file `esm.c:esm_process()`
+needs (preferably formal) verification.
+
 Introduction
 ------------
 Good system design is often about knowing what to avoid.
