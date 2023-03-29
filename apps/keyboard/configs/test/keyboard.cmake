@@ -9,6 +9,7 @@ include("${CMAKE_SOURCE_DIR}/modules/encoder.cmake")
 target_compile_definitions(${APP_NAME}
     PUBLIC
         -DSK6812_LEDS_NUM=24
+        -DNUM_TAPS=1
 )
 
 target_include_directories(${APP_NAME}
