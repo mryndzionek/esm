@@ -8,11 +8,75 @@ needs (preferably formal) verification.
 
 Introduction
 ------------
+
 Good system design is often about knowing what to avoid.
-Unrestricted use of traditional techniques for writing concurrent software, like preemptive threading, almost always
+Unrestricted use of traditional techniques for writing concurrent software, like preemptive threading[^1], almost always
 results in systems that are unpredictable and unreliable. Degradation of those two aspects
 is specially problematic in embedded systems where predictability and reliability are even
 more important than performance and/or expressiveness.
+
+Great deal of embedded systems fall into the category of _reactive systems_, which in short can be described as systems
+which "react continuously at the speed of the environment"[^2], as opposed to transformational
+systems, so systems that "transform a body of input data into a body of output data"[^2].
+
+As David Harel notices[^3]:
+
+> A typical reactive system is not particularly data intensive or calculation-intensive. So what is/was
+> the problem with such systems? In a nutshell, it is the need to provide a clear yet precise description of what
+> the system does, or should do. Specifying its *behavior* is the real issue.
+
+> For these reactive systems, as they are called, the
+> complexity we have to deal with does not stem from complex computations
+> or complex data, but from intricate to-and-from interaction - between the
+> system and its environment and between parts of the system itself.
+
+
+The importance of statecharts and fundamental differences to flowcharts
+-----------------------------------------------------------------------
+
+Most programmers are familiar with flowcharts. Statecharts use the same graphical
+elements as flowcharts, but the meaning of both is fundamentally different.
+
+David Harel[^3]:
+
+> Again and again, one comes across articles and books (many of
+> them related to UML) in which the very same phrases are used to introduce
+> sequence diagrams and statecharts. At one point such a publication might say
+> that “sequence diagrams can be used to specify behavior”, and later it might
+> say that “statecharts can be used to specify behavior”. Sadly, the reader is
+> told nothing about the fundamental difference in nature and usage between
+> the two — that one is a medium for conveying requirements, i.e., the inter-
+> object behavior required of a model, and the other is part of the executable
+> model itself.
+> This obscurity is one of the reasons many naive readers come
+> away confused by the multitude of diagram types in the full UML standard
+> and the lack of clear recommendations about what it means to specify the
+> behavior of a system in a way that can be implemented and executed.
+
+Miro Samek[^4]:
+
+> Graphically, compared to state diagrams, flowcharts reverse the sense of vertices and
+> arcs. In a state diagram, the processing is associated with the arcs (transitions),
+> whereas in a flowchart, it is associated with the vertices. A state machine is idle when it
+> sits in a state waiting for an event to occur. A flowchart is busy executing activities
+> when it sits in a node. Figure 2.3 attempts to show that reversal of roles by aligning
+> the arcs of the statecharts with the processing stages of the flowchart.
+
+Support section on 'Visual Paradigm' website[^5]:
+
+> People often confuse state diagrams with flowcharts. The figure below shows a comparison of a
+> state diagram with a flowchart. A state machine diagram in the Figure on the left below performs actions
+> in response to explicit events. In contrast, the Activity diagram in the Figure of the right below does
+> not need explicit events but rather transitions from node to node in its graph automatically upon completion of activities.
+
+[^1]: "*Problem with threads*", Edward A. Lee
+[^2]: "*The Ptolemy Project Modeling and Design of Reactive Systems*", Edward A. Lee
+[^3]: "*Statecharts in the Making: A Personal Account*", David Harel
+[^4]: "*Practical UML Statecharts in C/C++*, Second Edition", 2.2.3 State Diagrams versus Flowcharts, Miro Samek
+[^5]: [State Machine Diagram vs Activity Diagram](https://www.visual-paradigm.com/guide/uml-unified-modeling-language/state-machine-diagram-vs-activity-diagram/)
+
+Solution approach
+-----------------
 
 **Active Object Model** brings the same improvements to behavioral design as
 **Object Orientation** to architectural design. Active objects are objects that encapsulate own flow of control and
@@ -24,8 +88,9 @@ Implementation step in this method is, for the most part, mechanical process and
 
 This repository gathers all the ideas and implementation tricks around lightweight, efficient
 statecharts and AOM implementation in C. Inspired by [QP framework](https://state-machine.com/doc/concepts).
-It's basically a simple cooperative priority-based scheduler and a (hierarchical) state machine framework.
-Some implementation techniques and design patterns (like 'Embedded Anchor' and linker-section-based 'plugin' system) are borrowed from Linux kernel.
+It's basically a simple cooperative, priority-based scheduler and a (hierarchical) state machine framework.
+Some implementation techniques and design patterns (like 'Embedded Anchor' and linker-section-based 'plugin' system)
+are borrowed from Linux kernel.
 
 Another interesting feature is the possibility of running the system without delays, so as fast as possible.
 Having the inputs defined explicitly makes mocking them out easy and then linking with the `test` platform
